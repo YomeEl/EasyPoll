@@ -17,6 +17,12 @@ namespace EasyPoll.Controllers
             }
         }
 
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("token");
+            return RedirectToAction("Login", "Authentification");
+        }
+
         private bool HasValidToken()
         {
             var token = Request.Cookies["token"];
