@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="bg">
+        <div class="centered standard-container border border-primary rounded">
+            <label class="label-center text-logo">EasyPoll</label>
+            <hr>
+            <main role="main">
+                @RenderBody()
+            </main>
+            <br>
+            <br>
+            <label class="label-center text-copy">Боги опросов &#169; 2021</label>
+        </div>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+﻿.bg {
+    margin: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: repeating-linear-gradient(45deg, #8dff83, #6dde63 100px);
+}
+
+.centered {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.standard-container {
+    height: auto;
+    width: 30%;
+    padding: 2%;
+    color: #000000;
+    background-color: seashell;
+    ;
+}
+
+.label-center {
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+.label-warning {
+    color: red;
+}
+
+.text-logo {
+    font-size: 300%;
+}
+
+.text-copy {
+    font-size: 120%;
+}

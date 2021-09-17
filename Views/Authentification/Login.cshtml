@@ -1,0 +1,24 @@
+﻿@{
+    ViewData["Title"] = "Active poll";
+}
+
+@model LightPoll.ViewModels.LoginViewModel
+<form method="post" action="/Authentification/Login">
+    <input name="Username" 
+           class="form-control form-control-lg" 
+           type="text" 
+           placeholder="Логин" />
+    <input name="Password" 
+           class="form-control form-control-lg" 
+           type="password" 
+           placeholder="Пароль" />
+    <br>
+    <input class="btn btn-lg btn-primary mb-1 w-100" type="submit" value="Войти" />
+
+    @if ((bool)ViewData["ModelInvalid"]) 
+    { 
+        <label class="label-center label-warning">Неверный логин или пароль!</label>
+    } 
+</form>
+
+<a class="btn btn-lg btn-primary mb-1 w-100" href="/Authentification/Register">Регистрация</a>
