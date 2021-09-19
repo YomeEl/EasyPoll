@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.SqlServer;
 
 namespace LightPoll
 {
@@ -13,6 +12,7 @@ namespace LightPoll
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            AppSettings.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
