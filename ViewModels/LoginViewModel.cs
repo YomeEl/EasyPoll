@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LightPoll.ViewModels
+namespace EasyPoll.ViewModels
 {
     public class LoginViewModel
     {

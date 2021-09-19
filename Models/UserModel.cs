@@ -2,10 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
-using LightPoll.Data;
+using EasyPoll.Data;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace LightPoll.Models
+namespace EasyPoll.Models
 {
     public class UserModel
     {

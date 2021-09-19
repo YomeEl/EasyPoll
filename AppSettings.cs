@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace LightPoll
+namespace EasyPoll
 {
     public static class AppSettings
     {

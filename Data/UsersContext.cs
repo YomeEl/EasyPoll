@@ -1,7 +1,7 @@
-﻿using LightPoll.Models;
+﻿using EasyPoll.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LightPoll.Data
+namespace EasyPoll.Data
 {
     public class UsersContext : DbContext
     {

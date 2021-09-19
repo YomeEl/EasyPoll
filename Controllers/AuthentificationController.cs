@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace LightPoll.Controllers
+namespace EasyPoll.Controllers
 {
     public class AuthentificationController : Controller
     {
