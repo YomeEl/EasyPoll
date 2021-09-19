@@ -21,9 +21,6 @@ namespace EasyPoll
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-
-            services.AddDbContext<Data.UsersContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("UsersDBContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

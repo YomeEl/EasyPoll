@@ -4,13 +4,6 @@ namespace EasyPoll.Controllers
 {
     public class AuthentificationController : Controller
     {
-        private readonly Data.UsersContext usersDbContext;
-
-        public AuthentificationController(Data.UsersContext context)
-        {
-            usersDbContext = context;
-        }
-
         [HttpGet]
         public IActionResult Login()
         {
