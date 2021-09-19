@@ -4,15 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.SqlServer;
 
-namespace LightPoll
+namespace EasyPoll
 {
     public class Startup
     {
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            AppSettings.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -21,9 +21,6 @@ namespace LightPoll
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-
-            services.AddDbContext<Data.UsersContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("UsersDBContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

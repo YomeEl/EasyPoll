@@ -26,7 +26,7 @@ namespace EasyPoll.Controllers
         private bool HasValidToken()
         {
             var token = Request.Cookies["token"];
-            return token != null;
+            return Models.UserModel.CheckUserToken(token);
         }
     }
 }
