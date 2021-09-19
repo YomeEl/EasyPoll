@@ -1,24 +1,32 @@
 ﻿@{
-    ViewData["Title"] = "Active poll";
+    ViewData["Title"] = "Вход";
 }
 
 @model EasyPoll.ViewModels.LoginViewModel
 <form method="post" action="/Authentification/Login">
-    <input name="Username" 
-           class="form-control form-control-lg" 
-           type="text" 
+    <input name="Username"
+           class="form-control form-control-lg mb-1"
+           type="text"
            placeholder="Логин" />
-    <input name="Password" 
-           class="form-control form-control-lg" 
-           type="password" 
+    <input name="Password"
+           class="form-control form-control-lg"
+           type="password"
            placeholder="Пароль" />
-    <br>
-    <input class="btn btn-lg btn-primary mb-1 w-100" type="submit" value="Войти" />
-
-    @if ((bool)ViewData["ModelInvalid"]) 
-    { 
-        <label class="label-center label-warning">Неверный логин или пароль!</label>
+    @if ((bool)ViewData["ModelInvalid"])
+    {
+        <label class="label-center label-warning mb-0">Неверный логин или пароль!</label>
     } 
+    else { 
+        <br>
+    }
+    <table class="buttons-table">
+        <tr>
+            <td>
+                <a class="btn btn-register btn-common rounded-circle" title="Зарегистрироваться" href="/Authentification/Register"></a>
+            </td>
+            <td>
+                <input class="btn btn-login btn-common rounded-circle" title="Войти" type="submit" value="" />
+            </td>
+        </tr>
+    </table>
 </form>
-
-<a class="btn btn-lg btn-primary mb-1 w-100" href="/Authentification/Register">Регистрация</a>
