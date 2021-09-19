@@ -26,7 +26,7 @@ namespace LightPoll.Controllers
                 Models.UserModel userModel;
                 try 
                 { 
-                    userModel = new Models.UserModel(model, usersDbContext); 
+                    userModel = new Models.UserModel(model); 
                 }
                 catch
                 {
@@ -34,7 +34,7 @@ namespace LightPoll.Controllers
                     return View();
                 }
 
-                Response.Cookies.Append("token", "test");
+                Response.Cookies.Append("token", userModel.Token);
                 return RedirectToAction("Index", "Home");
             }
             else
