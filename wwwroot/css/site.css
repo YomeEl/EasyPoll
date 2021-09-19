@@ -1,9 +1,12 @@
-﻿.bg {
+﻿@import url("../fontin/fontin.css");
+
+.bg {
     margin: 0;
     position: absolute;
     height: 100%;
     width: 100%;
-    background-image: repeating-linear-gradient(45deg, #8dff83, #6dde63 100px);
+    background-color: #9ADDA4;
+    font-family: 'Fontin Sans CR'
 }
 
 .centered {
@@ -16,11 +19,12 @@
 }
 
 .standard-container {
+    border: 1px solid #629669;
     height: auto;
     width: 30%;
     padding: 2%;
     color: #000000;
-    background-color: seashell;
+    background-color: #FFFFFF;
 }
 
 .label-center {
@@ -39,4 +43,30 @@
 
 .text-copy {
     font-size: 120%;
+}
+
+.btn-common {
+    background-color: #6EB178;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-origin: content-box;
+    background-position: 50% 50%;
+    padding: 10px;
+    width: 5vw;
+    height: 5vw;
+    border: solid;
+    border-color: #9ADDA4;
+}
+
+.btn-login {
+    background-image: url(../img/arrow-right.png);
+}
+
+.btn-register {
+    background-image: url(../img/key.png)
+}
+
+.buttons-table {
+    width: 100%;
+    text-align: center;
 }
