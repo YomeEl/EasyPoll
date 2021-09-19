@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EasyPoll.Data
 {
-    public class UsersContext : DbContext
+    public class ServiceDBContext : DbContext
     {
-        public UsersContext(DbContextOptions<UsersContext> options)
+        public ServiceDBContext(DbContextOptions<ServiceDBContext> options)
             : base(options)
         {
         }
