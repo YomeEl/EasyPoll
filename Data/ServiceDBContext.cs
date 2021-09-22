@@ -11,5 +11,7 @@ namespace EasyPoll.Data
         }
 
         public DbSet<UserModel> Users { get; set; }
+        public DbSet<PollModel> Polls { get; set; }
+        public DbSet<AnswerModel> Answers { get; set; }
     }
 }
