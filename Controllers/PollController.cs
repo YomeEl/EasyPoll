@@ -2,10 +2,10 @@
 
 namespace EasyPoll.Controllers
 {
-    public class HomeController : Controller
+    public class PollController : Controller
     {
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult ActivePoll()
         {
             if (HasValidToken())
             {

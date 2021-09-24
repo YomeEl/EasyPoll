@@ -46,7 +46,7 @@ namespace EasyPoll
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Poll}/{action=ActivePoll}/{id?}");
             });
         }
     }
