@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 
 using EasyPoll.Data;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -33,7 +32,7 @@ namespace EasyPoll.Models
             CopyUser(user);
 
             Token = GenerateToken();
-            var usersDbContext = GetDBContext();
+            var usersDbContext = ServiceDBContext.GetDBContext();
             usersDbContext.Users.Update(this);
             usersDbContext.SaveChanges();
         }
@@ -64,15 +63,8 @@ namespace EasyPoll.Models
 
         private static UserModel GetUserModelByUsername(string username)
         {
-            var usersDbContext = GetDBContext();
+            var usersDbContext = ServiceDBContext.GetDBContext();
             return usersDbContext.Users.FirstOrDefaultAsync(user => user.Username == username).Result;
-        }
-
-        private static ServiceDBContext GetDBContext()
-        {
-            var optionsBuilder = new DbContextOptionsBuilder<ServiceDBContext>();
-            optionsBuilder.UseSqlServer(AppSettings.Configuration.GetConnectionString("ServiceData"));
-            return new ServiceDBContext(optionsBuilder.Options);
         }
 
         private string GenerateToken()
