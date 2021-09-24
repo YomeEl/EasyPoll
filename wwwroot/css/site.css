@@ -70,3 +70,26 @@
     width: 100%;
     text-align: center;
 }
+
+.question {
+    font-size: 100%;
+    text-align: center;
+}
+
+.answer-box {
+    height: 30px;
+    margin-bottom: 2px;
+}
+
+.active-answer {
+    cursor: pointer;
+    background-color: #007bff;
+}
+
+.active-answer:hover {
+    background-color: #000000;
+}
+
+.inactive-answer {
+    background-color: #007bff;
+}
