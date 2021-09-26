@@ -28,7 +28,7 @@ namespace EasyPoll.Controllers
                 }
 
                 Response.Cookies.Append("token", userModel.Token);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("ActivePoll", "Poll");
             }
             else
             {

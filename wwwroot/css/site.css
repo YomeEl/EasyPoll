@@ -70,3 +70,26 @@
     width: 100%;
     text-align: center;
 }
+
+.question {
+    font-size: 100%;
+    text-align: center;
+}
+
+.answer-box {
+    height: 30px;
+    margin-bottom: 2px;
+}
+
+.answer {
+    cursor: default;
+    background-color: #629669;
+}
+
+.poll-option {
+    text-align: center;
+    cursor: default;
+    color: #000000;
+    position: absolute;
+    font-size: 1em;
+}
