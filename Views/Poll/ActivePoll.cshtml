@@ -1,31 +1,32 @@
 ﻿@{
     ViewData["Title"] = "Активный опрос";
+
+    var activePoll = (EasyPoll.Models.PollModel)ViewData["ActivePoll"];
+    var answers = activePoll.GetAnswers();
+    var totalCount = activePoll.GetTotalAnswersCount();
+
+    string percentage(int cnt)
+    {
+        return $"{100f * cnt / totalCount}%".Replace(',', '.');
+    }
 }
 
 <div class="question">
-    Текст вопроса Текст вопроса Текст вопроса Текст вопроса Текст вопроса Текст вопроса Текст вопроса Текст вопроса Текст вопроса
+    @activePoll.Question
 </div>
 <br>
-<div class="progress answer-box">
-    <div class="progress-bar answer" style="width: 70%">
-        Вариант 1
+
+@{
+    foreach (var answer in answers)
+    {
+    <div class="progress answer-box">
+        <div class="progress-bar answer" style="width: @percentage(answer.Count)">
+        </div>
+        <label class="label-center poll-option">@answer.Text</label>
     </div>
-</div>
-<div class="progress answer-box">
-    <div class="progress-bar answer" style="width: 70%">
-        Вариант 2
-    </div>
-</div>
-<div class="progress answer-box">
-    <div class="progress-bar answer" style="width: 70%">
-        Вариант 3
-    </div>
-</div>
-<div class="progress answer-box">
-    <div class="progress-bar answer" style="width: 70%">
-        Вариант 4
-    </div>
-</div>
-<div class="question">Проголосовало: 123</div>
+    }
+}
+
+<div class="question">Проголосовало: @totalCount</div>
 <br>
-<a class="btn btn-lg btn-primary label-center" href="Home/Logout">Log out</a>
+<a class="btn btn-lg btn-primary label-center" href="Poll/Logout">Log out</a>

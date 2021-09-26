@@ -2,7 +2,7 @@
 {
     public class AnswerModel
     {
-        [System.ComponentModel.DataAnnotations.Key]
+        public int Id { get; set; }
         public int PollId { get; set; }
         public int UserId { get; set; }
         public int Answer { get; set; }

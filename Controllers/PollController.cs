@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EasyPoll.Controllers
 {
@@ -9,6 +10,8 @@ namespace EasyPoll.Controllers
         {
             if (HasValidToken())
             {
+                //TODO: Temporary. Active poll should be static somewhere.
+                ViewData["ActivePoll"] = Data.ServiceDBContext.GetDBContext().Polls.FirstAsync().Result; 
                 return View();
             }
             else

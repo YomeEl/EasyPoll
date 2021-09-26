@@ -81,15 +81,15 @@
     margin-bottom: 2px;
 }
 
-.active-answer {
-    cursor: pointer;
-    background-color: #007bff;
+.answer {
+    cursor: default;
+    background-color: #629669;
 }
 
-.active-answer:hover {
-    background-color: #000000;
-}
-
-.inactive-answer {
-    background-color: #007bff;
+.poll-option {
+    text-align: center;
+    cursor: default;
+    color: #000000;
+    position: absolute;
+    font-size: 1em;
 }
