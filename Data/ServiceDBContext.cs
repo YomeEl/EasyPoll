@@ -1,7 +1,6 @@
 ﻿using EasyPoll.Models;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace EasyPoll.Data
 {
@@ -16,11 +15,22 @@ namespace EasyPoll.Data
         public DbSet<PollModel> Polls { get; set; }
         public DbSet<AnswerModel> Answers { get; set; }
 
+        private const string connectionString = 
+            "server=localhost;userid=root;password=easypoll;database=servicedata";
+
         public static ServiceDBContext GetDBContext()
         {
-            var optionsBuilder = new DbContextOptionsBuilder<ServiceDBContext>();
-            optionsBuilder.UseSqlServer(AppSettings.Configuration.GetConnectionString("ServiceData"));
-            return new ServiceDBContext(optionsBuilder.Options);
+            return new ServiceDBContext();
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseMySQL(connectionString);
+        }
+
+        private ServiceDBContext() : base()
+        {
+
         }
     }
 }
