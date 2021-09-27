@@ -13,14 +13,14 @@ namespace EasyPoll.Models
         public string Question { get; set; }
         public System.DateTime Created { get; set; }
         public System.DateTime? Ended { get; set; }
-        public string Options { get; set; } //Separated with SEPARATOR
+        public string Options { get; set; }
 
-        private const string SEPARATOR = "~!";
+        private const string OPT_SEPARATOR = "~!";
         private int answersCount = -1;
 
         public List<AnswerViewModel> GetAnswers()
         {
-            var options = Options.Split(SEPARATOR);
+            var options = Options.Split(OPT_SEPARATOR);
             var answers = LoadAnswers();
             var viewModels = new List<AnswerViewModel>();
             for (int i = 0; i < options.Length; i++)
@@ -51,7 +51,7 @@ namespace EasyPoll.Models
         private List<AnswerModel> LoadAnswers()
         {
             var dbContext = Data.ServiceDBContext.GetDBContext();
-            var res = dbContext.Answers.FromSqlInterpolated($"SELECT * FROM dbo.Answers WHERE PollId = {Id}").ToListAsync().Result;
+            var res = dbContext.Answers.FromSqlInterpolated($"SELECT * FROM Answers WHERE PollId = {Id}").ToListAsync().Result;
             answersCount = res.Count;
             return res;
         }

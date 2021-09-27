@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Identity;
 using EasyPoll.Data;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using MySql.Data.MySqlClient;
+using MySql.Data.EntityFramework;
+
 namespace EasyPoll.Models
 {
     public class UserModel
