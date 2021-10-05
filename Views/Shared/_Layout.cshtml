@@ -6,17 +6,21 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <div class="bg">
-        <div class="centered standard-container rounded">
-            <label class="label-center text-logo">EasyPoll</label>
-            <hr>
-            <main role="main">
-                @RenderBody()
-            </main>
-            <br>
-            <label class="label-center text-copy">Боги опросов &#169; 2021</label>
+    <div class="flex-container">
+        <div class="raw">
+            <div class="flex-item">
+                <div class="standard-container rounded">
+                    <label class="label-center text-logo">EasyPoll</label>
+                    <hr>
+                    <main role="main">
+                        @RenderBody()
+                    </main>
+                    <br>
+                    <label class="label-center text-copy">Боги опросов &#169; 2021</label>
+                </div>
+            </div>
+            <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         </div>
     </div>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
