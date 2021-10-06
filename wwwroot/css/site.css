@@ -6,10 +6,6 @@ html, body {
 
 body {
     margin: 0;
-}
-
-body {
-    margin: 0;
     position: absolute;
     height: 100%;
     width: 100%;
@@ -25,14 +21,12 @@ body {
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+    overflow: overlay;
 }
 
 .raw {
     width: 50%;
-    margin: 0;
-}
-
-.flex-item {
+    margin: 1vh;
 }
 
 .standard-container {
