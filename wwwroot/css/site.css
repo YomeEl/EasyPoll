@@ -1,4 +1,4 @@
-﻿@import url("../fontin/fontin.css");
+﻿@import url("../fonts/Montserrat/Montserrat.css");
 
 html, body {
     height: 100%;
@@ -10,7 +10,7 @@ body {
     height: 100%;
     width: 100%;
     background-color: #9ADDA4;
-    font-family: 'Fontin Sans CR'
+    font-family: 'Montserrat'
 }
 
 .flex-container {
