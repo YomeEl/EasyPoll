@@ -9,8 +9,9 @@ body {
     position: absolute;
     height: 100%;
     width: 100%;
-    background-color: #9ADDA4;
-    font-family: 'Montserrat'
+    background-color: #E9ECEE;
+    font-family: 'Montserrat';
+    color: #0F2232;
 }
 
 .flex-container {
@@ -30,11 +31,18 @@ body {
 }
 
 .standard-container {
-    border: 1px solid #629669;
+    border: 1px solid #293240;
     height: auto;
     padding: 2%;
-    color: #000000;
     background-color: #FFFFFF;
+}
+
+.login-form-input {
+    width: 100%;
+    height: 3rem;
+    margin: 5px 0 5px 0;
+    padding: 0px 5%;
+    border: 1px solid;
 }
 
 .label-center {
@@ -55,30 +63,30 @@ body {
     font-size: 120%;
 }
 
+.btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .btn-common {
-    background-color: #6EB178;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-origin: content-box;
-    background-position: 50% 50%;
-    padding: 10px;
-    width: 5vw;
-    height: 5vw;
-    border: solid;
-    border-color: #9ADDA4;
-}
-
-.btn-login {
-    background-image: url(../img/arrow-right.png);
-}
-
-.btn-register {
-    background-image: url(../img/key.png)
-}
-
-.buttons-table {
-    width: 100%;
+    display: flex;
     text-align: center;
+    color: #FFFFFF;
+    background-color: #FF0000;
+    margin: 5px;
+    padding: 10px;
+    height: 3rem;
+    border-radius: 1.5rem;
+    border-width: 0;
+    border-color: #FF0000;
+    transition: 0.5s ease-out;
+}
+
+.btn-common:hover {
+    color: #FFFFFF;
+    background-color: #FF4346;
+    text-decoration: none;
 }
 
 .question {
@@ -87,19 +95,22 @@ body {
 }
 
 .answer-box {
+
+}
+
+.answer-bar {
+    background-color: #E9ECEE;
     height: 30px;
-    margin-bottom: 2px;
+    margin: 1px;
 }
 
-.answer {
-    cursor: default;
-    background-color: #629669;
+.answer-bar-result {
+    height: inherit;
+    background-color: #FFA6A6;
 }
 
-.poll-option {
-    text-align: center;
+.answer-text {
+    margin: 3px 0 0 0;
     cursor: default;
-    color: #000000;
-    position: absolute;
     font-size: 1em;
 }

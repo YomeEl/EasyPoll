@@ -7,7 +7,7 @@
 
     string percentage(int cnt)
     {
-        return $"{100f * cnt / totalCount}%".Replace(',', '.');
+        return $"{(100f * cnt / totalCount).ToString("F1")}%".Replace(',', '.');
     }
 }
 
@@ -17,16 +17,25 @@
 <br>
 
 @{
-    foreach (var answer in answers)
+    for (int i = 0; i < answers.Count; i++)
     {
-    <div class="progress answer-box">
-        <div class="progress-bar answer" style="width: @percentage(answer.Count)">
+        var answer = answers[i];
+        var barStyle = $"width:{@percentage(answer.Count)};";
+        if ((int)ViewData["Selected"] == i)
+        {
+            barStyle += "background-color:#FF0000;";
+        }
+        <div class="answer-box">
+            <label class="answer-text">@answer.Text (@percentage(answer.Count))</label>
+            <div class="answer-bar">
+                <div class="answer-bar-result" style=@barStyle></div>
+            </div>
         </div>
-        <label class="label-center poll-option">@answer.Text</label>
-    </div>
     }
 }
 
 <div class="question">Проголосовало: @totalCount</div>
 <br>
-<a class="btn btn-lg btn-primary label-center" href="Poll/Logout">Log out</a>
+<div class="btn-container">
+    <a class="btn-common" href="Poll/Logout">Выход</a>
+</div>
