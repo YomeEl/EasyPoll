@@ -9,6 +9,8 @@
     {
         return $"{(100f * cnt / totalCount).ToString("F1")}%".Replace(',', '.');
     }
+
+    var voted = (bool)ViewData["Voted"];
 }
 
 <div class="question">
@@ -20,13 +22,19 @@
     for (int i = 0; i < answers.Count; i++)
     {
         var answer = answers[i];
-        var barStyle = $"width:{@percentage(answer.Count)};";
+        var barStyle = $"width:{(voted ? @percentage(answer.Count) : "100%")};";
+        var answerText = answer.Text;
+        if (voted)
+        {
+            answerText += $" ({percentage(answer.Count)}";
+        }
         if ((int)ViewData["Selected"] == i)
         {
             barStyle += "background-color:#FF0000;";
         }
+
         <div class="answer-box">
-            <label class="answer-text">@answer.Text (@percentage(answer.Count))</label>
+            <label class="answer-text">@answerText</label>
             <div class="answer-bar">
                 <div class="answer-bar-result" style=@barStyle></div>
             </div>

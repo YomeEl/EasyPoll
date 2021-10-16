@@ -13,6 +13,7 @@ namespace EasyPoll.Controllers
                 //TODO: Temporary. Active poll should be static somewhere.
                 ViewData["ActivePoll"] = Data.ServiceDBContext.GetDBContext().Polls.FirstAsync().Result;
                 ViewData["Selected"] = 1;
+                ViewData["Voted"] = true;
                 return View();
             }
             else
