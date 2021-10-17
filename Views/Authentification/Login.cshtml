@@ -8,13 +8,18 @@
     <input name="Password" class="login-form-input" type="password" placeholder="Пароль" />
     @if ((bool)ViewData["ModelInvalid"])
     {
-        <label class="label-center label-warning mb-0">Неверный логин или пароль!</label>
+        <div class="login-warning-wrapper">
+            <label class="login-warning">Неверный логин или пароль!</label>
+        </div>
     } 
     else { 
         <br>
     }
+    <input type="submit" style="display: none" />
 <div class="btn-container">
-    <input class="btn-common" value="Войти в систему" type="submit" />
+    <div class="btn-common" onClick="this.parentNode.parentNode.submit();">
+        <label class="btn-text" type="submit">Войти в систему</label>
+    </div>
     <a class="" href="/Authentification/Register">Регистрация</a>
 </div>
 </form>

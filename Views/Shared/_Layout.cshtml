@@ -3,19 +3,23 @@
 <head>
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/light_style.css" />
 </head>
 <body>
     <div class="flex-container">
         <div class="my-row">
             <div class="standard-container rounded">
-                <label class="label-center text-logo">@ViewData["Title"]</label>
+                <div class="page-header">
+                    <label class="text-logo">@ViewData["Title"]</label>
+                </div>
                 <hr>
                 <main role="main">
                     @RenderBody()
                 </main>
                 <br>
-                <label class="label-center text-copy">Боги опросов &#169; 2021</label>
+                <div class="page-footer">
+                    <label class="text-copy">Боги опросов &#169; 2021</label>
+                </div>
             </div>
             <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
         </div>

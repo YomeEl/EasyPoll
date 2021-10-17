@@ -14,6 +14,24 @@ body {
     color: #0F2232;
 }
 
+a {
+    color: #FF0000;
+}
+
+a:hover {
+    color: #0F2232;
+    text-decoration: none;
+    transition: 0.6s ease-out;
+}
+
+.page-footer,
+.page-header {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
 .flex-container {
     height: 100%;
     padding: 0;
@@ -33,26 +51,28 @@ body {
 .standard-container {
     border: 1px solid #293240;
     height: auto;
-    padding: 2%;
+    padding: 5%;
     background-color: #FFFFFF;
 }
 
 .login-form-input {
     width: 100%;
-    height: 3rem;
     margin: 5px 0 5px 0;
-    padding: 0px 5%;
+    padding: 20px;
     border: 1px solid;
 }
 
-.label-center {
-    position: relative;
-    left: 50%;
-    transform: translate(-50%, 0%);
+.login-warning-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    margin: 0;
 }
 
-.label-warning {
-    color: red;
+.login-warning {
+    color: #FF0000;
 }
 
 .text-logo {
@@ -72,21 +92,26 @@ body {
 .btn-common {
     display: flex;
     text-align: center;
-    color: #FFFFFF;
     background-color: #FF0000;
     margin: 5px;
     padding: 10px;
-    height: 3rem;
+    height: fit-content;
     border-radius: 1.5rem;
     border-width: 0;
     border-color: #FF0000;
-    transition: 0.5s ease-out;
+    transition: 0.6s ease-out;
+    cursor: pointer;
 }
 
 .btn-common:hover {
+    background-color: #293240;
+}
+
+.btn-text {
+    font-weight: bold;
     color: #FFFFFF;
-    background-color: #FF4346;
-    text-decoration: none;
+    cursor: inherit;
+    margin: 0 10px;
 }
 
 .question {
@@ -94,14 +119,19 @@ body {
     text-align: center;
 }
 
+.answer-box-active,
 .answer-box {
+
+}
+
+.answer-box:hover,
+.answer-box-active:hover {
 
 }
 
 .answer-bar {
     background-color: #E9ECEE;
     height: 30px;
-    margin: 1px;
 }
 
 .answer-bar-result {
@@ -113,4 +143,10 @@ body {
     margin: 3px 0 0 0;
     cursor: default;
     font-size: 1em;
+}
+
+a.answer-text:hover::after {
+    content: " проголосовать";
+    font-size: 0.75rem;
+    color: #808080;
 }

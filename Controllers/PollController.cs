@@ -8,24 +8,26 @@ namespace EasyPoll.Controllers
         [HttpGet]
         public IActionResult ActivePoll()
         {
+            if (Request.Query.ContainsKey("answer"))
+            {
+                ViewData["Selected"] = int.Parse(Request.Query["answer"][0]);
+            }
+            else
+            {
+                ViewData["Selected"] = -1;
+            }
+
             if (HasValidToken())
             {
                 //TODO: Temporary. Active poll should be static somewhere.
                 ViewData["ActivePoll"] = Data.ServiceDBContext.GetDBContext().Polls.FirstAsync().Result;
-                ViewData["Selected"] = 1;
-                ViewData["Voted"] = true;
+                
                 return View();
             }
             else
             {
                 return RedirectToAction("Login", "Authentification");
             }
-        }
-
-        public IActionResult Logout()
-        {
-            Response.Cookies.Delete("token");
-            return RedirectToAction("Login", "Authentification");
         }
 
         private bool HasValidToken()

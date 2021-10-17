@@ -5,12 +5,14 @@
     var answers = activePoll.GetAnswers();
     var totalCount = activePoll.GetTotalAnswersCount();
 
+    const string NO_DISPLAY = "display:none";
+
     string percentage(int cnt)
     {
         return $"{(100f * cnt / totalCount).ToString("F1")}%".Replace(',', '.');
     }
 
-    var voted = (bool)ViewData["Voted"];
+    var voted = (int)ViewData["Selected"] != -1;
 }
 
 <div class="question">
@@ -22,28 +24,45 @@
     for (int i = 0; i < answers.Count; i++)
     {
         var answer = answers[i];
-        var barStyle = $"width:{(voted ? @percentage(answer.Count) : "100%")};";
+        var barStyle = "";
         var answerText = answer.Text;
+        var answerHref = $"href=Poll?answer={i}";
+
         if (voted)
         {
-            answerText += $" ({percentage(answer.Count)}";
-        }
-        if ((int)ViewData["Selected"] == i)
-        {
-            barStyle += "background-color:#FF0000;";
+            answerText += $" ({percentage(answer.Count)})";
+            answerHref = "";
+            barStyle = $"width:{(voted ? @percentage(answer.Count) : "100%")};";
+            if ((int)ViewData["Selected"] == i)
+            {
+                barStyle += "background-color: #FF0000;";
+            }
         }
 
-        <div class="answer-box">
-            <label class="answer-text">@answerText</label>
-            <div class="answer-bar">
-                <div class="answer-bar-result" style=@barStyle></div>
-            </div>
+    <div class="answer-box@(voted ? "" : "-active")">
+        <label class="answer-text">@(i + 1). </label>
+        @{
+            if (voted)
+            {
+                <label class="answer-text" @answerHref>@answerText</label>
+            }
+            else
+            {
+                <a class="answer-text" @answerHref>@answerText</a>
+            }
+        }
+        <div class="answer-bar" style="@(voted ? "" : NO_DISPLAY)">
+            <div class="answer-bar-result" style="@barStyle"></div>
         </div>
+    </div>
     }
 }
 
+<br>
 <div class="question">Проголосовало: @totalCount</div>
 <br>
 <div class="btn-container">
-    <a class="btn-common" href="Poll/Logout">Выход</a>
+    <div class="btn-common">
+        <label class="btn-text" onclick="location.href='Authentification/Logout'">Выход</label>
+    </div>
 </div>
