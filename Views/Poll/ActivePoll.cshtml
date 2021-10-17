@@ -26,12 +26,10 @@
         var answer = answers[i];
         var barStyle = "";
         var answerText = answer.Text;
-        var answerHref = $"href=Poll?answer={i}";
 
         if (voted)
         {
             answerText += $" ({percentage(answer.Count)})";
-            answerHref = "";
             barStyle = $"width:{(voted ? @percentage(answer.Count) : "100%")};";
             if ((int)ViewData["Selected"] == i)
             {
@@ -39,16 +37,16 @@
             }
         }
 
-    <div class="answer-box@(voted ? "" : "-active")">
+    <div class="answer-box@(voted ? "" : "-active")" @(voted ? "" : $"onclick=location.href='Poll?answer={i}'")>
         <label class="answer-text">@(i + 1). </label>
         @{
             if (voted)
             {
-                <label class="answer-text" @answerHref>@answerText</label>
+                <label class="answer-text">@answerText</label>
             }
             else
             {
-                <a class="answer-text" @answerHref>@answerText</a>
+                <a class="answer-text">@answerText</a>
             }
         }
         <div class="answer-bar" style="@(voted ? "" : NO_DISPLAY)">
