@@ -36,5 +36,11 @@ namespace EasyPoll.Controllers
                 return View();
             }
         }
+
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("token");
+            return RedirectToAction("Login", "Authentification");
+        }
     }
 }

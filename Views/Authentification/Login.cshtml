@@ -4,29 +4,22 @@
 
 @model EasyPoll.ViewModels.LoginViewModel
 <form method="post" action="/Authentification/Login">
-    <input name="Username"
-           class="form-control form-control-lg mb-1"
-           type="text"
-           placeholder="Логин" />
-    <input name="Password"
-           class="form-control form-control-lg"
-           type="password"
-           placeholder="Пароль" />
+    <input name="Username" class="login-form-input" type="text" placeholder="Логин" />
+    <input name="Password" class="login-form-input" type="password" placeholder="Пароль" />
     @if ((bool)ViewData["ModelInvalid"])
     {
-        <label class="label-center label-warning mb-0">Неверный логин или пароль!</label>
+        <div class="login-warning-wrapper">
+            <label class="login-warning">Неверный логин или пароль!</label>
+        </div>
     } 
     else { 
         <br>
     }
-    <table class="buttons-table">
-        <tr>
-            <td>
-                <a class="btn btn-register btn-common rounded-circle" title="Зарегистрироваться" href="/Authentification/Register"></a>
-            </td>
-            <td>
-                <input class="btn btn-login btn-common rounded-circle" title="Войти" type="submit" value="" />
-            </td>
-        </tr>
-    </table>
+    <input type="submit" style="display: none" />
+<div class="btn-container">
+    <div class="btn-common" onClick="this.parentNode.parentNode.submit();">
+        <label class="btn-text" type="submit">Войти в систему</label>
+    </div>
+    <a class="" href="/Authentification/Register">Регистрация</a>
+</div>
 </form>

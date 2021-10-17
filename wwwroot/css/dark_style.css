@@ -1,0 +1,174 @@
+﻿@import url("../fonts/Montserrat/Montserrat.css");
+
+html, body {
+    height: 100%;
+    font-size: 120%;
+}
+
+body {
+    margin: 0;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: #E9ECEE;
+    font-family: 'Montserrat';
+    color: #0F2232;
+}
+
+a {
+    color: #FFFFFF;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+a:hover {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.page-footer,
+.page-header {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+}
+
+.page-header {
+    background-color: #FF4346;
+    border-radius: 0.25rem;
+}
+
+.page-footer {
+
+}
+
+.text-logo {
+    color: #FFFFFF;
+    font-size: 250%;
+    font-weight: bold;
+    margin: 0;
+    font-weight: bold;
+}
+
+.text-copy {
+    color: #FFFFFF;
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.flex-container {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    overflow: overlay;
+}
+
+.my-row {
+    width: 50%;
+    margin: 1vh;
+}
+
+.standard-container {
+    border: 1px solid #293240;
+    height: auto;
+    padding: 5%;
+    background-color: #293240;
+}
+
+.login-form-input {
+    width: 100%;
+    margin: 5px 0 5px 0;
+    padding: 20px;
+    border: 1px solid;
+    background-color: #E9ECEE;
+}
+
+.login-warning-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+.login-warning {
+    color: #FF0000;
+}
+
+.btn-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btn-common {
+    display: flex;
+    text-align: center;
+    background-color: #FF0000;
+    margin: 5px;
+    padding: 10px;
+    height: fit-content;
+    border-radius: 1.5rem;
+    border-width: 0;
+    cursor: pointer;
+}
+
+.btn-text {
+    font-weight: bold;
+    color: #FFFFFF;
+    cursor: inherit;
+    margin: 0 10px;
+}
+
+.question {
+    color: #FFFFFF;
+    font-size: 100%;
+    text-align: center;
+}
+
+.answer-box {
+
+}
+
+.answer-box-active {
+    background-color: #FF9999;
+    border: 5px solid #FF9999;
+    margin: 5px 0;
+    padding: 5px;
+    cursor: pointer;
+    transition: 0.6s ease-out;
+}
+
+.answer-box-active:hover {
+    border-color: #FF0000;
+    background-color: #FF0000;
+}
+
+.answer-bar {
+    background-color: #E9ECEE;
+    height: 30px;
+}
+
+.answer-bar-result {
+    height: inherit;
+    background-color: #FFA6A6;
+}
+
+.answer-text {
+    text-decoration: none;
+    color: #FFFFFF;
+    margin: 3px 0 0 0;
+    cursor: inherit;
+    font-size: 1em;
+}
+
+.answer-text:hover {
+    text-decoration: none;
+}
