@@ -124,6 +124,10 @@ a:hover {
 
 }
 
+.answer-box-active {
+    width: fit-content;
+}
+
 .answer-box:hover,
 .answer-box-active:hover {
 
