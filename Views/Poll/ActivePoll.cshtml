@@ -37,22 +37,35 @@
             }
         }
 
-    <div class="answer-box@(voted ? "" : "-active")" @(voted ? "" : $"onclick=location.href='Poll?answer={i}'")>
-        <label class="answer-text">@(i + 1). </label>
-        @{
-            if (voted)
-            {
-                <label class="answer-text">@answerText</label>
-            }
-            else
-            {
-                <a class="answer-text">@answerText</a>
-            }
+        string answerBoxClass;
+        string answerBoxOnClick;
+        if (voted)
+        {
+            answerBoxClass = "answer-box";
+            answerBoxOnClick = "";
         }
-        <div class="answer-bar" style="@(voted ? "" : NO_DISPLAY)">
-            <div class="answer-bar-result" style="@barStyle"></div>
+        else
+        {
+            answerBoxClass = "answer-box-active";
+            answerBoxOnClick = $"onclick=location.href='Poll?answer={i}'";
+        }
+
+        <div class="@answerBoxClass" @answerBoxOnClick>
+            <label class="answer-text">@(i + 1). </label>
+            @{
+                if (voted)
+                {
+                    <label class="answer-text">@answerText</label>
+                }
+                else
+                {
+                    <a class="answer-text">@answerText</a>
+                }
+            }
+            <div class="answer-bar" style="@(voted ? "" : NO_DISPLAY)">
+                <div class="answer-bar-result" style="@barStyle"></div>
+            </div>
         </div>
-    </div>
     }
 }
 
