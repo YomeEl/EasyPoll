@@ -9,5 +9,10 @@ namespace EasyPoll.Controllers
         {
             return View();
         }
+
+        public IActionResult GoBack()
+        {
+            return RedirectToAction("ActivePoll", "Poll");
+        }
     }
 }
