@@ -2,8 +2,9 @@
 
 namespace EasyPoll.Controllers
 {
-    public class SettingsConroller : Controller
+    public class SettingsController : Controller
     {
+        [HttpGet]
         public IActionResult ControlPanel()
         {
             return View();
