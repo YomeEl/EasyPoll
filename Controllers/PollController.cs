@@ -30,6 +30,11 @@ namespace EasyPoll.Controllers
             }
         }
 
+        public IActionResult AddNew()
+        {
+            return View();
+        }
+
         private bool HasValidToken()
         {
             var token = Request.Cookies["token"];

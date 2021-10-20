@@ -24,6 +24,17 @@ a:hover {
     transition: 0.6s ease-out;
 }
 
+img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.img-wrapper {
+    width: 100%;
+    height: 40vh;
+}
+
 .page-footer,
 .page-header {
     display: flex;
@@ -114,9 +125,25 @@ a:hover {
     margin: 0 10px;
 }
 
-.question {
+.form-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.question,
+.checkbox-label {
     font-size: 100%;
     text-align: center;
+    margin: 0;
+}
+
+.checkbox-label {
+    text-align: left;
+}
+
+.checkbox {
+    width: auto;
+    margin-right: 10px;
 }
 
 .answer-box-active,
