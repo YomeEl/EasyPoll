@@ -30,6 +30,11 @@ namespace EasyPoll.Controllers
             }
         }
 
+        public IActionResult PollControl()
+        {
+            return View();
+        }
+
         public IActionResult AddNew()
         {
             return View();
