@@ -16,7 +16,7 @@ namespace EasyPoll.Data
         public DbSet<AnswerModel> Answers { get; set; }
 
         private const string connectionString = 
-            "server=localhost;userid=root;password=easypoll;database=servicedata";
+            "server=localhost;userid=app;password=pwd;database=servicedata";
 
         public static ServiceDBContext GetDBContext()
         {
