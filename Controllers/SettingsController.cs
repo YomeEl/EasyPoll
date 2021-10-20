@@ -15,6 +15,11 @@ namespace EasyPoll.Controllers
             return RedirectToAction("AddNew", "Poll");
         }
 
+        public IActionResult ShowAll()
+        {
+            return RedirectToAction("ShowAll", "Poll");
+        }
+
         public IActionResult GoBack()
         {
             return RedirectToAction("ActivePoll", "Poll");

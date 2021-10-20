@@ -35,6 +35,11 @@ namespace EasyPoll.Controllers
             return View();
         }
 
+        public IActionResult ShowAll()
+        {
+            return View();
+        }
+
         private bool HasValidToken()
         {
             var token = Request.Cookies["token"];
