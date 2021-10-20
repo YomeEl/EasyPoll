@@ -26,6 +26,10 @@ a:hover {
     text-decoration: underline;
 }
 
+img {
+    width: 100%;
+}
+
 .page-footer,
 .page-header {
     display: flex;
@@ -127,10 +131,26 @@ a:hover {
     margin: 0 10px;
 }
 
-.question {
+.form-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.question,
+.checkbox-label {
     color: #FFFFFF;
     font-size: 100%;
     text-align: center;
+    margin: 0;
+}
+
+.checkbox-label {
+    text-align: left;
+}
+
+.checkbox {
+    width: auto;
+    margin-right: 10px;
 }
 
 .answer-box {
