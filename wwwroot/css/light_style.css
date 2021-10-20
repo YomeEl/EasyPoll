@@ -61,3 +61,12 @@ a.answer-text:hover::after {
     font-size: 0.75rem;
     color: #808080;
 }
+
+.poll-summary-current {
+    border-color: #FF0000;
+}
+
+.poll-summary-current:hover,
+.poll-summary:hover {
+    background-color: #FFA6A6;
+}
