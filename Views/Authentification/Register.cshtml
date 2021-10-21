@@ -1,0 +1,35 @@
+﻿@{ ViewData["Title"] = "Регистрация"; }
+
+<form method="post" action="/Authentification/Login">
+    <input name="Mail"
+           class="login-form-input"
+           type="text"
+           placeholder="Aдрес электроной почты" />
+    <input name="Username"
+           class="login-form-input"
+           type="text"
+           placeholder="Логин" />
+    <input name="Password"
+           class="login-form-input"
+           type="password"
+           placeholder="Пароль" />
+    <input name="RePasword"
+           class="login-form-input"
+           type="password"
+           placeholder="Повтор пароля" />
+    <hr>
+    <label class="question">Выберите подразделение:</label>
+    <select class="login-form-input">
+        <option>Пункт 1</option>
+        <option>Пункт 2</option>
+    </select>
+    <div class="login-warning-wrapper">
+        <label class="login-warning">Пароли не совпадают!</label>
+    </div>
+    <div class="btn-container">
+        <div class="btn-common" onclick="location.href=''">
+            <label class="btn-text">Зарегистрироваться</label>
+        </div>
+    </div>
+    <input type="submit" style="display: none" />
+</form>
