@@ -21,7 +21,7 @@ namespace EasyPoll.Controllers
             {
                 //TODO: Temporary. Active poll should be static somewhere.
                 ViewData["ActivePoll"] = Data.ServiceDBContext.GetDBContext().Polls.FirstAsync().Result;
-                
+
                 return View();
             }
             else
@@ -41,6 +41,11 @@ namespace EasyPoll.Controllers
         }
 
         public IActionResult ShowAll()
+        {
+            return View();
+        }
+
+        public IActionResult Details()
         {
             return View();
         }
