@@ -15,6 +15,10 @@ a:hover {
     text-decoration: underline;
 }
 
+hr {
+    background-color: #888888;
+}
+
 .page-header {
     background-color: #FF4346;
     border-radius: 0.25rem;
@@ -81,4 +85,18 @@ a:hover {
 
 .answer-text:hover {
     text-decoration: none;
+}
+
+.poll-summary,
+.poll-summary-current {
+    color: #FFFFFF;
+}
+
+.poll-summary-current {
+    border-color: #FF0000;
+}
+
+.poll-summary-current:hover,
+.poll-summary:hover {
+    background-color: #FF9999;
 }

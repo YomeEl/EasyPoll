@@ -29,6 +29,7 @@ img {
     flex-direction: column;
     flex-wrap: wrap;
     align-content: center;
+    text-align: center;
 }
 
 .flex-container {

@@ -11,16 +11,20 @@
     <label class="question">Текст вопроса:</label>
     <textarea name="Question" class="login-form-input"></textarea>
     <hr>
-    <label class="question">Варианты ответов:</label>
+    <label class="question" style="width: 100%; font-size: 150%">Варианты ответов</label>
+    <hr>
     <input name="Answer1" class="login-form-input" type="text" placeholder="Текст ответа 1" />
+    <a href="">Загрузить изображение</a>
+    <hr>
     <input name="Answer2" class="login-form-input" type="text" placeholder="Текст ответа 2" />
+    <a href="">Загрузить изображение</a>
+    <hr>
     <input name="Answer3" class="login-form-input" type="text" placeholder="Текст ответа 3" />
-    <br>
-    <div class="form-checkbox-wrapper">
-        <input name="SendEmail" id="cb1" type="checkbox" class="checkbox" />
-        <label class="checkbox-label" for="cb1">Отправить уведомление сотрудникам о начале/конце опроса</label>
-    </div>
-    <br>
+    <a href="">Загрузить изображение</a>
+    <hr>
+    <input name="Answer4" class="login-form-input" type="text" placeholder="Текст ответа 4" />
+    <a href="">Загрузить изображение</a>
+    <hr>
     <div class="btn-container" style="flex-wrap: wrap; flex-direction: row; justify-content: center">
         <div class="btn-common" onClick="">
             <label class="btn-text" type="submit">Добавить вариант</label>
@@ -30,12 +34,18 @@
         </div>
     </div>
     <hr>
+    <div class="form-checkbox-wrapper">
+        <input name="SendEmail" id="cb1" type="checkbox" class="checkbox" />
+        <label class="checkbox-label" for="cb1">Отправить уведомление сотрудникам о начале/конце опроса</label>
+    </div>
+    <hr>
+    <label class="question">Дата начала: </label><input type="date"  style="margin-left: 5px" value="2021-10-22" readonly>
+    <br>
+    <label class="question">Дата окончания: </label><input type="date"  style="margin-left: 5px" value="2021-10-29">
+    <hr>
     <div class="btn-container" style="flex-wrap: wrap; flex-direction: row; justify-content: center">
         <div class="btn-common" onClick="">
             <label class="btn-text" type="submit">Сохранить</label>
-        </div>
-        <div class="btn-common" onClick="">
-            <label class="btn-text" type="submit">Завершить</label>
         </div>
     </div>
     <div class="btn-container" style="flex-wrap: wrap; flex-direction: row; justify-content: center">
