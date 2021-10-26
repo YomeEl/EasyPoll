@@ -15,8 +15,8 @@ namespace EasyPoll.Data
         public DbSet<PollModel> Polls { get; set; }
         public DbSet<AnswerModel> Answers { get; set; }
 
-        private const string connectionString = 
-            "server=localhost;userid=app;password=pwd;database=servicedata";
+        private const string connectionString =
+            "server=easypoll-db.mysql.database.azure.com;userid=app@easypoll-db;password=pwd;database=servicedata";
 
         public static ServiceDBContext GetDBContext()
         {
