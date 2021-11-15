@@ -20,13 +20,16 @@ namespace EasyPoll.Models
         [Required]
         [DataType(DataType.Password)]
         public string RepeatedPassword { get; set; }
-        
+
         [Required]
         public int Department { get; set; }
 
         public bool IsValid()
         {
-            return EmailAdress != null && Username != null && Password != null;
+            return EmailAdress != null && Username != null && Password != null && Password == RepeatedPassword;
         }
+
+
+
     }
 }
