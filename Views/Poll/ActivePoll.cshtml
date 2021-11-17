@@ -73,10 +73,10 @@
 <div class="question">Проголосовало: @totalCount</div>
 <br>
 <div class="btn-container">
-    <div class="btn-common" onclick="location.href='Authentification/Logout'">
+    <div class="btn-common" onclick="location.href='@Url.Action("Logout", "Authentification")'">
         <label class="btn-text">Выход</label>
     </div>
-    <div class="btn-common" onclick="location.href='Settings/ControlPanel'">
+    <div class="btn-common" onclick="location.href='@Url.Action("ControlPanel", "Settings")'">
         <label class="btn-text">Панель управления</label>
     </div>
 </div>
