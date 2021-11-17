@@ -13,23 +13,14 @@
     <hr>
     <label class="question" style="width: 100%; font-size: 150%">Варианты ответов</label>
     <hr>
-    <input name="Answer1" class="login-form-input" type="text" placeholder="Текст ответа 1" />
-    <a href="">Загрузить изображение</a>
-    <hr>
-    <input name="Answer2" class="login-form-input" type="text" placeholder="Текст ответа 2" />
-    <a href="">Загрузить изображение</a>
-    <hr>
-    <input name="Answer3" class="login-form-input" type="text" placeholder="Текст ответа 3" />
-    <a href="">Загрузить изображение</a>
-    <hr>
-    <input name="Answer4" class="login-form-input" type="text" placeholder="Текст ответа 4" />
-    <a href="">Загрузить изображение</a>
-    <hr>
+    <div id="answers">
+        <!--Initialized with JS -->
+    </div>
     <div class="btn-container" style="flex-wrap: wrap; flex-direction: row; justify-content: center">
-        <div class="btn-common" onClick="">
+        <div class="btn-common" onClick="add()">
             <label class="btn-text" type="submit">Добавить вариант</label>
         </div>
-        <div class="btn-common" onClick="">
+        <div class="btn-common" onClick="remove()">
             <label class="btn-text" type="submit">Удалить вариант</label>
         </div>
     </div>
@@ -50,3 +41,45 @@
         <a href="@Url.Action("ControlPanel", "Settings")">Отмена</a>
     </div>
 </form>
+
+<script>
+    var cntr = 0;
+
+    init(3);
+
+    function init(count) {
+        for (var i = 0; i < count; i++) {
+            add();
+        }
+    }
+
+    function add() {
+        cntr++;
+
+        var newAnswer = document.createElement("input");
+        newAnswer.name = 'Answer' + cntr;
+        newAnswer.className = "login-form-input";
+        newAnswer.type = "text";
+        newAnswer.placeholder = "Текст ответа " + cntr;
+
+        var newA = document.createElement("a");
+        newA.href = "";
+        newA.innerText = "Загрузить изображение";
+
+        var newHr = document.createElement("hr");
+
+        var newDiv = document.createElement("div");
+        newDiv.id = "AnswerDiv" + cntr;
+        newDiv.appendChild(newAnswer);
+        newDiv.appendChild(newA);
+        newDiv.appendChild(newHr);
+
+        var ansDiv = document.getElementById("answers");
+        ansDiv.appendChild(newDiv);
+    }
+
+    function remove() {
+        document.getElementById("answers").removeChild(document.getElementById("AnswerDiv" + cntr));
+        cntr--;
+    }
+</script>
