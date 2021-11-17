@@ -43,12 +43,10 @@
     <br>
     <label class="question">Дата окончания: </label><input type="date"  style="margin-left: 5px" value="2021-10-29">
     <hr>
-    <div class="btn-container" style="flex-wrap: wrap; flex-direction: row; justify-content: center">
+    <div class="btn-container">
         <div class="btn-common" onClick="">
             <label class="btn-text" type="submit">Сохранить</label>
         </div>
-    </div>
-    <div class="btn-container" style="flex-wrap: wrap; flex-direction: row; justify-content: center">
-        <a class="" href="ActivePoll">Назад</a>
+        <a href="@Url.Action("ControlPanel", "Settings")">Отмена</a>
     </div>
 </form>

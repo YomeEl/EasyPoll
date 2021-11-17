@@ -2,16 +2,16 @@
 
 <div class="buttons">
     <div class="btn-container">
-        <div class="btn-common" onclick="location.href='PollControl'">
+        <div class="btn-common" onclick="location.href='@Url.Action("PollControl", "Poll")'">
             <label class="btn-text">Управление текущим опросом</label>
         </div>
-        <div class="btn-common" onclick="location.href='AddNewPoll'">
+        <div class="btn-common" onclick="location.href='@Url.Action("AddNew", "Poll")'">
             <label class="btn-text">Добавить новый опрос</label>
         </div>
-        <div class="btn-common" onclick="location.href='ShowAll'">
+        <div class="btn-common" onclick="location.href='@Url.Action("ShowAll", "Poll")'">
             <label class="btn-text">Просмотр результатов</label>
         </div>
-        <div class="btn-common" onclick="location.href='GoBack'">
+        <div class="btn-common" onclick="location.href='@Url.Action("ActivePoll", "Poll")'">
             <label class="btn-text">Назад к опросу</label>
         </div>
     </div>
