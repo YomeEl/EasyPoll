@@ -1,9 +1,13 @@
 ﻿@{
+    @using Microsoft.AspNetCore.Mvc;
+    @using Microsoft.EntityFrameworkCore;
+
     ViewData["Title"] = "Активный опрос";
 
     var activePoll = (EasyPoll.Models.PollModel)ViewData["ActivePoll"];
-    var answers = activePoll.GetAnswers();
-    var totalCount = activePoll.GetTotalAnswersCount();
+    var question1 = EasyPoll.Data.ServiceDBContext.GetDBContext().Questions.FirstOrDefault(question => question.Id == activePoll.Id);
+    var answers = question1.GetAnswers();
+    var totalCount = question1.GetTotalAnswersCount();
 
     const string NO_DISPLAY = "display:none";
 
@@ -16,7 +20,7 @@
 }
 
 <div class="question">
-    @activePoll.Question
+    @question1.Question
 </div>
 <br>
 

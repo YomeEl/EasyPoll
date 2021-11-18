@@ -11,7 +11,6 @@ namespace EasyPoll.Models
 {
     public class UserModel
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
         public string Username { get; set; }
         public string Key { get; set; }
