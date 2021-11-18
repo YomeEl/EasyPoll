@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 using EasyPoll.ViewModels;
 
@@ -9,6 +11,8 @@ namespace EasyPoll.Models
     //Bad implementation, review asap
     public class QuestionModel
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int Id { get; set; }
         public string Question { get; set; }
         public string Options { get; set; }

@@ -2,15 +2,19 @@
 using Microsoft.AspNetCore.Identity;
 
 using EasyPoll.Data;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using MySql.Data.MySqlClient;
 using MySql.Data.EntityFramework;
 
+
 namespace EasyPoll.Models
 {
     public class UserModel
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int Id { get; set; }
         public string Username { get; set; }
         public string Key { get; set; }
