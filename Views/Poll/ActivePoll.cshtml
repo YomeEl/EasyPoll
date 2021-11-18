@@ -1,82 +1,52 @@
 ﻿@{
     ViewData["Title"] = "Активный опрос";
-
-    var activePoll = (EasyPoll.Models.PollModel)ViewData["ActivePoll"];
-    var answers = activePoll.GetAnswers();
-    var totalCount = activePoll.GetTotalAnswersCount();
-
-    const string NO_DISPLAY = "display:none";
-
-    string percentage(int cnt)
-    {
-        return $"{(100f * cnt / totalCount).ToString("F1")}%".Replace(',', '.');
-    }
-
-    var voted = (int)ViewData["Selected"] != -1;
 }
 
-<div class="question">
-    @activePoll.Question
-</div>
+<div id="question" class="question"></div>
 <br>
-
-@{
-    for (int i = 0; i < answers.Count; i++)
-    {
-        var answer = answers[i];
-        var barStyle = "";
-        var answerText = answer.Text;
-
-        if (voted)
-        {
-            answerText += $" ({percentage(answer.Count)})";
-            barStyle = $"width:{(voted ? @percentage(answer.Count) : "100%")};";
-            if ((int)ViewData["Selected"] == i)
-            {
-                barStyle += "background-color: #FF0000;";
-            }
-        }
-
-        string answerBoxClass;
-        string answerBoxOnClick;
-        if (voted)
-        {
-            answerBoxClass = "answer-box";
-            answerBoxOnClick = "";
-        }
-        else
-        {
-            answerBoxClass = "answer-box-active";
-            answerBoxOnClick = $"onclick=location.href='Poll?answer={i}'";
-        }
-
-        <div class="@answerBoxClass" @answerBoxOnClick>
-            <label class="answer-text">@(i + 1). </label>
-            @{
-                if (voted)
-                {
-                    <label class="answer-text">@answerText</label>
-                }
-                else
-                {
-                    <a class="answer-text">@answerText</a>
-                }
-            }
-            <div class="answer-bar" style="@(voted ? "" : NO_DISPLAY)">
-                <div class="answer-bar-result" style="@barStyle"></div>
-            </div>
-        </div>
-    }
-}
-
-<br>
-<div class="question">Проголосовало: @totalCount</div>
+<div id="answers"></div>
 <br>
 <div class="btn-container">
+    <div id="btn-next" class="btn-common" onclick="nextQuestion()">
+        <label class="btn-text">Следующий вопрос</label>
+    </div>
+    <div id="btn-prev" class="btn-common" onclick="prevQuestion()">
+        <label class="btn-text">Предыдущий вопрос</label>
+    </div>
+    <div id="btn-finish" class="btn-common" onclick="sendPoll()">
+        <label class="btn-text">Завершить опрос</label>
+    </div>
+</div>
+
+<br>
+<div class="question">Проголосовало: @((int)ViewData["TotalCount"])</div>
+<br>
+<div class="btn-container">
+
     <div class="btn-common" onclick="location.href='@Url.Action("Logout", "Authentification")'">
         <label class="btn-text">Выход</label>
     </div>
-    <div class="btn-common" onclick="location.href='@Url.Action("ControlPanel", "Settings")'">
-        <label class="btn-text">Панель управления</label>
-    </div>
+    @{
+        if ((bool)ViewData["ShowControlPanelButton"])
+        {
+            <div class="btn-common" onclick="location.href='@Url.Action("ControlPanel", "Settings")'">
+                <label class="btn-text">Панель управления</label>
+            </div>
+        }
+    }
 </div>
+<script src="/js/ActivePoll/common.js"></script>
+@if ((bool)ViewData["Answered"])
+{
+    <script src="~/js/ActivePoll/viewResults.js"></script>
+}
+else
+{
+    <script src="~/js/ActivePoll/answerPoll.js"></script>
+}
+<script>
+    var q = @Html.Raw(Json.Serialize(ViewData["Questions"]));
+    var a = @Html.Raw(Json.Serialize(ViewData["Answers"]));
+    var u = @Html.Raw(Json.Serialize(ViewData["UserSelection"]));
+    init(q, a, u, @(((bool)ViewData["Answered"]).ToString().ToLower()));
+</script>

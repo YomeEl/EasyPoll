@@ -35,8 +35,16 @@ a:hover {
 
 }
 
-.answer-box-active {
+.answer-box-active,
+.answer-box-active-selected
+{
     width: fit-content;
+}
+
+.answer-box-active-selected {
+    background-color: #FF0000;
+    color: #FFFFFF;
+    transition: 0.6s ease-out;
 }
 
 .answer-box:hover,
@@ -52,12 +60,13 @@ a:hover {
     background-color: #FFA6A6;
 }
 
-.answer-text {
+.answer-text,
+.answer-text-selected {
     cursor: default;
 }
 
-a.answer-text:hover::after {
-    content: " проголосовать";
+.answer-box-active:hover::after {
+    content: " выбрать";
     font-size: 0.75rem;
     color: #808080;
 }
