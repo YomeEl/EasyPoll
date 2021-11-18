@@ -1,34 +1,6 @@
-﻿var questions;
-var answers = [];
+﻿var answers = [];
 var index = 0;
 var selected = 0;
-
-var questionDiv = document.getElementById('question');
-var answersDiv = document.getElementById('answers');
-
-var buttonNext = document.getElementById('btn-next');
-var buttonFinish = document.getElementById('btn-finish');
-
-function init(questionsArray) {
-    questions = questionsArray;
-    reset();
-}
-
-function reset() {
-    clearCurrent();
-    resetButtons();
-    constructCurrent();
-}
-
-function resetButtons() {
-    buttonNext.style = 'display: none';
-    buttonFinish.style = 'display: none';
-}
-
-function clearCurrent() {
-    questionDiv.innerHTML = '';
-    answersDiv.innerHTML = '';
-}
 
 function constructCurrent() {
     clearCurrent();
@@ -73,6 +45,7 @@ function answer(ans) {
 function nextQuestion() {
     index++;
     answers.push(selected);
+    selected = 0;
     reset();
 }
 
