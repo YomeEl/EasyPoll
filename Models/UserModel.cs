@@ -26,7 +26,7 @@ namespace EasyPoll.Models
 
         public UserModel(ViewModels.LoginViewModel viewModel)
         {
-            UserModel user = GetUserModelByUsername(viewModel.Username);
+            UserModel user = GetUserByUsername(viewModel.Username);
             bool isPasswordCorrect = new PasswordHasher<UserModel>()
                 .VerifyHashedPassword(user, user.Key, viewModel.Password) != PasswordVerificationResult.Failed;
 
@@ -45,12 +45,10 @@ namespace EasyPoll.Models
 
         public static bool CheckUserToken(string token)
         {
-            string username;
             System.DateTime tokenTime;
             try
             {
                 var rawTokenData = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(token)).Split(':');
-                username = rawTokenData[1];
                 var timestamp = rawTokenData[0];
                 tokenTime = System.DateTime.FromBinary(long.Parse(timestamp));
             }
@@ -59,7 +57,7 @@ namespace EasyPoll.Models
                 return false;
             }
 
-            var user = GetUserModelByUsername(username);
+            var user = GetUserByToken(token);
             if (user == null && user.Token != token)
             { 
                 return false; 
@@ -67,7 +65,14 @@ namespace EasyPoll.Models
             return tokenTime.AddHours(1) > System.DateTime.Now;
         }
 
-        private static UserModel GetUserModelByUsername(string username)
+        public static UserModel GetUserByToken(string token)
+        {
+            var dbcontext = ServiceDBContext.GetDBContext();
+            UserModel user = dbcontext.Users.FirstAsync(user => user.Token == token).Result;
+            return user;
+        }
+
+        private static UserModel GetUserByUsername(string username)
         {
             var usersDbContext = ServiceDBContext.GetDBContext();
             return usersDbContext.Users.FirstOrDefaultAsync(user => user.Username == username).Result;
