@@ -9,10 +9,15 @@ namespace EasyPoll
     {
         public static Poll ActivePoll { get; set; }
 
+        private static int activePollId = 1;
+
         public static void Initialize()
         {
-            int activePollId = 1;
+            UpdateActivePoll();
+        }
 
+        public static void UpdateActivePoll()
+        {
             ActivePoll = new Poll(activePollId);
         }
     }
