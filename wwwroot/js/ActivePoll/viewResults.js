@@ -1,31 +1,29 @@
-﻿var index = 0;
-
-function constructCurrent() {
+﻿function constructCurrent() {
     questionDiv.innerHTML = questions[index].question;
 
     var options = questions[index].options.split('~!');
-    for (var i = 0; i < options.length; i++) {
-        var label1 = document.createElement('label');
+    for (let i = 0; i < options.length; i++) {
+        let label1 = document.createElement('label');
         label1.className = 'answer-text';
         label1.innerText = (i + 1) + ".\xa0";
-        var label2 = document.createElement('label');
+        let label2 = document.createElement('label');
         label2.className = 'answer-text';
         label2.innerText = options[i] + '\xa0(' + percentage(index, i) +')';
 
-        var ansBarResult = document.createElement('div');
+        let ansBarResult = document.createElement('div');
         ansBarResult.className = 'answer-bar-result';
-        var styleStr = 'width: ' + percentage(index, i);
+        let styleStr = 'width: ' + percentage(index, i);
         if (userSelection[index] == i + 1) {
             styleStr += '; background-color: #FF0000;'
         }
         ansBarResult.style = styleStr;
         
 
-        var ansBar = document.createElement('div');
+        let ansBar = document.createElement('div');
         ansBar.className = 'answer-bar';
         ansBar.appendChild(ansBarResult);
 
-        var ansDiv = document.createElement('div');
+        let ansDiv = document.createElement('div');
         ansDiv.className = 'answer-box';
         ansDiv.id = (i + 1);
         ansDiv.appendChild(label1);
@@ -54,10 +52,10 @@ function prevQuestion() {
 }
 
 function percentage(question, ans) {
-    var sum = 0;
-    for (var i = 0; i < allAnswers[question].length; i++) {
+    let sum = 0;
+    for (let i = 0; i < allAnswers[question].length; i++) {
         sum += allAnswers[question][i];
     }
-    var perc = (allAnswers[question][ans] / sum * 100).toFixed(1) + '%';
+    let perc = (allAnswers[question][ans] / sum * 100).toFixed(1) + '%';
     return perc;
 }

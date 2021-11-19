@@ -1,20 +1,19 @@
 ﻿var answers = [];
-var index = 0;
 var selected = 0;
 
 function constructCurrent() {
     clearCurrent();
     questionDiv.innerHTML = questions[index].question;
-    var options = questions[index].options.split('~!');
-    for (var i = 0; i < options.length; i++) {
-        var label1 = document.createElement('label');
+    const options = questions[index].options.split('~!');
+    for (let i = 0; i < options.length; i++) {
+        let label1 = document.createElement('label');
         label1.className = 'answer-text';
         label1.innerText = (i + 1) + ".\xa0";
-        var label2 = document.createElement('a');
+        let label2 = document.createElement('a');
         label2.className = 'answer-text';
         label2.innerText = options[i];
 
-        var ansDiv = document.createElement('div');
+        let ansDiv = document.createElement('div');
         ansDiv.className = 'answer-box-active';
         ansDiv.id = (i + 1);
         ansDiv.appendChild(label1);
@@ -51,8 +50,8 @@ function nextQuestion() {
 
 function sendPoll() {
     answers.push(selected);
-    var xhr = new XMLHttpRequest();
-    var formData = new FormData();
+    let xhr = new XMLHttpRequest();
+    let formData = new FormData();
     formData.append('Answers', answers);
     xhr.onload = function () {
         window.location.reload();
