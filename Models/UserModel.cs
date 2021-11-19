@@ -43,12 +43,12 @@ namespace EasyPoll.Models
             usersDbContext.SaveChanges();
         }
 
-        public static bool CheckUserToken(string token)
+        public bool CheckToken()
         {
             System.DateTime tokenTime;
             try
             {
-                var rawTokenData = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(token)).Split(':');
+                var rawTokenData = System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(Token)).Split(':');
                 var timestamp = rawTokenData[0];
                 tokenTime = System.DateTime.FromBinary(long.Parse(timestamp));
             }
@@ -57,8 +57,8 @@ namespace EasyPoll.Models
                 return false;
             }
 
-            var user = GetUserByToken(token);
-            if (user == null && user.Token != token)
+            var user = GetUserByToken(Token);
+            if (user == null && user.Token != Token)
             { 
                 return false; 
             }

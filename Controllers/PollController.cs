@@ -10,7 +10,9 @@ namespace EasyPoll.Controllers
         [HttpGet]
         public IActionResult ActivePoll()
         {
-            if (!HasValidToken())
+            var user = Models.UserModel.GetUserByToken(Request.Cookies["token"]);
+
+            if (user == null || (user != null && !user.CheckToken()))
             {
                 return RedirectToAction("Login", "Authentification");
             }
@@ -24,7 +26,6 @@ namespace EasyPoll.Controllers
                                 where question.PollId == activePoll.Id
                                 select question).OrderBy(question => question.Id).ToArray();
 
-            var user = Models.UserModel.GetUserByToken(Request.Cookies["token"]);
             int userId = user.Id;
             var userSelection = new int[questions.Length];
             var answers = new int[questions.Length][];
@@ -107,12 +108,6 @@ namespace EasyPoll.Controllers
         public IActionResult Details()
         {
             return View();
-        }
-
-        private bool HasValidToken()
-        {
-            var token = Request.Cookies["token"];
-            return Models.UserModel.CheckUserToken(token);
         }
     }
 }
