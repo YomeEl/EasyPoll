@@ -49,6 +49,13 @@ function nextQuestion() {
 }
 
 function sendPoll() {
+    buttonFinish.onclick = '';
+    buttonFinish.innerHTML = '';
+    let newLabel = document.createElement('label');
+    newLabel.className = 'btn-text';
+    newLabel.innerText = 'Сохранение...';
+    buttonFinish.appendChild(newLabel);
+
     answers.push(selected);
     let xhr = new XMLHttpRequest();
     let formData = new FormData();
