@@ -11,38 +11,22 @@ namespace EasyPoll.Controllers
         public IActionResult ActivePoll()
         {
             var user = Models.UserModel.GetUserByToken(Request.Cookies["token"]);
+            int userId = user.Id;
 
             if (user == null || (user != null && !user.CheckToken()))
             {
                 return RedirectToAction("Login", "Authentification");
             }
 
-            //TODO: Temporary. Active poll should be static somewhere.
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
-            var activePoll = dbcontext.Polls.FirstAsync().Result;
-            ViewData["ActivePoll"] = activePoll;
-
-            var questions = (from question in dbcontext.Questions
-                                where question.PollId == activePoll.Id
-                                select question).OrderBy(question => question.Id).ToArray();
-
-            int userId = user.Id;
-            var userSelection = new int[questions.Length];
-            var answers = new int[questions.Length][];
-            for (int i = 0; i < questions.Length; i++)
+            var activePoll = Global.ActivePoll;
+            var questions = activePoll.Questions;
+            bool answered = false;
+            var answers = activePoll.GetAnswersAsCount();
+            int[] userSelection = new int[activePoll.Questions.Length];
+            if (activePoll.UserAnswers.ContainsKey(userId))
             {
-                var qAns = (from answer in dbcontext.Answers
-                            where answer.QuestionId == questions[i].Id
-                            select answer).ToArray();
-                answers[i] = new int[questions[i].Options.Split("~!").Length];
-                foreach (var ans in qAns)
-                {
-                    answers[i][ans.Answer - 1]++;
-                    if (ans.UserId == userId)
-                    {
-                        userSelection[i] = ans.Answer;
-                    }
-                }
+                userSelection = activePoll.UserAnswers[userId];
+                answered = true;
             }
 
             int totalCount = 0;
@@ -51,10 +35,7 @@ namespace EasyPoll.Controllers
                 totalCount += ans;
             }
 
-            var answered = (from answer in dbcontext.Answers
-                           where answer.UserId == userId
-                           select answer).Any();
-
+            ViewData["ActivePoll"] = activePoll.PollModel;
             ViewData["Answered"] = answered;
             ViewData["Questions"] = questions;
             ViewData["Answers"] = answers;
@@ -81,6 +62,8 @@ namespace EasyPoll.Controllers
                 dbcontext.Answers.Add(ans);
             };
             dbcontext.SaveChanges();
+
+            Global.UpdateActivePoll();
 
             return Ok();
         }
