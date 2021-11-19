@@ -53,12 +53,7 @@ namespace EasyPoll.Controllers
 
             var answered = (from answer in dbcontext.Answers
                            where answer.UserId == userId
-                           select answer).Count() != 0;
-
-            if (answered)
-            {
-                ViewData["Selected"] = 1;
-            }
+                           select answer).Any();
 
             ViewData["Answered"] = answered;
             ViewData["Questions"] = questions;
