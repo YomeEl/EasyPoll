@@ -27,7 +27,9 @@ namespace EasyPoll.Controllers
                     return View();
                 }
 
-                Response.Cookies.Append("token", userModel.Token);
+                var opt = new Microsoft.AspNetCore.Http.CookieOptions();
+                opt.Expires = new System.DateTimeOffset(System.DateTime.Now.Ticks, System.TimeSpan.FromHours(1));
+                Response.Cookies.Append("token", userModel.Token, opt);
                 return RedirectToAction("ActivePoll", "Poll");
             }
             else
