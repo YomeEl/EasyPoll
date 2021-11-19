@@ -3,6 +3,8 @@ var allAnswers;
 var userSelection;
 var answered;
 
+var index = 0;
+
 var questionDiv = document.getElementById('question');
 var answersDiv = document.getElementById('answers');
 var buttonNext = document.getElementById('btn-next');
