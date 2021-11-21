@@ -38,10 +38,27 @@ namespace EasyPoll.Controllers
                 return View();
             }
         }
-        
+
+        [HttpGet]
         public IActionResult Register()
         {
+            ViewData["ModelInvalid"] = false;
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Register(Models.RegisterModel model)
+        {
+            bool CheckResult = model.IsValid();
+            if (CheckResult)
+            {
+                return RedirectToAction("Authentification", "Login");
+            }
+            else
+            {
+                ViewData["ModelInvalid"] = true;
+                return View();
+            }
         }
 
         public IActionResult Logout()
