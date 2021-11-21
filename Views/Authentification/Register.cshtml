@@ -1,5 +1,6 @@
 ﻿@{ ViewData["Title"] = "Регистрация"; }
 
+@model EasyPoll.Models.RegisterModel
 <form method="post" action="/Authentification/Login">
     <input name="Mail"
            class="login-form-input"
@@ -24,9 +25,14 @@
         <option>Подразделение 2</option>
         <option>Подразделение 3</option>
     </select>
-    <div class="login-warning-wrapper">
-        <label class="login-warning">Пароли не совпадают!</label>
-    </div>
+    
+
+    
+        <div class="login-warning-wrapper">
+            <label class="login-warning">Пароли не совпадают!</label>
+        </div>
+   
+
     <div class="btn-container">
         <div class="btn-common" onclick="this.parentNode.parentNode.submit();">
             <label class="btn-text">Зарегистрироваться</label>
