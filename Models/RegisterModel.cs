@@ -7,7 +7,7 @@ namespace EasyPoll.Models
         [Required]
         [RegularExpression(@"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}", ErrorMessage = "Некорректный адрес")]
         [DataType(DataType.EmailAddress)]
-        public string EmailAdress { get; set; }
+        public string Mail { get; set; }
 
         [Required]
         [DataType(DataType.Text)]
@@ -19,14 +19,14 @@ namespace EasyPoll.Models
 
         [Required]
         [DataType(DataType.Password)]
-        public string RepeatedPassword { get; set; }
+        public string RePassword { get; set; }
 
         [Required]
         public int Department { get; set; }
 
         public bool IsValid()
         {
-            return EmailAdress != null && Username != null && Password != null && Password == RepeatedPassword;
+            return Mail != null && Username != null && Password != null && Password == RePassword;
         }
 
 
