@@ -68,14 +68,6 @@ namespace EasyPoll.Controllers
             return Ok();
         }
 
-        public Models.PollModel[] Polls { get; set; }
-        public void ListOfPoll()
-        {
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
-            Polls = (from poll in dbcontext.Polls select poll).ToArray();
-            ViewData["PollsArray"] = Polls;
-        }
-
         public IActionResult PollControl()
         {
             return View();
@@ -88,7 +80,8 @@ namespace EasyPoll.Controllers
 
         public IActionResult ShowAll()
         {
-            ListOfPoll();
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            ViewData["PollsArray"] = dbcontext.Polls.OrderBy(poll => poll.CreatedAt).ToArray();
             return View();
         }
 
