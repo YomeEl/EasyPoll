@@ -80,6 +80,10 @@ namespace EasyPoll.Controllers
 
         public IActionResult ShowAll()
         {
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var pollsArray = dbcontext.Polls.OrderBy(poll => poll.CreatedAt).ToArray();
+            ViewData["LastIsActive"] = pollsArray.Last().FinishAt > System.DateTime.Now;
+            ViewData["PollsArray"] = pollsArray;
             return View();
         }
 

@@ -42,6 +42,7 @@ namespace EasyPoll.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            ViewData["ModelInvalid"] = false;
             return View();
         }
 

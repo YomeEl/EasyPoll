@@ -1,23 +1,13 @@
 ﻿@{ ViewData["Title"] = "Список опросов"; }
 
-<div class="poll-list">
-    <div class="poll-summary-current">
-        <label class="poll-desc">Как дела? Привет от MySQL!</label>
-        <label class="poll-date">20.10.2021</label>
-    </div>
-    <hr>
-    <div class="poll-summary">
-        <label class="poll-desc">Описание</label>
-        <label class="poll-date">19.10.2021</label>
-    </div>
-    <div class="poll-summary">
-        <label class="poll-desc">Очень длинное описание, которое точно не поместится в одну строку</label>
-        <label class="poll-date">17.10.2021</label>
-    </div>
-</div>
+<div id="polllist" class="poll-list"></div>
 <hr>
 <div class="btn-container">
     <div class="btn-common" onclick="location.href='@Url.Action("ControlPanel", "Settings")'">
         <label class="btn-text">Назад</label>
     </div>
 </div>
+<script src="~/js/ShowAll/ListOfPoll.js"></script>
+<script>
+    DisplayPolls(@Html.Raw(Json.Serialize(ViewData["PollsArray"])), @(((bool)ViewData["LastIsActive"]).ToString().ToLower()));
+</script>

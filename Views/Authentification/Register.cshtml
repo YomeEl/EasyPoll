@@ -25,18 +25,17 @@
         <option>Подразделение 2</option>
         <option>Подразделение 3</option>
     </select>
-    
 
-    
+    @if ((bool)ViewData["ModelInvalid"])
+    {
         <div class="login-warning-wrapper">
             <label class="login-warning">Пароли не совпадают!</label>
         </div>
-   
-
-    <div class="btn-container">
-        <div class="btn-common" onclick="this.parentNode.parentNode.submit();">
-            <label class="btn-text">Зарегистрироваться</label>
+    }
+        <div class="btn-container">
+            <div class="btn-common" onclick="this.parentNode.parentNode.submit();">
+                <label class="btn-text">Зарегистрироваться</label>
+            </div>
         </div>
-    </div>
-    <input type="submit" style="display: none" />
-</form>
+        <input type="submit" style="display: none" />
+    </form>
