@@ -1,8 +1,12 @@
-﻿function DisplayPolls(pollsArray) {
+﻿function DisplayPolls(pollsArray, lastIsActive) {
     let polllist = document.getElementById('polllist');
-    for (let i = pollsArray.length - 1; i >= 0; i--) {
-        let linePoll = document.createElement('div');   //добавить if для неактивных
-        linePoll.className = 'poll-summary';
+    for (let i = 0; i < pollsArray.length; i++) {
+        let linePoll = document.createElement('div');
+        if (lastIsActive && i == pollsArray.length - 1) {
+            linePoll.className = 'poll-summary-current';
+        } else {
+            linePoll.className = 'poll-summary';
+        }
 
         let label1 = document.createElement('label');
         label1.className = 'poll-desc';
@@ -21,6 +25,9 @@
         linePoll.append(label1);
         linePoll.append(label2);
 
+        if (lastIsActive && i == pollsArray.length - 1 && pollsArray.length > 1) {
+            polllist.prepend(document.createElement('hr'));
+        }
         polllist.prepend(linePoll);
     }
 }
