@@ -9,5 +9,5 @@
 </div>
 <script src="~/js/ShowAll/ListOfPoll.js"></script>
 <script>
-    DisplayPolls(@Html.Raw(Json.Serialize(ViewData["PollsArray"])));
+    DisplayPolls(@Html.Raw(Json.Serialize(ViewData["PollsArray"])), @(((bool)ViewData["LastIsActive"]).ToString().ToLower()));
 </script>
