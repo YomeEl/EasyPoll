@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using Microsoft.AspNetCore.Identity;
 
 namespace EasyPoll.Controllers
 {
@@ -47,24 +49,50 @@ namespace EasyPoll.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(Models.RegisterModel model)
+        public IActionResult Register(ViewModels.RegisterViewModel model)
         {
-            bool CheckResult = model.IsValid();
-            if (CheckResult)
+            var newUser = new Models.UserModel()
             {
-                return RedirectToAction("Authentification", "Login");
-            }
-            else
-            {
-                ViewData["ModelInvalid"] = true;
-                return View();
-            }
+                Username = model.Username,
+                Email = model.Email,
+                DepartmentId = model.DepartmentId,
+                RoleId = 1,
+                Key = new PasswordHasher<Models.UserModel>().HashPassword(null, model.Password)
+            };
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            dbcontext.Users.Add(newUser);
+            dbcontext.SaveChanges();
+            return RedirectToAction("Login", "Authentification");
         }
 
         public IActionResult Logout()
         {
             Response.Cookies.Delete("token");
             return RedirectToAction("Login", "Authentification");
+        }
+
+        [HttpPost]
+        public IActionResult CheckRegistration()
+        {
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var username = Request.Headers["Username"][0];
+            var email = Request.Headers["Email"][0];
+            var similarUsers = (from user in dbcontext.Users
+                               where user.Username == username || user.Email == email
+                               select user).ToArray();
+
+            var usernameFound = false;
+            var emailFound = false;
+            foreach (var user in similarUsers)
+            {
+                usernameFound = usernameFound || user.Username == username;
+                emailFound = emailFound || user.Email == email;
+            }
+            var strArr = new string[] { usernameFound.ToString(), emailFound.ToString() };
+            var strVal = new Microsoft.Extensions.Primitives.StringValues(strArr);
+            Response.Headers.Add("Result", strVal);
+
+            return Ok(strVal.ToString().ToLower());
         }
     }
 }
