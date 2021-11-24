@@ -51,13 +51,14 @@ namespace EasyPoll.Controllers
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
             var raw_answers = Request.Form["Answers"][0].Split(',');
+            var userId = Models.UserModel.GetUserByToken(Request.Cookies["token"]).Id;
             for (int i = 0; i < raw_answers.Length; i++)
             {
                 var ans = new Models.AnswerModel
                 {
                     Answer = int.Parse(raw_answers[i]),
                     QuestionId = i + 1,
-                    UserId = 1
+                    UserId = userId
                 };
                 dbcontext.Answers.Add(ans);
             };
