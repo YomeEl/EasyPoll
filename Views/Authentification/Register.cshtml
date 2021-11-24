@@ -1,41 +1,40 @@
 ﻿@{ ViewData["Title"] = "Регистрация"; }
 
-@model EasyPoll.Models.RegisterModel
-<form method="post" action="/Authentification/Login">
-    <input name="Mail"
-           class="login-form-input"
-           type="text"
-           placeholder="Aдрес электроной почты" />
-    <input name="Username"
+<form id="registrationForm" method="post" action="@Url.Action("Register")">
+    <input id="username"
+           name="Username"
            class="login-form-input"
            type="text"
            placeholder="Логин" />
-    <input name="Password"
+    <input id="email"
+           name="Email"
+           class="login-form-input"
+           type="email"
+           placeholder="Aдрес электроной почты" />
+    <input id="password"
+           name="Password"
            class="login-form-input"
            type="password"
            placeholder="Пароль" />
-    <input name="RePasword"
+    <input id="rePassword"
+           name="RePasword"
            class="login-form-input"
            type="password"
            placeholder="Повтор пароля" />
     <hr>
     <label class="question">Выберите подразделение:</label>
-    <select class="login-form-input">
-        <option>Подразделение 1</option>
-        <option>Подразделение 2</option>
-        <option>Подразделение 3</option>
+    <select id="department" name="DepartmentId" class="login-form-input">
+        <option value="1">Подразделение 1</option>
+        <option value="2">Подразделение 2</option>
+        <option value="3">Подразделение 3</option>
     </select>
 
-    @if ((bool)ViewData["ModelInvalid"])
-    {
-        <div class="login-warning-wrapper">
-            <label class="login-warning">Пароли не совпадают!</label>
+    <div id="errorList" class="login-warning-wrapper"></div>
+
+    <div class="btn-container">
+        <div class="btn-common" onclick="validateAndSend()">
+            <label class="btn-text">Зарегистрироваться</label>
         </div>
-    }
-        <div class="btn-container">
-            <div class="btn-common" onclick="this.parentNode.parentNode.submit();">
-                <label class="btn-text">Зарегистрироваться</label>
-            </div>
-        </div>
-        <input type="submit" style="display: none" />
-    </form>
+    </div>
+</form>
+<script src="~/js/Registration/registration.js"></script>
