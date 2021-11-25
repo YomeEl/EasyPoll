@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 
 using System.Linq;
+using System.Text.Json;
+using System.Collections.Generic;
 
 namespace EasyPoll.Controllers
 {
@@ -19,15 +21,8 @@ namespace EasyPoll.Controllers
             }
 
             var activePoll = Global.ActivePoll;
-            var questions = activePoll.Questions;
-            bool answered = false;
+            bool answered = activePoll.UserAnswers.ContainsKey(userId);
             var answers = activePoll.GetAnswersAsCount();
-            int[] userSelection = new int[activePoll.Questions.Length];
-            if (activePoll.UserAnswers.ContainsKey(userId))
-            {
-                userSelection = activePoll.UserAnswers[userId];
-                answered = true;
-            }
 
             int totalCount = 0;
             foreach (var ans in answers[0])
@@ -37,9 +32,6 @@ namespace EasyPoll.Controllers
 
             ViewData["ActivePoll"] = activePoll.PollModel;
             ViewData["Answered"] = answered;
-            ViewData["Questions"] = questions;
-            ViewData["Answers"] = answers;
-            ViewData["UserSelection"] = userSelection;
             ViewData["TotalCount"] = totalCount;
             ViewData["ShowControlPanelButton"] = user.RoleId > 1;
 
@@ -47,10 +39,11 @@ namespace EasyPoll.Controllers
         }
 
         [HttpPost]
-        public IActionResult ActivePoll(int unused)
+        public IActionResult ActivePoll(string answers)
         {
+            var raw_answers = (string[])JsonSerializer.Deserialize(answers, typeof(string[]));
             var dbcontext = Data.ServiceDBContext.GetDBContext();
-            var raw_answers = Request.Form["Answers"][0].Split(',');
+
             var userId = Models.UserModel.GetUserByToken(Request.Cookies["token"]).Id;
             for (int i = 0; i < raw_answers.Length; i++)
             {
@@ -67,6 +60,33 @@ namespace EasyPoll.Controllers
             Global.UpdateActivePoll();
 
             return Ok();
+        }
+
+        [HttpGet]
+        public IActionResult GetActivePollInfo()
+        {
+            var activePoll = Global.ActivePoll;
+
+            var user = Models.UserModel.GetUserByToken(Request.Cookies["token"]);
+            int userId = user.Id;
+
+            var questions = activePoll.Questions;
+            var answers = activePoll.GetAnswersAsCount();
+            int[] userSelection = new int[activePoll.Questions.Length];
+            bool answered = false;
+            if (activePoll.UserAnswers.ContainsKey(userId))
+            {
+                userSelection = activePoll.UserAnswers[userId];
+                answered = true;
+            }
+
+            var data = new Dictionary<string, object>();
+            data["questions"] = questions;
+            data["answers"] = answers;
+            data["answered"] = answered;
+            data["userselection"] = userSelection;
+
+            return Ok(JsonSerializer.Serialize(data).ToLower());
         }
 
         public IActionResult PollControl()

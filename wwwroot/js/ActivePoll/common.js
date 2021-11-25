@@ -11,12 +11,20 @@ var buttonNext = document.getElementById('btn-next');
 var buttonPrev = document.getElementById('btn-prev');
 var buttonFinish = document.getElementById('btn-finish');
 
-function init(questionsArray, answersArray, userSelectionArray, answeredBool) {
-    questions = questionsArray;
-    allAnswers = answersArray;
-    userSelection = userSelectionArray;
-    answered = answeredBool;
-    reset();
+init();
+
+function init() {
+    let xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        let res = JSON.parse(xhr.response);
+        questions = res['questions'];
+        allAnswers = res['answers'];
+        userSelection = res['userselection'];
+        answered = res['answered'];
+        reset();
+    }
+    xhr.open('GET', '/Poll/GetActivePollInfo', true);
+    xhr.send();
 }
 
 function reset() {
