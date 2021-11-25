@@ -58,11 +58,11 @@ function sendPoll() {
 
     answers.push(selected);
     let xhr = new XMLHttpRequest();
-    let formData = new FormData();
-    formData.append('Answers', answers);
     xhr.onload = function () {
         window.location.reload();
     }
+
     xhr.open('POST', '/');
-    xhr.send(formData);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.send('answers=' + JSON.stringify(answers));
 }
