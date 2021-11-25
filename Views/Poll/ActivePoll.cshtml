@@ -2,18 +2,20 @@
     ViewData["Title"] = "Активный опрос";
 }
 
-<div id="question" class="question"></div>
+<div id="question" class="question">
+    <label>Загрузка...</label>
+</div>
 <br>
 <div id="answers"></div>
 <br>
 <div class="btn-container">
-    <div id="btn-next" class="btn-common" onclick="nextQuestion()">
+    <div id="btn-next" class="btn-common" style="display:none" onclick="nextQuestion()">
         <label class="btn-text">Следующий вопрос</label>
     </div>
-    <div id="btn-prev" class="btn-common" onclick="prevQuestion()">
+    <div id="btn-prev" class="btn-common" style="display:none" onclick="prevQuestion()">
         <label class="btn-text">Предыдущий вопрос</label>
     </div>
-    <div id="btn-finish" class="btn-common" onclick="sendPoll()">
+    <div id="btn-finish" class="btn-common" style="display:none" onclick="sendPoll()">
         <label class="btn-text">Завершить опрос</label>
     </div>
 </div>
@@ -44,9 +46,3 @@ else
 {
     <script src="~/js/ActivePoll/answerPoll.js"></script>
 }
-<script>
-    var q = @Html.Raw(Json.Serialize(ViewData["Questions"]));
-    var a = @Html.Raw(Json.Serialize(ViewData["Answers"]));
-    var u = @Html.Raw(Json.Serialize(ViewData["UserSelection"]));
-    init(q, a, u, @(((bool)ViewData["Answered"]).ToString().ToLower()));
-</script>
