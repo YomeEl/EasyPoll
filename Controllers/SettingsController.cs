@@ -12,6 +12,10 @@ namespace EasyPoll.Controllers
 
         public IActionResult Service()
         {
+            if (!(Request.Cookies.ContainsKey("token") && Global.CheckSU(Request.Cookies["token"])))
+            {
+                return RedirectToAction("Login", "Authentification");
+            }
             return View();
         }
     }
