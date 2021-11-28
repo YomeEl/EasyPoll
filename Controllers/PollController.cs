@@ -13,13 +13,13 @@ namespace EasyPoll.Controllers
         public IActionResult ActivePoll()
         {
             var user = Models.UserModel.GetUserByToken(Request.Cookies["token"]);
-            int userId = user.Id;
 
             if (user == null || (user != null && !user.CheckToken()))
             {
                 return RedirectToAction("Login", "Authentification");
             }
 
+            int userId = user.Id;
             var activePoll = Global.ActivePoll;
             bool answered = activePoll.UserAnswers.ContainsKey(userId);
             var answers = activePoll.GetAnswersAsCount();
