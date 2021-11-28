@@ -1,8 +1,14 @@
-﻿namespace EasyPoll.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EasyPoll.Models
 {
     public class DepartmentModel
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int Id { get; set; }
+
         public string Name { get; set; }
     }
 }
