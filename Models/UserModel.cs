@@ -19,7 +19,7 @@ namespace EasyPoll.Models
         public string Username { get; set; }
         public string Email { get; set; }
         public int RoleId { get; set; }
-        public int DepartmentId { get; set; }
+        public int? DepartmentId { get; set; }
         public string Key { get; set; }
         public string Token { get; set; }
 
