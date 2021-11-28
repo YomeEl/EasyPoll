@@ -1,38 +1,36 @@
 ﻿@{ ViewData["Title"] = "Настройки сервиса"; }
 
-@{ 
+@{
     var departments = (string)ViewData["Departments"];
 }
 
-<form method="post" action="/Authentification/Login">
-    <div class="question" style="font-size: 150%;">
-        Подразделения
+<div class="question" style="font-size: 150%;">
+    Подразделения
+</div>
+<textarea name="Question" class="login-form-input" style="height: 15vh">@departments</textarea>
+<br>
+<div class="question" style="font-size: 150%;">
+    Список HR и РП
+</div>
+<div class="user-role-select">
+    <label class="question">Имя: hr Роль:</label>
+    <select>
+        <option selected>HR</option>
+        <option>РП</option>
+        <option>Пользователь</option>
+    </select>
+</div>
+<div class="user-role-select">
+    <label class="question">Имя: head Роль:</label>
+    <select>
+        <option>HR</option>
+        <option selected>РП</option>
+        <option>Пользователь</option>
+    </select>
+</div>
+<hr>
+<div class="btn-container">
+    <div class="btn-common">
+        <label class="btn-text" type="submit">Сохранить</label>
     </div>
-    <textarea name="Question" class="login-form-input" style="height: 15vh">@departments</textarea>
-    <br>
-    <div class="question" style="font-size: 150%;">
-        Список HR и РП
-    </div>
-    <div class="user-role-select">
-        <label class="question">Имя: hr Роль:</label>
-        <select>
-            <option selected>HR</option>
-            <option>РП</option>
-            <option>Пользователь</option>
-        </select>
-    </div>
-    <div class="user-role-select">
-        <label class="question">Имя: head Роль:</label>
-        <select>
-            <option>HR</option>
-            <option selected>РП</option>
-            <option>Пользователь</option>
-        </select>
-    </div>
-    <hr>
-    <div class="btn-container">
-        <div class="btn-common">
-            <label class="btn-text" type="submit">Сохранить</label>
-        </div>
-    </div>
-</form>
+</div>
