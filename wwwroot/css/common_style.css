@@ -167,3 +167,25 @@ img {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+.users-table {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.users-table table th {
+    border: 1px solid black;
+    text-align: center;
+    padding: 5px;
+}
+
+.users-table table td {
+    border: 1px solid black;
+    text-align: right;
+    padding: 5px;
+}
+
+.users-table table input {
+    width: 100%;
+}
