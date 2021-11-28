@@ -1,36 +1,50 @@
 ﻿@{ ViewData["Title"] = "Настройки сервиса"; }
 
-@{
-    var departments = (string)ViewData["Departments"];
-}
-
-<div class="question" style="font-size: 150%;">
-    Подразделения
+<div class="question" style="font-size: 150%;">Подразделения</div>
+<div id="departments"></div>
+<div>
+    <input id="newDeptName" type="text" placeholder="Введите название" />
+    <a onclick="appendDepartmentFromInput()">добавить</a>
 </div>
-<textarea name="Question" class="login-form-input" style="height: 15vh">@departments</textarea>
-<br>
-<div class="question" style="font-size: 150%;">
-    Список HR и РП
-</div>
-<div class="user-role-select">
-    <label class="question">Имя: hr Роль:</label>
-    <select>
-        <option selected>HR</option>
-        <option>РП</option>
-        <option>Пользователь</option>
-    </select>
-</div>
-<div class="user-role-select">
-    <label class="question">Имя: head Роль:</label>
-    <select>
-        <option>HR</option>
-        <option selected>РП</option>
-        <option>Пользователь</option>
-    </select>
-</div>
-<hr>
-<div class="btn-container">
+<div class="btn-container" onclick="updateDepartments()">
     <div class="btn-common">
-        <label class="btn-text" type="submit">Сохранить</label>
+        <label class="btn-text">Сохранить</label>
     </div>
 </div>
+<hr>
+
+<div class="question" style="font-size: 150%;">Список HR и РП</div>
+<div class="users-table">
+    <table id="table">
+        <tr>
+            <th>Пользователь</th>
+            <th>Роль</th>
+        </tr>
+        <tr id="lastRow">
+            <td>
+                <input id="username" type="text" onclick="this.select()" />
+            </td>
+            <td>
+                <select id="roleSelect">
+                    <option value="1" selected>Пользователь</option>
+                    <option value="2">РП</option>
+                    <option value="3">HR</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+    <div class="btn-container" onclick="appendToTable()">
+        <div class="btn-common">
+            <label class="btn-text">Добавить пользователя</label>
+        </div>
+    </div>
+</div>
+<hr>
+
+<div class="btn-container">
+    <div class="btn-common">
+        <label class="btn-text">Сохранить</label>
+    </div>
+</div>
+
+<script src="~/js/Service/service.js"></script>
