@@ -1,13 +1,15 @@
 ﻿@import url("../fonts/Montserrat/Montserrat.css");
 
 a {
-    color: #FF0000;
+    color: #FF0000 !important;
+    cursor: pointer;
 }
 
 a:hover {
-    color: #0F2232;
-    text-decoration: none;
-    transition: 0.6s ease-out;
+    color: #0F2232 !important;
+    text-decoration: none !important;
+    transition: 0.6s ease-out !important;
+    cursor: pointer;
 }
 
 .standard-container {
