@@ -69,7 +69,7 @@ namespace EasyPoll.Models
         public static UserModel GetUserByToken(string token)
         {
             var dbcontext = ServiceDBContext.GetDBContext();
-            UserModel user = dbcontext.Users.FirstAsync(user => user.Token == token).Result;
+            UserModel user = dbcontext.Users.FirstOrDefaultAsync(user => user.Token == token).Result; 
             return user;
         }
 

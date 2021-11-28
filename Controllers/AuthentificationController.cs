@@ -18,6 +18,13 @@ namespace EasyPoll.Controllers
         {
             if (model.IsValid())
             {
+                var suToken = Global.CheckSUAndGenerateToken(model.Username, model.Password);
+                if (suToken.Length > 0)
+                {
+                    Response.Cookies.Append("token", suToken);
+                    return RedirectToAction("Service", "Settings");
+                }
+
                 Models.UserModel userModel;
                 try 
                 { 
