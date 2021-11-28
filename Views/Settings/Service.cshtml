@@ -1,7 +1,7 @@
 ﻿@{ ViewData["Title"] = "Настройки сервиса"; }
 
 @{ 
-    var departments = "Подразделение 1\nПодразделение2\nПодразделение 3";
+    var departments = (string)ViewData["Departments"];
 }
 
 <form method="post" action="/Authentification/Login">
