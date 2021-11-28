@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace EasyPoll.Controllers
 {
@@ -16,6 +17,19 @@ namespace EasyPoll.Controllers
             {
                 return RedirectToAction("Login", "Authentification");
             }
+
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var depts = (from dep in dbcontext.Departments
+                         where dep.Id > 0
+                         select dep.Name).ToArray();
+            var deptsString = "";
+            foreach (var d in depts)
+            {
+                deptsString += d + '\n';
+            }
+            
+            ViewData["Departments"] = deptsString.Trim('\n');
+
             return View();
         }
     }
