@@ -1,5 +1,6 @@
 ﻿@{ ViewData["Title"] = "Настройки сервиса"; }
 
+<!-- Departments section -->
 <div class="question" style="font-size: 150%;">Подразделения</div>
 <div id="departments"></div>
 <div>
@@ -11,8 +12,28 @@
         <label class="btn-text">Сохранить</label>
     </div>
 </div>
+
 <hr>
 
+<!-- Users section -->
+<div class="question" style="font-size: 150%;">Пользователи без подразделений</div>
+<div class="users-table">
+    <table id="usersTable">
+        <tr id="header">
+            <th>Пользователь</th>
+            <th>Подразделение</th>
+        </tr>
+    </table>
+    <div class="btn-container" onclick="updateUsers()">
+        <div class="btn-common">
+            <label class="btn-text">Сохранить</label>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<!-- Roles section -->
 <div class="question" style="font-size: 150%;">Список HR и РП</div>
 <div class="users-table">
     <table id="table">
@@ -39,6 +60,7 @@
         </div>
     </div>
 </div>
+
 <hr>
 
 <div class="btn-container">
