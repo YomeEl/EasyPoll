@@ -48,8 +48,7 @@ namespace EasyPoll.Controllers
             var dbcontext = Data.ServiceDBContext.GetDBContext();
             var depts = (from dept in dbcontext.Departments
                          orderby dept.Id
-                         select System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(dept.Name)))
-                         .ToArray();
+                         select dept.Name).ToArray();
             return Ok(JsonSerializer.Serialize(depts));
         }
 
@@ -62,13 +61,11 @@ namespace EasyPoll.Controllers
 
             foreach (var dept in add)
             {
-                var str = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(dept));
-                dbcontext.Departments.Add(new Models.DepartmentModel() { Name = str });
+                dbcontext.Departments.Add(new Models.DepartmentModel() { Name = dept });
             }
             foreach (var dept in delete)
             {
-                var str = System.Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(dept));
-                var item = dbcontext.Departments.ToArray().First(i => i.Name == str);
+                var item = dbcontext.Departments.ToArray().First(i => i.Name == dept);
                 dbcontext.Departments.Remove(item);
             }
             dbcontext.SaveChanges();
