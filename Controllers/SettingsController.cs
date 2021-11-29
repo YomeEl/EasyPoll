@@ -52,6 +52,15 @@ namespace EasyPoll.Controllers
             return Ok(JsonSerializer.Serialize(depts));
         }
 
+        public IActionResult GetUsersWithoutDepartment()
+        {
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var users = (from user in dbcontext.Users
+                         where user.DepartmentId == null
+                         select user.Username).ToArray();
+            return Ok(JsonSerializer.Serialize(users));
+        }
+
         public IActionResult UpdateDepartments(string addRaw, string deleteRaw)
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
