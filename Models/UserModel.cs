@@ -28,6 +28,11 @@ namespace EasyPoll.Models
         public UserModel(ViewModels.LoginViewModel viewModel)
         {
             UserModel user = GetUserByUsername(viewModel.Username);
+            if (user == null)
+            {
+                throw new System.Exception();
+            }
+
             bool isPasswordCorrect = new PasswordHasher<UserModel>()
                 .VerifyHashedPassword(user, user.Key, viewModel.Password) != PasswordVerificationResult.Failed;
 
