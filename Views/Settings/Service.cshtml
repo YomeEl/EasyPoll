@@ -18,12 +18,14 @@
 <!-- Users section -->
 <div class="question" style="font-size: 150%;">Пользователи без подразделений</div>
 <div class="users-table">
-    <table id="usersTable">
-        <tr id="header">
-            <th>Пользователь</th>
-            <th>Подразделение</th>
-        </tr>
-    </table>
+    <div style="width: 100%;display: flex;justify-content: center;">
+        <table id="usersTable">
+            <tr id="header">
+                <th>Пользователь</th>
+                <th>Подразделение</th>
+            </tr>
+        </table>
+    </div>
     <div class="btn-container" onclick="updateUsers()">
         <div class="btn-common">
             <label class="btn-text">Сохранить</label>
@@ -36,24 +38,26 @@
 <!-- Roles section -->
 <div class="question" style="font-size: 150%;">Список HR и РП</div>
 <div class="users-table">
-    <table id="table">
-        <tr>
-            <th>Пользователь</th>
-            <th>Роль</th>
-        </tr>
-        <tr id="lastRow">
-            <td>
-                <input id="username" type="text" onclick="this.select()" />
-            </td>
-            <td>
-                <select id="roleSelect">
-                    <option value="1" selected>Пользователь</option>
-                    <option value="2">РП</option>
-                    <option value="3">HR</option>
-                </select>
-            </td>
-        </tr>
-    </table>
+    <div style="width: 100%;display: flex;justify-content: center;">
+        <table id="table">
+            <tr>
+                <th>Пользователь</th>
+                <th>Роль</th>
+            </tr>
+            <tr id="lastRow">
+                <td>
+                    <input id="username" type="text" onclick="this.select()" />
+                </td>
+                <td>
+                    <select id="roleSelect">
+                        <option value="1" selected>Пользователь</option>
+                        <option value="2">РП</option>
+                        <option value="3">HR</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
     <div class="btn-container" onclick="appendToTable()">
         <div class="btn-common">
             <label class="btn-text">Добавить пользователя</label>
