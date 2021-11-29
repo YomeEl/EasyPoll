@@ -16,9 +16,9 @@ namespace EasyPoll.Data
         public DbSet<QuestionModel> Questions { get; set; }
         public DbSet<AnswerModel> Answers { get; set; }
         public DbSet<DepartmentModel> Departments { get; set; }
-        
+
         private const string connectionString =
-            "server=sql11.freemysqlhosting.net;userid=sql11451768;password=5ah1S9Zu6Z;database=sql11451768;SSL Mode=None;";
+            "server=sql11.freemysqlhosting.net;userid=sql11451768;password=5ah1S9Zu6Z;database=sql11451768;SSL Mode=None;CharSet=utf8;";
 
         public static ServiceDBContext GetDBContext()
         {
