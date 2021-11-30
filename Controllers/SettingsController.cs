@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+
 using System.Linq;
 using System.Text.Json;
+using System.Collections.Generic;
 
 namespace EasyPoll.Controllers
 {
@@ -28,7 +30,7 @@ namespace EasyPoll.Controllers
             var users = (from user in dbcontext.Users
                          where user.RoleId != 1
                          select user).ToArray();
-            var dict = new System.Collections.Generic.Dictionary<string, int>();
+            var dict = new Dictionary<string, int>();
             foreach (var user in users)
             {
                 dict[user.Username] = user.RoleId;
@@ -61,6 +63,26 @@ namespace EasyPoll.Controllers
             return Ok(JsonSerializer.Serialize(users));
         }
 
+        public IActionResult UpdateUserDepartments(string usersRaw, string departmentsRaw)
+        {
+            var users = (string[])JsonSerializer.Deserialize(usersRaw, typeof(string[]));
+            var deptNames = (string[])JsonSerializer.Deserialize(departmentsRaw, typeof(string[]));
+            var depts = ConvertDepartmentsToIds(deptNames);
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+
+            for (int i = 0; i < users.Length; i++)
+            {
+                var user = (from u in dbcontext.Users
+                            where u.Username == users[i]
+                            select u).First();
+                user.DepartmentId = depts[i];
+                dbcontext.Users.Update(user);
+            }
+            dbcontext.SaveChanges();
+
+            return Ok();
+        }
+
         public IActionResult UpdateDepartments(string addRaw, string deleteRaw)
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
@@ -80,6 +102,19 @@ namespace EasyPoll.Controllers
             dbcontext.SaveChanges();
 
             return Ok();
+        }
+
+        private int[] ConvertDepartmentsToIds(string[] departments)
+        {
+            var ids = new int[departments.Length];
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            for (int i = 0; i < departments.Length; i++)
+            {
+                ids[i] = (from dept in dbcontext.Departments
+                          where dept.Name == departments[i]
+                          select dept.Id).First();
+            }
+            return ids;
         }
     }
 }
