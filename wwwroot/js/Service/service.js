@@ -155,6 +155,35 @@ function constructUsersRow(username, departments) {
     usersTable.append(newRow);
 }
 
+function submitUsersDepts() {
+    let table = document.getElementById('usersTable');
+    let deltaUsers = [];
+    let deltaDepartments = [];
+    for (let row of table.rows) {
+        if (row.id == 'header') continue;
+
+        let left = row.firstElementChild;
+        let right = row.lastElementChild;
+        let username = left.firstElementChild.innerText;
+        let departmentSelect = right.firstElementChild;
+        let index = departmentSelect.selectedIndex;
+        if (index > 0) {
+            deltaUsers.push(username);
+            deltaDepartments.push(departmentSelect[index].innerText);
+        }
+    }
+
+    let xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        loadDepartments().then((departments) => loadUsersWithoutDept(departments));
+    }
+    xhr.open('POST', '/Settings/UpdateUserDepartments', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    let usersRaw = JSON.stringify(deltaUsers);
+    let departmentsRaw = JSON.stringify(deltaDepartments);
+    xhr.send('usersRaw=' + usersRaw + '&departmentsRaw=' + departmentsRaw);
+}
+
 //Roles section
 
 function loadUsers() {
