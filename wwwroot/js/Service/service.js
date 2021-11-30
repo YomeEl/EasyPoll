@@ -3,22 +3,25 @@ let lastRow = document.getElementById('lastRow');
 let usernameInput = document.getElementById('username');
 let departmentsDiv = document.getElementById('departments');
 
-loadDepartments();
+loadDepartments().then((departments) => loadUsersWithoutDept(departments));
 loadUsers();
 
 //Departments section
 
-function loadDepartments() {
-    let xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        departmentsDiv.innerHTML = '';
-        let depts = JSON.parse(xhr.response);
-        for (let dept of depts) {
-            appendDepartment(dept);
+async function loadDepartments() {
+    return new Promise((resolve, reject) => {
+        let xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+            departmentsDiv.innerHTML = '';
+            let depts = JSON.parse(xhr.response);
+            resolve(depts);
+            for (let dept of depts) {
+                appendDepartment(dept);
+            }
         }
-    }
-    xhr.open('GET', '/Settings/GetDepartments', true);
-    xhr.send();
+        xhr.open('GET', '/Settings/GetDepartments', true);
+        xhr.send();
+    });
 }
 
 function appendDepartment(dept, isNew = false) {
@@ -89,13 +92,96 @@ function getAddedDepartments() {
 function updateDepartments() {
     let xhr = new XMLHttpRequest();
     xhr.onload = function () {
-        loadDepartments();
+        loadDepartments().then((departments) => loadUsersWithoutDept(departments));
     }
     xhr.open('POST', '/Settings/UpdateDepartments', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     let add = JSON.stringify(getAddedDepartments());
     let del = JSON.stringify(getDeletedDepartments());
     xhr.send('addRaw=' + add + '&deleteRaw=' + del);
+}
+
+//Users section
+
+function loadUsersWithoutDept(departments) {
+    clearUsersTable();
+    let xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        let users = JSON.parse(xhr.response);
+        for (let username of users) {
+            constructUsersRow(username, departments);
+        }
+    }
+    xhr.open('GET', '/Settings/GetUsersWithoutDepartment', true);
+    xhr.send();
+}
+
+function clearUsersTable() {
+    let table = document.getElementById('usersTable').firstElementChild;
+    let lastChild = table.lastElementChild;
+    if (lastChild.id != 'header') {
+        lastChild.remove();
+        clearUsersTable();
+    }
+}
+
+function constructUsersRow(username, departments) {
+    let usersTable = document.getElementById('usersTable').firstElementChild;
+
+    let left = document.createElement('td');
+    let label = document.createElement('label');
+    label.style = 'margin: 0';
+    label.innerText = username;
+    left.append(label);
+
+    let right = document.createElement('td');
+    let select = document.createElement('select');
+    let zeroOpt = document.createElement('option');
+    zeroOpt.value = 0;
+    zeroOpt.innerText = 'Не назначено';
+    select.append(zeroOpt);
+    for (let i = 0; i < departments.length; i++) {
+        let opt = document.createElement('option');
+        opt.value = i + 1;
+        opt.innerText = departments[i];
+        select.append(opt);
+    }
+    right.append(select);
+
+    let newRow = document.createElement('tr');
+    newRow.append(left);
+    newRow.append(right);
+
+    usersTable.append(newRow);
+}
+
+function submitUsersDepts() {
+    let table = document.getElementById('usersTable');
+    let deltaUsers = [];
+    let deltaDepartments = [];
+    for (let row of table.rows) {
+        if (row.id == 'header') continue;
+
+        let left = row.firstElementChild;
+        let right = row.lastElementChild;
+        let username = left.firstElementChild.innerText;
+        let departmentSelect = right.firstElementChild;
+        let index = departmentSelect.selectedIndex;
+        if (index > 0) {
+            deltaUsers.push(username);
+            deltaDepartments.push(departmentSelect[index].innerText);
+        }
+    }
+
+    let xhr = new XMLHttpRequest();
+    xhr.onload = function () {
+        loadDepartments().then((departments) => loadUsersWithoutDept(departments));
+    }
+    xhr.open('POST', '/Settings/UpdateUserDepartments', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    let usersRaw = JSON.stringify(deltaUsers);
+    let departmentsRaw = JSON.stringify(deltaDepartments);
+    xhr.send('usersRaw=' + usersRaw + '&departmentsRaw=' + departmentsRaw);
 }
 
 //Roles section
