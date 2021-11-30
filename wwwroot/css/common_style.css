@@ -168,24 +168,31 @@ img {
     white-space: nowrap;
 }
 
-.users-table {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+.settings-label {
+    font-size: 150%;
+    text-align: center;
+    margin-bottom: 1vh;
 }
 
-.users-table table th {
+.settings-section {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-content: center;
+}
+
+.settings-section table th {
     border: 1px solid black;
     text-align: center;
     padding: 5px;
 }
 
-.users-table table td {
+.settings-section table td {
     border: 1px solid black;
     text-align: right;
     padding: 5px;
 }
 
-.users-table table input {
+.settings-section table input {
     width: 100%;
 }
