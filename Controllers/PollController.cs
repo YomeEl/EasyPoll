@@ -30,7 +30,6 @@ namespace EasyPoll.Controllers
                 totalCount += ans;
             }
 
-            ViewData["ActivePoll"] = activePoll.PollModel;
             ViewData["Answered"] = answered;
             ViewData["TotalCount"] = totalCount;
             ViewData["ShowControlPanelButton"] = user.RoleId > 1;
@@ -73,20 +72,21 @@ namespace EasyPoll.Controllers
             var questions = activePoll.Questions;
             var answers = activePoll.GetAnswersAsCount();
             int[] userSelection = new int[activePoll.Questions.Length];
-            bool answered = false;
+
             if (activePoll.UserAnswers.ContainsKey(userId))
             {
                 userSelection = activePoll.UserAnswers[userId];
-                answered = true;
             }
 
-            var data = new Dictionary<string, object>();
-            data["questions"] = questions;
-            data["answers"] = answers;
-            data["answered"] = answered;
-            data["userselection"] = userSelection;
+            var data = new Dictionary<string, object>
+            {
+                ["questions"] = questions,
+                ["options"] = activePoll.Options,
+                ["answers"] = answers,
+                ["userselection"] = userSelection
+            };
 
-            return Ok(JsonSerializer.Serialize(data).ToLower());
+            return Ok(JsonSerializer.Serialize(data));
         }
 
         public IActionResult PollControl()
