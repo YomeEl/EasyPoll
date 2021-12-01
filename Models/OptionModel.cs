@@ -3,12 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EasyPoll.Models
 {
-    public class QuestionModel
+    public class OptionModel
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         public int Id { get; set; }
-        public string Question { get; set; }
-        public int PollId { get; set; }
+        public int QuestionId { get; set; }
+        public int? MediaId { get; set; }
+        public string Text { get; set; }
     }
 }

@@ -1,14 +1,13 @@
 ﻿function constructCurrent() {
-    questionDiv.innerHTML = questions[index].question;
+    questionDiv.innerHTML = questions[index];
 
-    var options = questions[index].options.split('~!');
-    for (let i = 0; i < options.length; i++) {
+    for (let i = 0; i < options[index].length; i++) {
         let label1 = document.createElement('label');
         label1.className = 'answer-text';
         label1.innerText = (i + 1) + ".\xa0";
         let label2 = document.createElement('label');
         label2.className = 'answer-text';
-        label2.innerText = options[i] + '\xa0(' + percentage(index, i) +')';
+        label2.innerText = options[index][i] + '\xa0(' + percentage(index, i) +')';
 
         let ansBarResult = document.createElement('div');
         ansBarResult.className = 'answer-bar-result';

@@ -1,4 +1,5 @@
 ﻿var questions;
+var options;
 var allAnswers;
 var userSelection;
 var answered;
@@ -18,6 +19,7 @@ function init() {
     xhr.onload = function () {
         let res = JSON.parse(xhr.response);
         questions = res['questions'];
+        options = res['options'];
         allAnswers = res['answers'];
         userSelection = res['userselection'];
         answered = res['answered'];
