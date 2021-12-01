@@ -3,15 +3,14 @@ var selected = 0;
 
 function constructCurrent() {
     clearCurrent();
-    questionDiv.innerHTML = questions[index].question;
-    const options = questions[index].options.split('~!');
-    for (let i = 0; i < options.length; i++) {
+    questionDiv.innerHTML = questions[index].Question;
+    for (let i = 0; i < options[index].length; i++) {
         let label1 = document.createElement('label');
         label1.className = 'answer-text';
         label1.innerText = (i + 1) + ".\xa0";
         let label2 = document.createElement('a');
         label2.className = 'answer-text';
-        label2.innerText = options[i];
+        label2.innerText = options[index][i];
 
         let ansDiv = document.createElement('div');
         ansDiv.className = 'answer-box-active';
