@@ -3,7 +3,7 @@ var selected = 0;
 
 function constructCurrent() {
     clearCurrent();
-    questionDiv.innerHTML = questions[index].Question;
+    questionDiv.innerHTML = questions[index];
     for (let i = 0; i < options[index].length; i++) {
         let label1 = document.createElement('label');
         label1.className = 'answer-text';
