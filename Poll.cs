@@ -8,7 +8,7 @@ namespace EasyPoll
     public class Poll
     {
         public Models.PollModel PollModel { get; }
-        public Models.QuestionModel[] Questions { get; }
+        public string[] Questions { get; }
         public string[][] Options { get; }
 
         /// <summary>
@@ -22,23 +22,24 @@ namespace EasyPoll
             var dbcontext = Data.ServiceDBContext.GetDBContext();
 
             PollModel = dbcontext.Polls.Find(id);
-            Questions = (from question in dbcontext.Questions
+            var questionModels = (from question in dbcontext.Questions
                         where question.PollId == PollModel.Id
                         select question).OrderBy(q => q.Id).ToArray();
-            Options = new string[Questions.Length][];
-            for (int i = 0; i < Questions.Length; i++)
+            Questions = questionModels.Select(q => q.Question).ToArray();
+            Options = new string[questionModels.Length][];
+            for (int i = 0; i < questionModels.Length; i++)
             {
-                var questionId = Questions[i].Id;
+                var questionId = questionModels[i].Id;
                 Options[i] = (from opt in dbcontext.Options
                               where opt.QuestionId == questionId
                               select opt.Text).ToArray();
             }
 
-            Answers = new Models.AnswerModel[Questions.Length][][];
+            Answers = new Models.AnswerModel[questionModels.Length][][];
             UserAnswers = new Dictionary<int, int[]>();
-            for (int i = 0; i < Questions.Length; i++)
+            for (int i = 0; i < questionModels.Length; i++)
             {
-                var currentQuestion = Questions[i];
+                var currentQuestion = questionModels[i];
                 var optionsCount = Options[i].Length;
 
                 var answers = (from answer in dbcontext.Answers
@@ -48,7 +49,7 @@ namespace EasyPoll
                 {
                     if (!UserAnswers.ContainsKey(ans.UserId))
                     {
-                        UserAnswers[ans.UserId] = new int[Questions.Length];
+                        UserAnswers[ans.UserId] = new int[questionModels.Length];
                     }
                     UserAnswers[ans.UserId][i] = ans.Answer;
                 }
