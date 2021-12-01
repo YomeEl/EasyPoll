@@ -18,7 +18,11 @@ namespace EasyPoll.Data
         public DbSet<DepartmentModel> Departments { get; set; }
 
         private const string connectionString =
-            "server=sql11.freemysqlhosting.net;userid=sql11451768;password=5ah1S9Zu6Z;database=sql11451768;SSL Mode=None;CharSet=utf8;";
+            "server=easypoll-db.cad8zcrqvclk.eu-central-1.rds.amazonaws.com;" +
+            "userid=app;password=pwd;" +
+            "database=easypoll;" +
+            "SSL Mode=None;" +
+            "CharSet=utf8;";
 
         public static ServiceDBContext GetDBContext()
         {
