@@ -9,6 +9,7 @@ namespace EasyPoll
     {
         public Models.PollModel PollModel { get; }
         public Models.QuestionModel[] Questions { get; }
+        public string[][] Options { get; }
 
         /// <summary>
         /// Indices [question][option][answer]
@@ -24,13 +25,21 @@ namespace EasyPoll
             Questions = (from question in dbcontext.Questions
                         where question.PollId == PollModel.Id
                         select question).OrderBy(q => q.Id).ToArray();
+            Options = new string[Questions.Length][];
+            for (int i = 0; i < Questions.Length; i++)
+            {
+                var questionId = Questions[i].Id;
+                Options[i] = (from opt in dbcontext.Options
+                              where opt.QuestionId == questionId
+                              select opt.Text).ToArray();
+            }
 
             Answers = new Models.AnswerModel[Questions.Length][][];
             UserAnswers = new Dictionary<int, int[]>();
             for (int i = 0; i < Questions.Length; i++)
             {
                 var currentQuestion = Questions[i];
-                var optionsCount = currentQuestion.ExtractOptions().Length;
+                var optionsCount = Options[i].Length;
 
                 var answers = (from answer in dbcontext.Answers
                            where answer.QuestionId == currentQuestion.Id
