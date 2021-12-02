@@ -4,11 +4,11 @@ init(3);
 
 function init(count) {
     for (var i = 0; i < count; i++) {
-        add();
+        addOption();
     }
 }
 
-function add() {
+function addOption(val = '') {
     cntr++;
 
     var newAnswer = document.createElement("input");
@@ -16,6 +16,7 @@ function add() {
     newAnswer.className = "login-form-input";
     newAnswer.type = "text";
     newAnswer.placeholder = "Текст ответа " + cntr;
+    newAnswer.value = val;
 
     var newA = document.createElement("a");
     newA.href = "";
@@ -33,7 +34,7 @@ function add() {
     ansDiv.appendChild(newDiv);
 }
 
-function remove() {
+function removeOption() {
     document.getElementById("answers").removeChild(document.getElementById("AnswerDiv" + cntr));
     cntr--;
 }
