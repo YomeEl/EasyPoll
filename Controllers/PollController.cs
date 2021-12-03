@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+using System;
 using System.Linq;
 using System.Text.Json;
 using System.Collections.Generic;
@@ -94,16 +95,34 @@ namespace EasyPoll.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult AddNew()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddNew(
+            string name, 
+            string startAtRaw, string finishAtRaw, 
+            string sendStartRaw, string sendFinishRaw,
+            string questionsRaw, string optionsRaw)
+        {
+            var startAt = DateTime.Parse(startAtRaw);
+            var finishAt = DateTime.Parse(finishAtRaw);
+            var sendStart = bool.Parse(sendStartRaw);
+            var sendFinish = bool.Parse(sendFinishRaw);
+            var questions = (string[])JsonSerializer.Deserialize(questionsRaw, typeof(string[]));
+            var options = (string[][])JsonSerializer.Deserialize(optionsRaw, typeof(string[][]));
+
+            return Ok();
         }
 
         public IActionResult ShowAll()
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
             var pollsArray = dbcontext.Polls.OrderBy(poll => poll.CreatedAt).ToArray();
-            ViewData["LastIsActive"] = pollsArray.Last().FinishAt > System.DateTime.Now;
+            ViewData["LastIsActive"] = pollsArray.Last().FinishAt > DateTime.Now;
             ViewData["PollsArray"] = pollsArray;
             return View();
         }
