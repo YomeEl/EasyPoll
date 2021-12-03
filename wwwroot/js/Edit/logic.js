@@ -62,12 +62,28 @@ function submitPoll() {
 		}
 		for (let j = 0; j < options[i].length; j++)
 		{
-			warnings.push('Вопрос ' + (i + 1) + ': текст ответа ' + (j + 1) + ' не задан');
+			if (options[i][j] == '') {
+				warnings.push('Вопрос ' + (i + 1) + ': текст ответа ' + (j + 1) + ' не задан');
+			}
 		}
 	}
 		
 	if (warnings.length == 0) {
-		
+		let xhr = new XMLHttpRequest();
+		xhr.onload = function () {
+			window.location = '/Settings/ControlPanel';
+		}
+		xhr.open('POST', '/Poll/AddNew');
+		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xhr.send(
+			'name=' + name + '&' +
+			'startAtRaw=' + new Date(startAt).toJSON() + '&' +
+			'finishAtRaw=' + new Date(finishAt).toJSON() + '&' +
+			'sendStartRaw=' + sendStart.toString() + '&' +
+			'sendFinishRaw=' + sendFinish.toString() + '&' +
+			'questionsRaw=' + JSON.stringify(questions) + '&' +
+			'optionsRaw=' + JSON.stringify(options)
+		);
 	}
 	
 	return warnings;
