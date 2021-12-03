@@ -7,6 +7,7 @@ namespace EasyPoll
 {
     public class Poll
     {
+        public int Id { get; }
         public Models.PollModel PollModel { get; }
         public string[] Questions { get; }
         public string[][] Options { get; }
@@ -22,6 +23,7 @@ namespace EasyPoll
             var dbcontext = Data.ServiceDBContext.GetDBContext();
 
             PollModel = dbcontext.Polls.Find(id);
+            Id = id;
             var questionModels = (from question in dbcontext.Questions
                         where question.PollId == PollModel.Id
                         select question).OrderBy(q => q.Id).ToArray();

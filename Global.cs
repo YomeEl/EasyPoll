@@ -9,7 +9,7 @@ namespace EasyPoll
     {
         public static Poll ActivePoll { get; set; }
 
-        private static int activePollId = 1;
+        private static int activePollId = 4;
         private static (string username, string password) superuser;
         private static string superuserToken;
 
