@@ -1,45 +1,5 @@
 ﻿@{ ViewData["Title"] = "Добавление опроса"; }
 
-<form method="post" action="/Authentification/Login">
-    <div class="img-wrapper">
-        <img src="~/img/sample_img.png" />
-    </div>
-    <div class="btn-container" style="margin-top: 5px">
-        <a href="">Загрузить изображение</a>
-    </div>
-    <hr>
-    <label class="question">Текст вопроса:</label>
-    <textarea name="Question" class="login-form-input"></textarea>
-    <hr>
-    <label class="question" style="width: 100%; font-size: 150%">Варианты ответов</label>
-    <hr>
-    <div id="answers">
-        <!--Initialized with JS -->
-    </div>
-    <div class="btn-container" style="flex-wrap: wrap; flex-direction: row; justify-content: center">
-        <div class="btn-common" onClick="addOption()">
-            <label class="btn-text" type="submit">Добавить вариант</label>
-        </div>
-        <div class="btn-common" onClick="removeOption()">
-            <label class="btn-text" type="submit">Удалить вариант</label>
-        </div>
-    </div>
-    <hr>
-    <div class="form-checkbox-wrapper">
-        <input name="SendEmail" id="cb1" type="checkbox" class="checkbox" />
-        <label class="checkbox-label" for="cb1">Отправить уведомление сотрудникам о начале/конце опроса</label>
-    </div>
-    <hr>
-    <label class="question">Дата начала: </label><input type="date" style="margin-left: 5px">
-    <br>
-    <label class="question">Дата окончания: </label><input type="date"  style="margin-left: 5px">
-    <hr>
-    <div class="btn-container">
-        <div class="btn-common" onClick="this.parentNode.parentNode.submit();">
-            <label class="btn-text" type="submit">Добавить опрос</label>
-        </div>
-        <a href="@Url.Action("ControlPanel", "Settings")">Отмена</a>
-    </div>
-</form>
-
-<script src="~/js/Edit/edit.js"></script>
+<div id="content"></div>
+<script src="~/js/Edit/logic.js"></script>
+<script src="~/js/Edit/contentConstructor.js"></script>
