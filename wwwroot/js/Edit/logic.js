@@ -1,90 +1,108 @@
-let questions = ['Вопрос 1', 'Вопрос 2'];
-let options = [[], []];
-
-let name = '';
-let startAt = '';
-let finishAt = '';
-let sendStart = false;
-let sendFinish = false;
-
-function addQuestion() {
-	questions.push('Новый вопрос');
-	options.push([]);
+/*
+interface Question {
+	name: string;
+	options: string[];
 }
+*/
 
-function removeQuestion(index) {
-	for (let i = index; i < questions.length - 1; i++)
-	{
-		questions[i] = questions[i + 1];
-		options[i] = options[i + 1];
-	}
-	questions.pop();
-	options.pop();
-}
-
-function moveUp(index) {
-	if (index == 0) return;
-	
-	let tmp1 = questions[index];
-	questions[index] = questions[index - 1];
-	questions[index - 1] = tmp1;
-	
-	let tmp2 = options[index];
-	options[index] = options[index - 1];
-	options[index - 1] = tmp2;
-}
-
-function moveDown(index) {
-	if (index == questions.length - 1) return;
-	
-	let tmp1 = questions[index];
-	questions[index] = questions[index + 1];
-	questions[index + 1] = tmp1;
-	
-	let tmp2 = options[index];
-	options[index] = options[index + 1];
-	options[index + 1] = tmp2;
-}
-
-function submitPoll() {
-	let warnings = [];
-	if (name == '') warnings.push('Название опроса не указано');
-	if (startAt == '') warnings.push('Дата начала не указана');
-	if (finishAt == '') warnings.push('Дата окончания не указана');
-	if (new Date(startAt) > new Date(finishAt)) warnings.push('Окончание вопроса указано раньше его начала');
-	if (questions.length == 0)
-	{
-		warnings.push('Не добавлено ни одного вопроса');
-	}
-	for (let i = 0; i < options.length; i++) {
-		if (options[i].length == 0) {
-			warnings.push('Вопрос ' + (i + 1) + ': не заданы варианты ответа');
-		}
-		for (let j = 0; j < options[i].length; j++)
-		{
-			if (options[i][j] == '') {
-				warnings.push('Вопрос ' + (i + 1) + ': текст ответа ' + (j + 1) + ' не задан');
+const editLogic = (function () {
+	const editData = {
+		name: '',  // string
+		startAt: null,  // Date
+		finishAt: null,  // Date
+		sendStart: false,  // boolean
+		sendFinish: false,  // boolean
+		questions: [  // Question[]
+			{
+				name: 'Вопрос 1',
+				options: []
+			},
+			{
+				name: 'Вопрос 2',
+				options: []
 			}
-		}
+		]
 	}
-		
-	if (warnings.length == 0) {
-		let xhr = new XMLHttpRequest();
-		xhr.onload = function () {
-			window.location = '/Settings/ControlPanel';
-		}
-		xhr.open('POST', '/Poll/AddNew');
-		xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-		xhr.send(
-			'name=' + name + '&' +
-			'startAtRaw=' + new Date(startAt).toJSON() + '&' +
-			'finishAtRaw=' + new Date(finishAt).toJSON() + '&' +
-			'sendStartRaw=' + sendStart.toString() + '&' +
-			'sendFinishRaw=' + sendFinish.toString() + '&' +
-			'questionsRaw=' + JSON.stringify(questions) + '&' +
-			'optionsRaw=' + JSON.stringify(options)
-		);
+
+	function addQuestion () {
+		editData.questions.push({
+			name: 'Новый вопрос',
+			options: []
+		});
 	}
-	
-	return warnings;
-}
+
+	function removeQuestion (index) {
+		editData.questions.splice(i, 1);
+	}
+
+	function moveUp (index) {
+		if (index === 0) return;
+
+		[editData.questions[index], editData.questions[index - 1]] = [editData.questions[index - 1], editData.questions[index]];
+	}
+
+	function moveDown (index) {
+		if (index === editData.questions.length - 1) return;
+
+		[editData.questions[index], editData.questions[index + 1]] = [editData.questions[index + 1], editData.questions[index]];
+	}
+
+	function validateData () {
+		const warnings = [];
+
+		if (editData.name === '') warnings.push('Название опроса не указано');
+		if (editData.startAt === '') warnings.push('Дата начала не указана');
+		if (editData.finishAt === '') warnings.push('Дата окончания не указана');
+		if (editData.startAt > editData.finishAt) warnings.push('Окончание вопроса указано раньше его начала');
+		if (editData.questions.length === 0) warnings.push('Не добавлено ни одного вопроса');
+
+		editData.questions.forEach((question, i) => {
+			if (question.length === 0) {
+				warnings.push(`Вопрос ${i + 1}: не заданы варианты ответа`);
+			}
+			question.options.forEach((option, j) => {
+				if (option === '') {
+					warnings.push(`Вопрос ${i + 1}: текст ответа ${j + 1} не задан`);
+				}
+			}
+		})
+			
+		return warnings
+	}
+
+	function submitPoll () {
+		const warnings = validateData()
+
+		if (warnings.length === 0) {
+			fetch('/Poll/AddNew', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: URLSearchParams({
+					name: editData.name,
+					startAtRaw: editData.startAt.toISOString(),
+					finishAtRaw: editData.finishAt.toISOString(),
+					sendStartRaw: editData.sendStart,
+					sendFinishRaw: editData.sendFinish,
+					questionsRaw: editData.questions.map(question => question.name),
+					optionsRaw: editData.questions.map(question => question.options)
+				}
+			).then((response) => {
+				window.location.assign('/Settings/ControlPanel');
+			}).catch((err) => console.error(err));
+		}
+
+		return warnings;
+	}
+					   
+	return {
+		editData,
+		addQuestion,
+		removeQuestion,
+		moveUp,
+		moveDown,
+		validateData,
+		submitPoll
+	}
+})()
