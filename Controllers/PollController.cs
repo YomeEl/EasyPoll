@@ -115,6 +115,38 @@ namespace EasyPoll.Controllers
             var questions = (string[])JsonSerializer.Deserialize(questionsRaw, typeof(string[]));
             var options = (string[][])JsonSerializer.Deserialize(optionsRaw, typeof(string[][]));
 
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var poll = new Models.PollModel()
+            {
+                PollName = name,
+                CreatedAt = startAt,
+                FinishAt = finishAt
+            };
+            dbcontext.Polls.Add(poll);
+            dbcontext.SaveChanges();
+            poll = dbcontext.Polls.FirstAsync(p => p.PollName == name).Result;
+            for (int i = 0; i < questions.Length; i++)
+            {
+                var question = new Models.QuestionModel()
+                {
+                    PollId = poll.Id,
+                    Question = questions[i]
+                };
+                dbcontext.Questions.Add(question);
+                dbcontext.SaveChanges();
+                question = dbcontext.Questions.FirstAsync(q => q.Question == questions[i]).Result;
+                for (int j = 0; j < options[i].Length; j++)
+                {
+                    var option = new Models.OptionModel()
+                    {
+                        QuestionId = question.Id,
+                        Text = options[i][j]
+                    };
+                    dbcontext.Options.Add(option);
+                }
+                dbcontext.SaveChanges();
+            }
+
             return Ok();
         }
 
