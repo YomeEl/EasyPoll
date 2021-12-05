@@ -12,16 +12,7 @@ const editLogic = (function () {
 		finishAt: null,  // Date
 		sendStart: false,  // boolean
 		sendFinish: false,  // boolean
-		questions: [  // Question[]
-			{
-				name: 'Вопрос 1',
-				options: []
-			},
-			{
-				name: 'Вопрос 2',
-				options: []
-			}
-		]
+		questions: []  // Question[]
 	}
 
 	function addQuestion () {
@@ -32,7 +23,7 @@ const editLogic = (function () {
 	}
 
 	function removeQuestion (index) {
-		editData.questions.splice(i, 1);
+		editData.questions.splice(index, 1);
 	}
 
 	function moveUp (index) {
@@ -53,19 +44,19 @@ const editLogic = (function () {
 		if (editData.name === '') warnings.push('Название опроса не указано');
 		if (editData.startAt === '') warnings.push('Дата начала не указана');
 		if (editData.finishAt === '') warnings.push('Дата окончания не указана');
-		if (editData.startAt > editData.finishAt) warnings.push('Окончание вопроса указано раньше его начала');
+		if (editData.startAt > editData.finishAt) warnings.push('Окончание опроса указано раньше его начала');
 		if (editData.questions.length === 0) warnings.push('Не добавлено ни одного вопроса');
 
 		editData.questions.forEach((question, i) => {
-			if (question.length === 0) {
+			if (question.options.length === 0) {
 				warnings.push(`Вопрос ${i + 1}: не заданы варианты ответа`);
 			}
 			question.options.forEach((option, j) => {
 				if (option === '') {
 					warnings.push(`Вопрос ${i + 1}: текст ответа ${j + 1} не задан`);
 				}
-			}
-		})
+			})
+		});
 			
 		return warnings
 	}
@@ -79,16 +70,16 @@ const editLogic = (function () {
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
-				body: URLSearchParams({
+				body: new URLSearchParams({
 					name: editData.name,
 					startAtRaw: editData.startAt.toISOString(),
 					finishAtRaw: editData.finishAt.toISOString(),
 					sendStartRaw: editData.sendStart,
 					sendFinishRaw: editData.sendFinish,
-					questionsRaw: editData.questions.map(question => question.name),
-					optionsRaw: editData.questions.map(question => question.options)
-				}
-			).then((response) => {
+					questionsRaw: JSON.stringify(editData.questions.map(question => question.name)),
+					optionsRaw: JSON.stringify(editData.questions.map(question => question.options))
+				})
+			}).then((response) => {
 				window.location.assign('/Settings/ControlPanel');
 			}).catch((err) => console.error(err));
 		}
