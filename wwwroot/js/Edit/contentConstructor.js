@@ -7,6 +7,9 @@ let contentDiv = document.getElementById('content');
 
 let selectedQuestion = 0;
 
+let startAtValue = '';
+let finishAtValue = '';
+
 constructNewPoll();
 
 function constructNewQuestion() {
@@ -21,10 +24,9 @@ function constructNewQuestion() {
 	hr();
 	appendSectionTitle('Варианты ответа');
 	appendOptionsDiv();
-	for (let i = 0; i < options[selectedQuestion].length; i++)
-	{
-		appendOption(options[selectedQuestion][i]);	
-	}
+	editLogic.editData.questions[selectedQuestion].options.forEach((option) => {
+		appendOption(option);
+	});
 	appendOptionsButtons();
 	hr();
 	appendSubmitQuestionButton();
@@ -58,7 +60,7 @@ function appendSectionTitle(title)
 
 function appendImage() {
 	let img = document.createElement('img');
-	img.src = 'img/sample_img.png';
+	img.src = 'img/sample_img.png'; //fix asap
 	
 	let btn = document.createElement('div');
 	btn.className = 'btn-container';
@@ -75,12 +77,12 @@ function appendImage() {
 }
 
 function appendText() {
-	 let text = document.createElement('textarea');
-	 text.id = 'text';
-	 text.value = questions[selectedQuestion];
-	 text.className = 'login-form-input';
+	let text = document.createElement('textarea');
+	text.id = 'text';
+	text.value = editLogic.editData.questions[selectedQuestion].name;
+	text.className = 'login-form-input';
 	 
-	 contentDiv.append(text);
+	contentDiv.append(text);
 }
 
 function appendOptionsDiv()
@@ -163,13 +165,12 @@ function createButton(text, onclick) {
 
 function appendSubmitQuestionButton() {
 	let btn = createButton('Сохранить', null);
-	btn.onclick = () => { 
-		questions[selectedQuestion] = document.getElementById('text').value;
-		options[selectedQuestion] = [];
-		for (let i = 0; i < optionsInputs.length; i++)
-		{
-			options[selectedQuestion].push(optionsInputs[i].value);
-		}
+	btn.onclick = () => {
+		editLogic.editData.questions[selectedQuestion].name = document.getElementById('text').value;
+		editLogic.editData.questions[selectedQuestion].options = [];
+		optionsInputs.forEach((input) => {
+			editLogic.editData.questions[selectedQuestion].options.push(input.value);
+		});
 		constructNewPoll(); 
 	};
 	contentDiv.append(btn);
@@ -212,9 +213,9 @@ function appendInput() {
 	input.id = 'pollName';
     input.className = 'login-form-input';
     input.type = 'text';
-    input.placeholder = 'Введите название';
-	input.value = name;
-	input.onchange = () => { name = document.getElementById('pollName').value; };
+	input.placeholder = 'Введите название';
+	input.value = editLogic.editData.name;
+	input.onchange = () => { editLogic.editData.name = document.getElementById('pollName').value; };
 	
 	contentDiv.append(input);
 }
@@ -228,8 +229,11 @@ function appendDates() {
 	input1.id = 'startAt';
 	input1.type = 'datetime-local';
 	input1.style = 'margin-left: 5px; margin-bottom: 1vh;';
-	input1.onchange = () => { startAt = document.getElementById('startAt').value; };
-	input1.value = startAt;
+	input1.value = startAtValue;
+	input1.onchange = () => {
+		startAtValue = document.getElementById('startAt').value;
+		editLogic.editData.startAt = new Date(startAtValue);
+	};
 	
 	let br = document.createElement('br');
 	
@@ -241,8 +245,11 @@ function appendDates() {
 	input2.id = 'finishAt';
 	input2.type = 'datetime-local';
 	input2.style = 'margin-left: 5px';
-	input2.onchange = () => { finishAt = document.getElementById('finishAt').value; };
-	input2.value = finishAt;
+	input2.value = finishAtValue;
+	input2.onchange = () => {
+		finishAtValue = document.getElementById('finishAt').value;
+		editLogic.editData.finishAt = new Date(finishAtValue);
+	};
 	
 	contentDiv.append(label1, input1, br, label2, input2);
 }
@@ -251,9 +258,9 @@ function appendCheckboxes() {
 	let checkbox1 = document.createElement('input');
 	checkbox1.id = 'sendStart';
 	checkbox1.className = 'checkbox';
-	checkbox1.type='checkbox';
-	checkbox1.checked = sendStart;
-	checkbox1.onchange = () => { sendStart = document.getElementById('sendStart').checked; };
+	checkbox1.type = 'checkbox';
+	checkbox1.checked = editLogic.editData.sendStart;
+	checkbox1.onchange = () => { editLogic.editData.sendStart = document.getElementById('sendStart').checked; };
 
 	let label1 = document.createElement('label');
 	label1.className = 'checkbox-label';
@@ -268,12 +275,12 @@ function appendCheckboxes() {
 	checkbox2.id = 'sendFinish';
 	checkbox2.className = 'checkbox';
 	checkbox2.type='checkbox';
-	checkbox2.checked = sendFinish;
-	checkbox2.oncellchange = () => { sendFinish = document.getElementById('sendFinish').checked; };
+	checkbox2.checked = editLogic.editData.sendFinish;
+	checkbox2.onchange = () => { editLogic.editData.sendFinish = document.getElementById('sendFinish').checked; };
 	
 	let label2 = document.createElement('label');
 	label2.className = 'checkbox-label';
-	label2.setAttribute('for', 'sendEnd');
+	label2.setAttribute('for', 'sendFinish');
 	label2.innerText = 'Отправить уведомление сотрудникам об окончании опроса';
 	
 	let wrapper2 = document.createElement('div');
@@ -293,14 +300,13 @@ function appendQuestionsList() {
 	
 	let a = document.createElement('a');
 	a.innerText = 'Добавить вопрос';
-	a.onclick = () => { addQuestion(); constructNewPoll(); };
+	a.onclick = () => { editLogic.addQuestion(); constructNewPoll(); };
 	
 	contentDiv.append(ol, a);
-	
-	for (let i = 0; i < questions.length; i++)
-	{
-		appendQuestion(questions[i]);
-	}
+
+	editLogic.editData.questions.forEach((question) => {
+		appendQuestion(question.name)
+	});
 }
 
 function appendQuestion(name) {	
@@ -319,16 +325,16 @@ function appendQuestion(name) {
 	let a2 = document.createElement('a');
 	a2.className = 'separator';
 	a2.innerText = 'удалить';
-	a2.onclick = () => { removeQuestion(i); constructNewPoll(); };
+	a2.onclick = () => { editLogic.removeQuestion(i); constructNewPoll(); };
 	
 	let a3 = document.createElement('a');
 	a3.className = 'separator';
 	a3.innerText = 'вверх';
-	a3.onclick = () => { moveUp(i); constructNewPoll(); };
+	a3.onclick = () => { editLogic.moveUp(i); constructNewPoll(); };
 	
 	let a4 = document.createElement('a');
 	a4.innerText = 'вниз';
-	a4.onclick = () => { moveDown(i); constructNewPoll(); };
+	a4.onclick = () => { editLogic.moveDown(i); constructNewPoll(); };
 	
 	let li = document.createElement('li');
 	li.append(label, br, a1, a2, a3, a4);
@@ -349,19 +355,16 @@ function appendWarningsDiv() {
 
 function appendSubmitPollButton() {
 	let btn = createButton('Добавить опрос', () => {
-		let warnings = submitPoll();
-		if (warnings.length > 0)
-		{
-			let warningsDiv = document.getElementById('warnings');
-			warningsDiv.innerHTML = '';
-			for (let i = 0; i < warnings.length; i++)
-			{
-				let label = document.createElement('label');
-				label.className = 'login-warning';
-				label.innerText = warnings[i];
-				warningsDiv.append(label);
-			}
-		}
+		let warnings = editLogic.submitPoll();
+
+		let warningsDiv = document.getElementById('warnings');
+		warningsDiv.innerHTML = '';
+		warnings.forEach((warning) => {
+			let label = document.createElement('label');
+			label.className = 'login-warning';
+			label.innerText = warning;
+			warningsDiv.append(label);
+		});
 	});
 	contentDiv.append(btn);
 	

@@ -206,6 +206,7 @@ img {
 }
 
 .questions-list li label {
+    display: contents;
     margin-bottom: 0;
 }
 
