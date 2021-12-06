@@ -2,29 +2,40 @@
     ViewData["Title"] = "Активный опрос";
 }
 
-<div id="question" class="question">
-    <label>Загрузка...</label>
-</div>
-<br>
-<div id="answers"></div>
-<br>
-<div class="btn-container">
-    <div id="btn-next" class="btn-common" style="display:none" onclick="nextQuestion()">
-        <label class="btn-text">Следующий вопрос</label>
-    </div>
-    <div id="btn-prev" class="btn-common" style="display:none" onclick="prevQuestion()">
-        <label class="btn-text">Предыдущий вопрос</label>
-    </div>
-    <div id="btn-finish" class="btn-common" style="display:none" onclick="sendPoll()">
-        <label class="btn-text">Завершить опрос</label>
-    </div>
-</div>
+@{
+    if (!(bool)ViewData["NoActivePoll"])
+    {
+        <div id="question" class="question">
+            <label>Загрузка...</label>
+        </div>
+        <br>
+        <div id="answers"></div>
+        <br>
+        <div class="btn-container">
+            <div id="btn-next" class="btn-common" style="display:none" onclick="nextQuestion()">
+                <label class="btn-text">Следующий вопрос</label>
+            </div>
+            <div id="btn-prev" class="btn-common" style="display:none" onclick="prevQuestion()">
+                <label class="btn-text">Предыдущий вопрос</label>
+            </div>
+            <div id="btn-finish" class="btn-common" style="display:none" onclick="sendPoll()">
+                <label class="btn-text">Завершить опрос</label>
+            </div>
+        </div>
 
-<br>
-<div class="question">Проголосовало: @((int)ViewData["TotalCount"])</div>
-<br>
-<div class="btn-container">
+        <br>
+        <div class="question">Проголосовало: @((int)ViewData["TotalCount"])</div>
+        <br>
+    }
+    else
+    {
+        <div id="question" class="question">
+            <label>Нет активных опросов</label>
+        </div>
+    }
+}
 
+<div class="btn-container">
     <div class="btn-common" onclick="location.href='@Url.Action("Logout", "Authentification")'">
         <label class="btn-text">Выход</label>
     </div>
@@ -37,12 +48,18 @@
         }
     }
 </div>
-<script src="/js/ActivePoll/common.js"></script>
-@if ((bool)ViewData["Answered"])
-{
-    <script src="~/js/ActivePoll/viewResults.js"></script>
-}
-else
-{
-    <script src="~/js/ActivePoll/answerPoll.js"></script>
+
+@{ 
+    if (!(bool)ViewData["NoActivePoll"])
+    {
+        <script src="/js/ActivePoll/common.js"></script>
+        if ((bool)ViewData["Answered"])
+        {
+            <script src="~/js/ActivePoll/viewResults.js"></script>
+        }
+        else
+        {
+            <script src="~/js/ActivePoll/answerPoll.js"></script>
+        }
+    }
 }
