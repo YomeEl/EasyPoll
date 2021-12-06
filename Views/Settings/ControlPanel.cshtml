@@ -2,9 +2,12 @@
 
 <div class="buttons">
     <div class="btn-container">
-        <div class="btn-common" onclick="location.href='@Url.Action("PollControl", "Poll")'">
-            <label class="btn-text">Управление текущим опросом</label>
-        </div>
+        @if (!(bool)ViewData["NoActivePoll"])
+        {
+            <div class="btn-common" onclick="location.href='@Url.Action("PollControl", "Poll")'">
+                <label class="btn-text">Управление активным опросом</label>
+            </div>
+        }
         <div class="btn-common" onclick="location.href='@Url.Action("AddNew", "Poll")'">
             <label class="btn-text">Добавить новый опрос</label>
         </div>

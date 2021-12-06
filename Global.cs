@@ -9,7 +9,6 @@ namespace EasyPoll
     {
         public static Poll ActivePoll { get; set; }
 
-        private static int activePollId = 4;
         private static (string username, string password) superuser;
         private static string superuserToken;
 
@@ -21,7 +20,15 @@ namespace EasyPoll
 
         public static void UpdateActivePoll()
         {
-            ActivePoll = new Poll(activePollId);
+            int activePollId = DetermineActivePollId();
+            if (activePollId > 0)
+            {
+                ActivePoll = new Poll(activePollId);
+            }
+            else
+            {
+                ActivePoll = null;
+            }
         }
 
         public static string CheckSUAndGenerateToken(string username, string password)
@@ -50,6 +57,16 @@ namespace EasyPoll
         {
             var sr = new System.IO.StreamReader("superuser.txt");
             superuser = (sr.ReadLine(), sr.ReadLine());
+        }
+
+        private static int DetermineActivePollId()
+        {
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            int id = (from poll in dbcontext.Polls
+                      orderby poll.CreatedAt
+                      where poll.FinishAt > DateTime.Now
+                      select poll.Id).LastOrDefault();
+            return id;
         }
     }
 }

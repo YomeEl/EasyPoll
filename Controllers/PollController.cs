@@ -21,7 +21,15 @@ namespace EasyPoll.Controllers
             }
 
             int userId = user.Id;
+
+            ViewData["ShowControlPanelButton"] = user.RoleId > 1;
             var activePoll = Global.ActivePoll;
+            if (activePoll == null)
+            {
+                ViewData["NoActivePoll"] = true;
+                return View();
+            }
+
             bool answered = activePoll.UserAnswers.ContainsKey(userId);
             var answers = activePoll.GetAnswersAsCount();
 
@@ -33,7 +41,7 @@ namespace EasyPoll.Controllers
 
             ViewData["Answered"] = answered;
             ViewData["TotalCount"] = totalCount;
-            ViewData["ShowControlPanelButton"] = user.RoleId > 1;
+            ViewData["NoActivePoll"] = false;
 
             return View();
         }
@@ -84,6 +92,11 @@ namespace EasyPoll.Controllers
 
             var data = new Dictionary<string, object>
             {
+                ["pollName"] = activePoll.PollModel.PollName,
+                ["startAt"] = activePoll.PollModel.CreatedAt.ToString("u"),
+                ["finishAt"] = activePoll.PollModel.FinishAt.ToString("u"),
+                ["sendStart"] = false,
+                ["sendFinish"] = false,
                 ["questions"] = questions,
                 ["options"] = activePoll.Options,
                 ["answers"] = answers,
@@ -106,10 +119,10 @@ namespace EasyPoll.Controllers
 
         [HttpPost]
         public IActionResult AddNew(
-            string name, 
+            string oldName, string newName, 
             string startAtRaw, string finishAtRaw, 
             string sendStartRaw, string sendFinishRaw,
-            string questionsRaw, string optionsRaw)
+            string questionsRaw, string optionsRaw, string questionsChangedRaw)
         {
             var startAt = DateTime.Parse(startAtRaw);
             var finishAt = DateTime.Parse(finishAtRaw);
@@ -118,16 +131,36 @@ namespace EasyPoll.Controllers
             var questions = (string[])JsonSerializer.Deserialize(questionsRaw, typeof(string[]));
             var options = (string[][])JsonSerializer.Deserialize(optionsRaw, typeof(string[][]));
 
+            var questionsChanged = bool.Parse(questionsChangedRaw);
+
             var dbcontext = Data.ServiceDBContext.GetDBContext();
+
+            var existingPoll = dbcontext.Polls.FirstOrDefaultAsync((poll) => poll.PollName == oldName).Result;
+            if (existingPoll != null)
+            {
+                if (!questionsChanged)
+                {
+                    existingPoll.PollName = newName;
+                    existingPoll.CreatedAt = startAt;
+                    existingPoll.FinishAt = finishAt;
+                    dbcontext.Polls.Update(existingPoll);
+                    dbcontext.SaveChanges();
+                    Global.UpdateActivePoll();
+                    return Ok();
+                }
+                dbcontext.Polls.Remove(existingPoll);
+                dbcontext.SaveChanges();
+            }
+            
             var poll = new Models.PollModel()
             {
-                PollName = name,
+                PollName = newName,
                 CreatedAt = startAt,
                 FinishAt = finishAt
             };
             dbcontext.Polls.Add(poll);
             dbcontext.SaveChanges();
-            poll = dbcontext.Polls.FirstAsync(p => p.PollName == name).Result;
+            poll = dbcontext.Polls.FirstAsync(p => p.PollName == newName).Result;
             for (int i = 0; i < questions.Length; i++)
             {
                 var question = new Models.QuestionModel()
@@ -150,6 +183,7 @@ namespace EasyPoll.Controllers
                 dbcontext.SaveChanges();
             }
 
+            Global.UpdateActivePoll();
             return Ok();
         }
 

@@ -7,7 +7,8 @@ interface Question {
 
 const editLogic = (function () {
 	const editData = {
-		name: '',  // string
+		oldName: '',  // string
+		newName: '',  // string
 		startAt: null,  // Date
 		finishAt: null,  // Date
 		sendStart: false,  // boolean
@@ -15,16 +16,31 @@ const editLogic = (function () {
 		questions: []  // Question[]
 	}
 
-	function addQuestion () {
+	let newPoll = true;
+	let questionsChanged = false;
+
+	function addQuestion() {
+		questionsChanged = true;
 		editData.questions.push({
 			name: 'Новый вопрос',
 			options: []
 		});
 	}
 
-	function removeQuestion (index) {
+	function removeQuestion(index) {
+		questionsChanged = true;
 		editData.questions.splice(index, 1);
 	}
+
+	function addOption(questionIndex, option) {
+		editData.questions[questionIndex].options.push(option);
+    }
+
+	function resetQuestion(questionIndex, name) {
+		questionsChanged = true;
+		editData.questions[questionIndex].name = name;
+		editData.questions[questionIndex].options = [];
+    }
 
 	function moveUp (index) {
 		if (index === 0) return;
@@ -71,13 +87,15 @@ const editLogic = (function () {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
 				body: new URLSearchParams({
-					name: editData.name,
+					oldName: editData.oldName,
+					newName: editData.newName,
 					startAtRaw: editData.startAt.toISOString(),
 					finishAtRaw: editData.finishAt.toISOString(),
 					sendStartRaw: editData.sendStart,
 					sendFinishRaw: editData.sendFinish,
 					questionsRaw: JSON.stringify(editData.questions.map(question => question.name)),
-					optionsRaw: JSON.stringify(editData.questions.map(question => question.options))
+					optionsRaw: JSON.stringify(editData.questions.map(question => question.options)),
+					questionsChangedRaw: questionsChanged
 				})
 			}).then((response) => {
 				window.location.assign('/Settings/ControlPanel');
@@ -89,8 +107,11 @@ const editLogic = (function () {
 					   
 	return {
 		editData,
+		newPoll,
 		addQuestion,
 		removeQuestion,
+		addOption,
+		resetQuestion,
 		moveUp,
 		moveDown,
 		validateData,

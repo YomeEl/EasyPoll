@@ -11,6 +11,7 @@ namespace EasyPoll.Controllers
         [HttpGet]
         public IActionResult ControlPanel()
         {
+            ViewData["NoActivePoll"] = Global.ActivePoll == null;
             return View();
         }
 

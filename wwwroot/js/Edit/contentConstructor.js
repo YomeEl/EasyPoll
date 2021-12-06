@@ -164,15 +164,13 @@ function createButton(text, onclick) {
 }
 
 function appendSubmitQuestionButton() {
-	let btn = createButton('Сохранить', null);
-	btn.onclick = () => {
-		editLogic.editData.questions[selectedQuestion].name = document.getElementById('text').value;
-		editLogic.editData.questions[selectedQuestion].options = [];
+	let btn = createButton('Сохранить', () => {
+		editLogic.resetQuestion(selectedQuestion, document.getElementById('text').value);
 		optionsInputs.forEach((input) => {
-			editLogic.editData.questions[selectedQuestion].options.push(input.value);
+			editLogic.addOption(selectedQuestion, input.value);
 		});
-		constructNewPoll(); 
-	};
+		constructNewPoll();
+	});
 	contentDiv.append(btn);
 	
 	let a = document.createElement('a');
@@ -214,10 +212,27 @@ function appendInput() {
     input.className = 'login-form-input';
     input.type = 'text';
 	input.placeholder = 'Введите название';
-	input.value = editLogic.editData.name;
-	input.onchange = () => { editLogic.editData.name = document.getElementById('pollName').value; };
+	input.value = editLogic.editData.newName;
+	input.onchange = () => { editLogic.editData.newName = document.getElementById('pollName').value; };
 	
 	contentDiv.append(input);
+}
+
+function convertDate(date) {
+	if (!date) return '';
+
+	let dd = date.getDate().toString();
+	let MM = (date.getMonth() + 1).toString();
+	let yyyy = date.getFullYear().toString();
+	let hh = date.getHours().toString();
+	let mm = date.getMinutes().toString();
+
+	if (dd.length === 1) dd = '0' + dd;
+	if (MM.length === 1) MM = '0' + MM;
+	if (hh.length === 1) hh = '0' + hh;
+	if (mm.length === 1) mm = '0' + mm;
+
+	return `${yyyy}-${MM}-${dd}T${hh}:${mm}`
 }
 
 function appendDates() {
@@ -229,10 +244,9 @@ function appendDates() {
 	input1.id = 'startAt';
 	input1.type = 'datetime-local';
 	input1.style = 'margin-left: 5px; margin-bottom: 1vh;';
-	input1.value = startAtValue;
+	input1.value = convertDate(editLogic.editData.startAt);
 	input1.onchange = () => {
-		startAtValue = document.getElementById('startAt').value;
-		editLogic.editData.startAt = new Date(startAtValue);
+		editLogic.editData.startAt = new Date(input1.value);
 	};
 	
 	let br = document.createElement('br');
@@ -245,10 +259,9 @@ function appendDates() {
 	input2.id = 'finishAt';
 	input2.type = 'datetime-local';
 	input2.style = 'margin-left: 5px';
-	input2.value = finishAtValue;
+	input2.value = convertDate(editLogic.editData.finishAt);
 	input2.onchange = () => {
-		finishAtValue = document.getElementById('finishAt').value;
-		editLogic.editData.finishAt = new Date(finishAtValue);
+		editLogic.editData.finishAt = new Date(input2.value);
 	};
 	
 	contentDiv.append(label1, input1, br, label2, input2);
@@ -354,8 +367,14 @@ function appendWarningsDiv() {
 }
 
 function appendSubmitPollButton() {
-	let btn = createButton('Добавить опрос', () => {
+	let btnText = editLogic.newPoll ? 'Добавить опрос' : 'Сохранить опрос';
+	let btn = createButton(btnText, () => {
 		let warnings = editLogic.submitPoll();
+
+		if (warnings.length === 0) {
+			btn.firstElementChild.innerText = 'Сохранение...';
+			btn.onclick = null;
+        }
 
 		let warningsDiv = document.getElementById('warnings');
 		warningsDiv.innerHTML = '';
@@ -366,6 +385,7 @@ function appendSubmitPollButton() {
 			warningsDiv.append(label);
 		});
 	});
+	btn.firstElementChild.id = 'submitBtnLabel';
 	contentDiv.append(btn);
 	
 	let wrapper = document.createElement('div');
