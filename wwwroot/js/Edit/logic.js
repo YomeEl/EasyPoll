@@ -17,17 +17,30 @@ const editLogic = (function () {
 	}
 
 	let newPoll = true;
+	let questionsChanged = false;
 
-	function addQuestion () {
+	function addQuestion() {
+		questionsChanged = true;
 		editData.questions.push({
 			name: 'Новый вопрос',
 			options: []
 		});
 	}
 
-	function removeQuestion (index) {
+	function removeQuestion(index) {
+		questionsChanged = true;
 		editData.questions.splice(index, 1);
 	}
+
+	function addOption(questionIndex, option) {
+		editData.questions[questionIndex].options.push(option);
+    }
+
+	function resetQuestion(questionIndex, name) {
+		questionsChanged = true;
+		editData.questions[questionIndex].name = name;
+		editData.questions[questionIndex].options = [];
+    }
 
 	function moveUp (index) {
 		if (index === 0) return;
@@ -81,7 +94,8 @@ const editLogic = (function () {
 					sendStartRaw: editData.sendStart,
 					sendFinishRaw: editData.sendFinish,
 					questionsRaw: JSON.stringify(editData.questions.map(question => question.name)),
-					optionsRaw: JSON.stringify(editData.questions.map(question => question.options))
+					optionsRaw: JSON.stringify(editData.questions.map(question => question.options)),
+					questionsChangedRaw: questionsChanged
 				})
 			}).then((response) => {
 				window.location.assign('/Settings/ControlPanel');
@@ -96,6 +110,8 @@ const editLogic = (function () {
 		newPoll,
 		addQuestion,
 		removeQuestion,
+		addOption,
+		resetQuestion,
 		moveUp,
 		moveDown,
 		validateData,
