@@ -164,15 +164,13 @@ function createButton(text, onclick) {
 }
 
 function appendSubmitQuestionButton() {
-	let btn = createButton('Сохранить', null);
-	btn.onclick = () => {
-		editLogic.editData.questions[selectedQuestion].name = document.getElementById('text').value;
-		editLogic.editData.questions[selectedQuestion].options = [];
+	let btn = createButton('Сохранить', () => {
+		editLogic.resetQuestion(selectedQuestion, document.getElementById('text').value);
 		optionsInputs.forEach((input) => {
-			editLogic.editData.questions[selectedQuestion].options.push(input.value);
+			editLogic.addOption(selectedQuestion, input.value);
 		});
-		constructNewPoll(); 
-	};
+		constructNewPoll();
+	});
 	contentDiv.append(btn);
 	
 	let a = document.createElement('a');
@@ -372,6 +370,11 @@ function appendSubmitPollButton() {
 	let btnText = editLogic.newPoll ? 'Добавить опрос' : 'Сохранить опрос';
 	let btn = createButton(btnText, () => {
 		let warnings = editLogic.submitPoll();
+
+		if (warnings.length === 0) {
+			btn.firstElementChild.innerText = 'Сохранение...';
+			btn.onclick = null;
+        }
 
 		let warningsDiv = document.getElementById('warnings');
 		warningsDiv.innerHTML = '';
