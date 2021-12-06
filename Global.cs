@@ -12,23 +12,13 @@ namespace EasyPoll
         private static (string username, string password) superuser;
         private static string superuserToken;
 
+        private static Task timeTrackingTask;
+
         public static void Initialize()
         {
             UpdateActivePoll();
+            StartTimeTrackingTask();
             LoadSUData();
-        }
-
-        public static void UpdateActivePoll()
-        {
-            int activePollId = DetermineActivePollId();
-            if (activePollId > 0)
-            {
-                ActivePoll = new Poll(activePollId);
-            }
-            else
-            {
-                ActivePoll = null;
-            }
         }
 
         public static string CheckSUAndGenerateToken(string username, string password)
@@ -67,6 +57,33 @@ namespace EasyPoll
                       where poll.FinishAt > DateTime.Now
                       select poll.Id).LastOrDefault();
             return id;
+        }
+
+        private static void UpdateActivePoll()
+        {
+            int activePollId = DetermineActivePollId();
+            if (activePollId > 0)
+            {
+                ActivePoll = new Poll(activePollId);
+            }
+            else
+            {
+                ActivePoll = null;
+            }
+        }
+
+        private static void StartTimeTrackingTask()
+        {
+            timeTrackingTask = new Task(() =>
+            {
+                while (true)
+                {
+                    UpdateActivePoll();
+                    Task.Delay(TimeSpan.FromSeconds(30)).Wait();
+                }
+            });
+
+            timeTrackingTask.Start();
         }
     }
 }

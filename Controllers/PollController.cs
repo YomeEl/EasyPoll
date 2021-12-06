@@ -68,8 +68,6 @@ namespace EasyPoll.Controllers
             };
             dbcontext.SaveChanges();
 
-            Global.UpdateActivePoll();
-
             return Ok();
         }
 
@@ -145,7 +143,7 @@ namespace EasyPoll.Controllers
                     existingPoll.FinishAt = finishAt;
                     dbcontext.Polls.Update(existingPoll);
                     dbcontext.SaveChanges();
-                    Global.UpdateActivePoll();
+
                     return Ok();
                 }
                 dbcontext.Polls.Remove(existingPoll);
@@ -183,7 +181,6 @@ namespace EasyPoll.Controllers
                 dbcontext.SaveChanges();
             }
 
-            Global.UpdateActivePoll();
             return Ok();
         }
 
