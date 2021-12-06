@@ -220,6 +220,23 @@ function appendInput() {
 	contentDiv.append(input);
 }
 
+function convertDate(date) {
+	if (!date) return '';
+
+	let dd = date.getDate().toString();
+	let MM = (date.getMonth() + 1).toString();
+	let yyyy = date.getFullYear().toString();
+	let hh = date.getHours().toString();
+	let mm = date.getMinutes().toString();
+
+	if (dd.length === 1) dd = '0' + dd;
+	if (MM.length === 1) MM = '0' + MM;
+	if (hh.length === 1) hh = '0' + hh;
+	if (mm.length === 1) mm = '0' + mm;
+
+	return `${yyyy}-${MM}-${dd}T${hh}:${mm}`
+}
+
 function appendDates() {
 	let label1 = document.createElement('label');
 	label1.className = 'question';
@@ -229,10 +246,9 @@ function appendDates() {
 	input1.id = 'startAt';
 	input1.type = 'datetime-local';
 	input1.style = 'margin-left: 5px; margin-bottom: 1vh;';
-	input1.value = startAtValue;
+	input1.value = convertDate(editLogic.editData.startAt);
 	input1.onchange = () => {
-		startAtValue = document.getElementById('startAt').value;
-		editLogic.editData.startAt = new Date(startAtValue);
+		editLogic.editData.startAt = new Date(input1.value);
 	};
 	
 	let br = document.createElement('br');
@@ -245,10 +261,9 @@ function appendDates() {
 	input2.id = 'finishAt';
 	input2.type = 'datetime-local';
 	input2.style = 'margin-left: 5px';
-	input2.value = finishAtValue;
+	input2.value = convertDate(editLogic.editData.finishAt);
 	input2.onchange = () => {
-		finishAtValue = document.getElementById('finishAt').value;
-		editLogic.editData.finishAt = new Date(finishAtValue);
+		editLogic.editData.finishAt = new Date(input2.value);
 	};
 	
 	contentDiv.append(label1, input1, br, label2, input2);
