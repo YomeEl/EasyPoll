@@ -84,6 +84,11 @@ namespace EasyPoll.Controllers
 
             var data = new Dictionary<string, object>
             {
+                ["pollName"] = activePoll.PollModel.PollName,
+                ["startAt"] = activePoll.PollModel.CreatedAt.ToString("u"),
+                ["finishAt"] = activePoll.PollModel.FinishAt.ToString("u"),
+                ["sendStart"] = false,
+                ["sendFinish"] = false,
                 ["questions"] = questions,
                 ["options"] = activePoll.Options,
                 ["answers"] = answers,
