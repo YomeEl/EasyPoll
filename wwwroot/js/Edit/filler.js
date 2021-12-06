@@ -5,7 +5,8 @@ function loadActivePollData() {
 		.then((response) => response.text())
 		.then((dataRaw) => {
 			let data = JSON.parse(dataRaw);
-			editLogic.editData.name = data['pollName'];
+			editLogic.editData.oldName = data['pollName'];
+			editLogic.editData.newName = data['pollName'];
 			editLogic.editData.startAt = new Date(data['startAt']);
 			editLogic.editData.finishAt = new Date(data['finishAt']);
 			editLogic.editData.sendStart = data['sendStart'];
@@ -16,6 +17,7 @@ function loadActivePollData() {
 					options: data['options'][i]
 				});
 			});
+			editLogic.newPoll = false;
 			constructNewPoll();
 		});
 }

@@ -7,13 +7,16 @@ interface Question {
 
 const editLogic = (function () {
 	const editData = {
-		name: '',  // string
+		oldName: '',  // string
+		newName: '',  // string
 		startAt: null,  // Date
 		finishAt: null,  // Date
 		sendStart: false,  // boolean
 		sendFinish: false,  // boolean
 		questions: []  // Question[]
 	}
+
+	let newPoll = true;
 
 	function addQuestion () {
 		editData.questions.push({
@@ -71,7 +74,8 @@ const editLogic = (function () {
 					'Content-Type': 'application/x-www-form-urlencoded'
 				},
 				body: new URLSearchParams({
-					name: editData.name,
+					oldName: editData.oldName,
+					newName: editData.newName,
 					startAtRaw: editData.startAt.toISOString(),
 					finishAtRaw: editData.finishAt.toISOString(),
 					sendStartRaw: editData.sendStart,
@@ -89,6 +93,7 @@ const editLogic = (function () {
 					   
 	return {
 		editData,
+		newPoll,
 		addQuestion,
 		removeQuestion,
 		moveUp,

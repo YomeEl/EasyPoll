@@ -214,8 +214,8 @@ function appendInput() {
     input.className = 'login-form-input';
     input.type = 'text';
 	input.placeholder = 'Введите название';
-	input.value = editLogic.editData.name;
-	input.onchange = () => { editLogic.editData.name = document.getElementById('pollName').value; };
+	input.value = editLogic.editData.newName;
+	input.onchange = () => { editLogic.editData.newName = document.getElementById('pollName').value; };
 	
 	contentDiv.append(input);
 }
@@ -369,7 +369,8 @@ function appendWarningsDiv() {
 }
 
 function appendSubmitPollButton() {
-	let btn = createButton('Добавить опрос', () => {
+	let btnText = editLogic.newPoll ? 'Добавить опрос' : 'Сохранить опрос';
+	let btn = createButton(btnText, () => {
 		let warnings = editLogic.submitPoll();
 
 		let warningsDiv = document.getElementById('warnings');
@@ -381,6 +382,7 @@ function appendSubmitPollButton() {
 			warningsDiv.append(label);
 		});
 	});
+	btn.firstElementChild.id = 'submitBtnLabel';
 	contentDiv.append(btn);
 	
 	let wrapper = document.createElement('div');

@@ -111,7 +111,7 @@ namespace EasyPoll.Controllers
 
         [HttpPost]
         public IActionResult AddNew(
-            string name, 
+            string oldName, string newName, 
             string startAtRaw, string finishAtRaw, 
             string sendStartRaw, string sendFinishRaw,
             string questionsRaw, string optionsRaw)
@@ -124,15 +124,22 @@ namespace EasyPoll.Controllers
             var options = (string[][])JsonSerializer.Deserialize(optionsRaw, typeof(string[][]));
 
             var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var existingPoll = dbcontext.Polls.FirstOrDefaultAsync((poll) => poll.PollName == oldName).Result;
+            if (existingPoll != null)
+            {
+                dbcontext.Polls.Remove(existingPoll);
+                dbcontext.SaveChanges();
+            }
+            
             var poll = new Models.PollModel()
             {
-                PollName = name,
+                PollName = newName,
                 CreatedAt = startAt,
                 FinishAt = finishAt
             };
             dbcontext.Polls.Add(poll);
             dbcontext.SaveChanges();
-            poll = dbcontext.Polls.FirstAsync(p => p.PollName == name).Result;
+            poll = dbcontext.Polls.FirstAsync(p => p.PollName == newName).Result;
             for (int i = 0; i < questions.Length; i++)
             {
                 var question = new Models.QuestionModel()
