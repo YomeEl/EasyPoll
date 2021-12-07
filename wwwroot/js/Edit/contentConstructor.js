@@ -104,7 +104,8 @@ function appendMedia() {
 	
 	let a = document.createElement('a');
 	a.innerText = 'Удалить медиа';
-	a.onclick = mediaController.deleteMedia;
+	let sel = selectedQuestion;
+	a.onclick = () => mediaController.deleteMedia(sel);
 
 	btnContainer.append(input, label, a);
 
