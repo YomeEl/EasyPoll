@@ -99,6 +99,8 @@ const editLogic = (function () {
 		const warnings = validateData()
 
 		if (warnings.length === 0) {
+			//Update poll
+			console.log('Updating poll...');
 			fetch('/Poll/AddNew', {
 				method: 'POST',
 				headers: {
@@ -116,22 +118,45 @@ const editLogic = (function () {
 					questionsChangedRaw: questionsChanged
 				})
 			}).then((response) => {
+				//Get new poll id
+				console.log('Poll updated');
 				return response.text();
-			}).catch((err) => console.error(err)).then((id) => {
-				let promises = [];
-				editData.questions.forEach((question, i) => {
-					if (question.media) {
-						let form = new FormData();
-						form.append('file', question.media);
-						form.append('pollId', id);
-						form.append('questionIndex', i)
-						promises.push(fetch('/Poll/UploadFile', {
-							method: 'POST',
-							body: form
-						}));
-					}
+			}).then((id) => {
+				//Delete files
+				console.log('Deleting files...');
+				let deleteForm = new FormData();
+				deleteForm.append('questionsRaw', JSON.stringify(mediaController.data.deletedMedia));
+				deleteForm.append('pollId', id);
+				fetch('/Poll/DeleteFiles', {
+					method: 'POST',
+					body: deleteForm
+				}).then((response) => {
+					console.log('Files deleted');
+					//Upload files
+					console.log('Uploading files...');
+					let uploadPromises = [];
+					editData.questions.forEach((question, i) => {
+						if (question.media) {
+							console.log(`Uploading media for question ${i + 1}...`);
+							let uploadForm = new FormData();
+							uploadForm.append('file', question.media);
+							uploadForm.append('pollId', id);
+							uploadForm.append('questionIndex', i)
+							uploadPromises.push(fetch('/Poll/UploadFile', {
+								method: 'POST',
+								body: uploadForm
+							}));
+							uploadPromises[uploadPromises.length - 1].then(() => {
+								console.log(`Question ${i + 1} done`)
+							});
+						}
+					});
+					Promise.all(uploadPromises).then(() => {
+						console.log('Files uploaded');
+						console.log('Redirecting...');
+						document.location.assign('/Settings/ControlPanel');
+					});
 				});
-				Promise.all(promises).then(() => document.location.assign('/Settings/ControlPanel'));
 			});
 		}
 
