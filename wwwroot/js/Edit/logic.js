@@ -2,6 +2,7 @@
 interface Question {
 	name: string;
 	options: string[];
+	media: File;
 }
 */
 
@@ -23,7 +24,8 @@ const editLogic = (function () {
 		questionsChanged = true;
 		editData.questions.push({
 			name: 'Новый вопрос',
-			options: []
+			options: [],
+			media: null
 		});
 	}
 
@@ -40,6 +42,22 @@ const editLogic = (function () {
 		questionsChanged = true;
 		editData.questions[questionIndex].name = name;
 		editData.questions[questionIndex].options = [];
+		let file;
+		if (mediaController.data.fileInput.files.length === 1) {
+			file = mediaController.data.fileInput.files[0]
+		}
+		else {
+			file = null;
+        }
+		editData.questions[questionIndex].media = file;
+    }
+
+	function setMedia(questionIndex) {
+		let file = null;
+		if (mediaController.data.fileInput.files.length != 0) {
+			file = mediaController.data.fileInput.files[0];
+		}
+		editData.questions[questionIndex].media = file;
     }
 
 	function moveUp (index) {
@@ -81,6 +99,8 @@ const editLogic = (function () {
 		const warnings = validateData()
 
 		if (warnings.length === 0) {
+			//Update poll
+			console.log('Updating poll...');
 			fetch('/Poll/AddNew', {
 				method: 'POST',
 				headers: {
@@ -98,8 +118,46 @@ const editLogic = (function () {
 					questionsChangedRaw: questionsChanged
 				})
 			}).then((response) => {
-				window.location.assign('/Settings/ControlPanel');
-			}).catch((err) => console.error(err));
+				//Get new poll id
+				console.log('Poll updated');
+				return response.text();
+			}).then((id) => {
+				//Delete files
+				console.log('Deleting files...');
+				let deleteForm = new FormData();
+				deleteForm.append('questionsRaw', JSON.stringify(mediaController.data.deletedMedia));
+				deleteForm.append('pollId', id);
+				fetch('/Poll/DeleteFiles', {
+					method: 'POST',
+					body: deleteForm
+				}).then((response) => {
+					console.log('Files deleted');
+					//Upload files
+					console.log('Uploading files...');
+					let uploadPromises = [];
+					editData.questions.forEach((question, i) => {
+						if (question.media) {
+							console.log(`Uploading media for question ${i + 1}...`);
+							let uploadForm = new FormData();
+							uploadForm.append('file', question.media);
+							uploadForm.append('pollId', id);
+							uploadForm.append('questionIndex', i)
+							uploadPromises.push(fetch('/Poll/UploadFile', {
+								method: 'POST',
+								body: uploadForm
+							}));
+							uploadPromises[uploadPromises.length - 1].then(() => {
+								console.log(`Question ${i + 1} done`)
+							});
+						}
+					});
+					Promise.all(uploadPromises).then(() => {
+						console.log('Files uploaded');
+						console.log('Redirecting...');
+						document.location.assign('/Settings/ControlPanel');
+					});
+				});
+			});
 		}
 
 		return warnings;
@@ -112,6 +170,7 @@ const editLogic = (function () {
 		removeQuestion,
 		addOption,
 		resetQuestion,
+		setMedia,
 		moveUp,
 		moveDown,
 		validateData,

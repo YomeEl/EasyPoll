@@ -4,6 +4,8 @@ var allAnswers;
 var userSelection;
 var answered;
 
+let loadedSrc = [];
+
 var index = 0;
 
 var questionDiv = document.getElementById('question');
@@ -15,18 +17,22 @@ var buttonFinish = document.getElementById('btn-finish');
 init();
 
 function init() {
-    let xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        let res = JSON.parse(xhr.response);
-        questions = res['questions'];
-        options = res['options'];
-        allAnswers = res['answers'];
-        userSelection = res['userselection'];
-        answered = res['answered'];
-        reset();
-    }
-    xhr.open('GET', '/Poll/GetActivePollInfo', true);
-    xhr.send();
+	fetch('/Poll/GetActivePollInfo')
+		.then((response) => response.text())
+        .then((dataRaw) => {
+            let data = JSON.parse(dataRaw);
+            questions = data['questions'];
+            options = data['options'];
+            allAnswers = data['answers'];
+            userSelection = data['userselection'];
+            answered = data['answered'];
+			data['sources'].forEach((src) => {
+				let s = src.match(/\d+\./)[0];
+				s = s.slice(0, s.length - 1);
+				loadedSrc[s] = src;
+			});
+            reset();
+		});
 }
 
 function reset() {

@@ -18,6 +18,11 @@ function loadActivePollData() {
 				});
 			});
 			editLogic.newPoll = false;
+			data['sources'].forEach((src) => {
+				let s = src.match(/\d+\./)[0];
+				s = s.slice(0, s.length - 1);
+				loadedSrc[s] = src;
+			});
 			constructNewPoll();
 		});
 }

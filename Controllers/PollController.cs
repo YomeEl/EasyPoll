@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
 using System;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Collections.Generic;
@@ -10,6 +13,13 @@ namespace EasyPoll.Controllers
 {
     public class PollController : Controller
     {
+        private readonly IWebHostEnvironment environment;
+
+        public PollController(IWebHostEnvironment environment)
+        {
+            this.environment = environment;
+        }
+
         [HttpGet]
         public IActionResult ActivePoll()
         {
@@ -68,6 +78,7 @@ namespace EasyPoll.Controllers
             };
             dbcontext.SaveChanges();
 
+            Global.UpdateActivePoll();
             return Ok();
         }
 
@@ -88,8 +99,12 @@ namespace EasyPoll.Controllers
                 userSelection = activePoll.UserAnswers[userId];
             }
 
+            var srcs = from path in Directory.GetFiles($"{environment.WebRootPath}\\img\\PollMedia\\{activePoll.Id}\\")
+                       select $"/img/PollMedia/{activePoll.Id}/{Path.GetFileName(path)}";
+
             var data = new Dictionary<string, object>
             {
+                ["pollId"] = activePoll.PollModel.Id,
                 ["pollName"] = activePoll.PollModel.PollName,
                 ["startAt"] = activePoll.PollModel.CreatedAt.ToString("u"),
                 ["finishAt"] = activePoll.PollModel.FinishAt.ToString("u"),
@@ -97,8 +112,10 @@ namespace EasyPoll.Controllers
                 ["sendFinish"] = false,
                 ["questions"] = questions,
                 ["options"] = activePoll.Options,
+                ["media"] = null,
                 ["answers"] = answers,
-                ["userselection"] = userSelection
+                ["userselection"] = userSelection,
+                ["sources"] = srcs.ToArray(),
             };
 
             return Ok(JsonSerializer.Serialize(data));
@@ -113,6 +130,32 @@ namespace EasyPoll.Controllers
         public IActionResult AddNew()
         {
             return View();
+        }
+
+        public IActionResult UploadFile(IFormFile file, int pollId, int questionIndex)
+        {
+            var ext = Path.GetExtension(file.FileName);
+            var path = $"{environment.WebRootPath}\\img\\PollMedia\\{pollId}\\{questionIndex}{ext}";
+            var fs = new FileStream(path.ToString(), FileMode.CreateNew);
+            file.CopyTo(fs);
+            fs.Close();
+            return Ok();
+        }
+
+        public IActionResult DeleteFiles(string questionsRaw, string pollId)
+        {
+            var questions = (int[])JsonSerializer.Deserialize(questionsRaw, typeof(int[]));
+            foreach (var q in questions)
+            {
+                var path = $"{environment.WebRootPath}\\img\\PollMedia\\{pollId}";
+                var files = Directory.GetFiles(path, $"{q}.*");
+                foreach (var file in files)
+                {
+                    System.IO.File.Delete(file);
+                }
+            }
+
+            return Ok();
         }
 
         [HttpPost]
@@ -134,8 +177,10 @@ namespace EasyPoll.Controllers
             var dbcontext = Data.ServiceDBContext.GetDBContext();
 
             var existingPoll = dbcontext.Polls.FirstOrDefaultAsync((poll) => poll.PollName == oldName).Result;
+            int prevId = -1;
             if (existingPoll != null)
             {
+                prevId = existingPoll.Id;
                 if (!questionsChanged)
                 {
                     existingPoll.PollName = newName;
@@ -144,6 +189,7 @@ namespace EasyPoll.Controllers
                     dbcontext.Polls.Update(existingPoll);
                     dbcontext.SaveChanges();
 
+                    Global.UpdateActivePoll();
                     return Ok();
                 }
                 dbcontext.Polls.Remove(existingPoll);
@@ -181,7 +227,19 @@ namespace EasyPoll.Controllers
                 dbcontext.SaveChanges();
             }
 
-            return Ok();
+            var pathNew = $"{environment.WebRootPath}\\img\\PollMedia\\{poll.Id}\\";
+            var pathOld = $"{environment.WebRootPath}\\img\\PollMedia\\{prevId}\\";
+            if (prevId == -1)
+            {
+                Directory.CreateDirectory(pathNew);
+            }
+            else
+            {
+                Directory.Move(pathOld, pathNew);
+            }
+
+            Global.UpdateActivePoll();
+            return Ok(poll.Id);
         }
 
         public IActionResult ShowAll()

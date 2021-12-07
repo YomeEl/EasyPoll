@@ -10,6 +10,8 @@ let selectedQuestion = 0;
 let startAtValue = '';
 let finishAtValue = '';
 
+let loadedSrc = {};
+
 constructNewPoll();
 
 function constructNewQuestion() {
@@ -17,7 +19,7 @@ function constructNewQuestion() {
 	cntr = 0;
 	optionsInputs = [];
 	
-	appendImage();
+	appendMedia();
 	hr();
 	appendSectionTitle('Текст вопроса');
 	appendText();
@@ -58,22 +60,56 @@ function appendSectionTitle(title)
 	contentDiv.append(label);
 }
 
-function appendImage() {
+function appendMedia() {
 	let img = document.createElement('img');
-	img.src = 'img/sample_img.png'; //fix asap
 	
-	let btn = document.createElement('div');
-	btn.className = 'btn-container';
-	btn.style = 'margin-top: 5px';
-	let a = document.createElement('a');
-	a.innerText = 'Загрузить изображение';
-	btn.append(a);
+	let video = document.createElement('video');
+	video.setAttribute('controls', '');
+	
+	if (loadedSrc[selectedQuestion]) {
+		if (loadedSrc[selectedQuestion].match(/.(jpg|jpeg|png|gif)$/i)) {
+			img.src = loadedSrc[selectedQuestion];
+			video.style = 'display: none';
+		} else {
+			video.src = loadedSrc[selectedQuestion];
+			img.style = 'display: none';
+		}
+	}
+	else {
+		img.style = 'display: none';
+		video.style = 'display: none';
+    }
 	
 	let wrapper = document.createElement('div');
 	wrapper.className = 'img-wrapper';
-	wrapper.append(img);
+	wrapper.append(img, video);
+
+	let btnContainer = document.createElement('div');
+	btnContainer.className = 'btn-container';
+	btnContainer.style = 'margin-top: 5px';
+
+	let input = document.createElement('input');
+	input.type = 'file';
+	input.style = 'display: none';
+	input.id = 'file';
+	input.setAttribute('accept', 'image/*, video/*');
+	input.onchange = mediaController.previewMedia;
+
+	mediaController.init(input, img, video);
+
+	let label = document.createElement('label');
+	label.setAttribute('for', 'file');
+	label.className = 'upload-label';
+	label.innerText = 'Выбрать медиа';
 	
-	contentDiv.append(wrapper, btn);
+	let a = document.createElement('a');
+	a.innerText = 'Удалить медиа';
+	let sel = selectedQuestion;
+	a.onclick = () => mediaController.deleteMedia(sel);
+
+	btnContainer.append(input, label, a);
+
+	contentDiv.append(wrapper, btnContainer);
 }
 
 function appendText() {
@@ -169,6 +205,7 @@ function appendSubmitQuestionButton() {
 		optionsInputs.forEach((input) => {
 			editLogic.addOption(selectedQuestion, input.value);
 		});
+		editLogic.setMedia(selectedQuestion);
 		constructNewPoll();
 	});
 	contentDiv.append(btn);

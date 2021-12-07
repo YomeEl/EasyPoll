@@ -12,6 +12,8 @@ namespace EasyPoll
         private static (string username, string password) superuser;
         private static string superuserToken;
 
+        private static readonly object _lock = new();
+
         private static Task timeTrackingTask;
 
         public static void Initialize()
@@ -43,6 +45,22 @@ namespace EasyPoll
             return cookie == superuserToken;
         }
 
+        public static void UpdateActivePoll()
+        {
+            lock (_lock)
+            {
+                int activePollId = DetermineActivePollId();
+                if (activePollId > 0)
+                {
+                    ActivePoll = new Poll(activePollId);
+                }
+                else
+                {
+                    ActivePoll = null;
+                }
+            }
+        }
+
         private static void LoadSUData()
         {
             var sr = new System.IO.StreamReader("superuser.txt");
@@ -57,19 +75,6 @@ namespace EasyPoll
                       where poll.FinishAt > DateTime.Now
                       select poll.Id).LastOrDefault();
             return id;
-        }
-
-        private static void UpdateActivePoll()
-        {
-            int activePollId = DetermineActivePollId();
-            if (activePollId > 0)
-            {
-                ActivePoll = new Poll(activePollId);
-            }
-            else
-            {
-                ActivePoll = null;
-            }
         }
 
         private static void StartTimeTrackingTask()
