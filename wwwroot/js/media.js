@@ -2,7 +2,8 @@
 	const data = {
 		fileInput: null,
 		imgPreview: null,
-		videoPreview: null
+		videoPreview: null,
+		deletedMedia: []
     }
 
 	function init(fileInput, imgPreview, videoPreview) {
@@ -30,7 +31,8 @@
 		};
 	};
 
-	function deleteMedia() {
+	function deleteMedia(question) {
+		data.deletedMedia.push(question);
 		data.fileInput.value = '';
 		data.imgPreview.src = '';
 		data.imgPreview.style = 'display: none';
