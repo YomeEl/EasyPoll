@@ -78,6 +78,7 @@ namespace EasyPoll.Controllers
             };
             dbcontext.SaveChanges();
 
+            Global.UpdateActivePoll();
             return Ok();
         }
 
