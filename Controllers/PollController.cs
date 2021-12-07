@@ -172,6 +172,7 @@ namespace EasyPoll.Controllers
                     dbcontext.Polls.Update(existingPoll);
                     dbcontext.SaveChanges();
 
+                    Global.UpdateActivePoll();
                     return Ok();
                 }
                 dbcontext.Polls.Remove(existingPoll);
@@ -220,6 +221,7 @@ namespace EasyPoll.Controllers
                 Directory.Move(pathOld, pathNew);
             }
 
+            Global.UpdateActivePoll();
             return Ok(poll.Id);
         }
 
