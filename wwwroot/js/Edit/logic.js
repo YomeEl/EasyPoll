@@ -118,18 +118,20 @@ const editLogic = (function () {
 			}).then((response) => {
 				return response.text();
 			}).catch((err) => console.error(err)).then((id) => {
+				let promises = [];
 				editData.questions.forEach((question, i) => {
 					if (question.media) {
 						let form = new FormData();
 						form.append('file', question.media);
 						form.append('pollId', id);
 						form.append('questionIndex', i)
-						fetch('/Poll/UploadFile', {
+						promises.push(fetch('/Poll/UploadFile', {
 							method: 'POST',
 							body: form
-						});
+						}));
 					}
-				})
+				});
+				Promise.all(promises).then(() => document.location.assign('/Settings/ControlPanel'));
 			});
 		}
 
