@@ -141,6 +141,22 @@ namespace EasyPoll.Controllers
             return Ok();
         }
 
+        public IActionResult DeleteFiles(string questionsRaw, string pollId)
+        {
+            var questions = (int[])JsonSerializer.Deserialize(questionsRaw, typeof(int[]));
+            foreach (var q in questions)
+            {
+                var path = $"{environment.WebRootPath}\\img\\PollMedia\\{pollId}";
+                var files = Directory.GetFiles(path, $"{q}.*");
+                foreach (var file in files)
+                {
+                    System.IO.File.Delete(file);
+                }
+            }
+
+            return Ok();
+        }
+
         [HttpPost]
         public IActionResult AddNew(
             string oldName, string newName, 
