@@ -230,15 +230,18 @@ namespace EasyPoll.Controllers
                 dbcontext.Questions.Add(question);
                 dbcontext.SaveChanges();
                 question = dbcontext.Questions.FirstAsync(q => q.Question == questions[i]).Result;
+                var optionsList = new List<Models.OptionModel>();
                 for (int j = 0; j < options[i].Length; j++)
                 {
                     var option = new Models.OptionModel()
                     {
                         QuestionId = question.Id,
-                        Text = options[i][j]
+                        Text = options[i][j],
+                        Order = j
                     };
-                    dbcontext.Options.Add(option);
+                    optionsList.Add(option);
                 }
+                dbcontext.Options.AddRange(optionsList);
                 dbcontext.SaveChanges();
             }
             
