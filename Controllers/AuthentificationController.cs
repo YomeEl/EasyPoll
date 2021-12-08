@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using Microsoft.AspNetCore.Identity;
+
+using System;
+using System.Linq;
 
 namespace EasyPoll.Controllers
 {
@@ -36,8 +38,10 @@ namespace EasyPoll.Controllers
                     return View();
                 }
 
-                var opt = new Microsoft.AspNetCore.Http.CookieOptions();
-                opt.Expires = new System.DateTimeOffset(System.DateTime.Now.Ticks, System.TimeSpan.FromHours(1));
+                var opt = new Microsoft.AspNetCore.Http.CookieOptions
+                {
+                    Expires = new DateTimeOffset(DateTime.Now.AddHours(1))
+                };
                 Response.Cookies.Append("token", userModel.Token, opt);
                 return RedirectToAction("ActivePoll", "Poll");
             }
