@@ -93,10 +93,14 @@ function appendMedia() {
 	input.style = 'display: none';
 	input.id = 'file';
 	input.setAttribute('accept', 'image/*, video/*');
-	input.onchange = mediaController.previewMedia;
+	input.onchange = () => mediaController.previewMedia();
 
 	mediaController.init(input, img, video);
-
+	let questionMedia = editLogic.editData.questions[selectedQuestion].media;
+	if (questionMedia) {
+		mediaController.previewMedia(questionMedia);
+    }
+	
 	let label = document.createElement('label');
 	label.setAttribute('for', 'file');
 	label.className = 'upload-label';
