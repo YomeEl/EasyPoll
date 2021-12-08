@@ -12,13 +12,16 @@
 		data.videoPreview = videoPreview;
     }
 
-	function previewMedia() {
+	function previewMedia(file=null) {
 		let oFReader = new FileReader();
-		oFReader.readAsDataURL(data.fileInput.files[0]);
+		if (!file) {
+			file = data.fileInput.files[0];
+        }
+		oFReader.readAsDataURL(file);
 
 		oFReader.onload = function (oFREvent) {
 			let src = oFREvent.target.result;
-			if (data.fileInput.files[0].type.match(/image/)) {
+			if (file.type.match(/image/)) {
 				data.imgPreview.src = oFREvent.target.result;
 				data.imgPreview.style = '';
 				data.videoPreview.style = 'display: none';
