@@ -34,6 +34,7 @@ namespace EasyPoll
                 var questionId = questionModels[i].Id;
                 Options[i] = (from opt in dbcontext.Options
                               where opt.QuestionId == questionId
+                              orderby opt.Order
                               select opt.Text).ToArray();
             }
 

@@ -99,9 +99,15 @@ namespace EasyPoll.Controllers
                 userSelection = activePoll.UserAnswers[userId];
             }
 
-            var srcs = from path in Directory.GetFiles($"{environment.WebRootPath}\\img\\PollMedia\\{activePoll.Id}\\")
-                       select $"/img/PollMedia/{activePoll.Id}/{Path.GetFileName(path)}";
+            var mediaPath = $"{environment.WebRootPath}\\img\\PollMedia\\{activePoll.Id}\\";
+            if (!Directory.Exists(mediaPath))
+            {
+                Directory.CreateDirectory(mediaPath);
+            }
 
+            var srcs = from path in Directory.GetFiles(mediaPath)
+                       select $"/img/PollMedia/{activePoll.Id}/{Path.GetFileName(path)}";
+                        
             var data = new Dictionary<string, object>
             {
                 ["pollId"] = activePoll.PollModel.Id,
@@ -135,8 +141,13 @@ namespace EasyPoll.Controllers
         public IActionResult UploadFile(IFormFile file, int pollId, int questionIndex)
         {
             var ext = Path.GetExtension(file.FileName);
-            var path = $"{environment.WebRootPath}\\img\\PollMedia\\{pollId}\\{questionIndex}{ext}";
-            var fs = new FileStream(path.ToString(), FileMode.CreateNew);
+            var dirPath = $"{environment.WebRootPath}\\img\\PollMedia\\{pollId}\\";
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+            }
+            var path = $"{dirPath}{questionIndex}{ext}";
+            var fs = new FileStream(path, FileMode.CreateNew);
             file.CopyTo(fs);
             fs.Close();
             return Ok();
@@ -148,6 +159,10 @@ namespace EasyPoll.Controllers
             foreach (var q in questions)
             {
                 var path = $"{environment.WebRootPath}\\img\\PollMedia\\{pollId}";
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
                 var files = Directory.GetFiles(path, $"{q}.*");
                 foreach (var file in files)
                 {
@@ -175,7 +190,7 @@ namespace EasyPoll.Controllers
             var questionsChanged = bool.Parse(questionsChangedRaw);
 
             var dbcontext = Data.ServiceDBContext.GetDBContext();
-
+            
             var existingPoll = dbcontext.Polls.FirstOrDefaultAsync((poll) => poll.PollName == oldName).Result;
             int prevId = -1;
             if (existingPoll != null)
@@ -195,7 +210,7 @@ namespace EasyPoll.Controllers
                 dbcontext.Polls.Remove(existingPoll);
                 dbcontext.SaveChanges();
             }
-            
+
             var poll = new Models.PollModel()
             {
                 PollName = newName,
@@ -215,18 +230,21 @@ namespace EasyPoll.Controllers
                 dbcontext.Questions.Add(question);
                 dbcontext.SaveChanges();
                 question = dbcontext.Questions.FirstAsync(q => q.Question == questions[i]).Result;
+                var optionsList = new List<Models.OptionModel>();
                 for (int j = 0; j < options[i].Length; j++)
                 {
                     var option = new Models.OptionModel()
                     {
                         QuestionId = question.Id,
-                        Text = options[i][j]
+                        Text = options[i][j],
+                        Order = j
                     };
-                    dbcontext.Options.Add(option);
+                    optionsList.Add(option);
                 }
+                dbcontext.Options.AddRange(optionsList);
                 dbcontext.SaveChanges();
             }
-
+            
             var pathNew = $"{environment.WebRootPath}\\img\\PollMedia\\{poll.Id}\\";
             var pathOld = $"{environment.WebRootPath}\\img\\PollMedia\\{prevId}\\";
             if (prevId == -1)
