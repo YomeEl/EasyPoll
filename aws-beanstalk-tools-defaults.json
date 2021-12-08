@@ -1,0 +1,21 @@
+
+{
+    "region" : "eu-central-1",
+    "configuration" : "Release",
+    "framework"     : "net5.0",
+    "self-contained" : false,
+    "application"    : "easypoll",
+    "environment"    : "EasyPoll-dev",
+    "app-path"       : "/",
+    "iis-website"    : "Default Web Site",
+    "enable-xray"    : false,
+    "enhanced-health-type" : "basic",
+    "additional-options"   : "",
+    "solution-stack"       : "64bit Windows Server Core 2019 v2.8.0 running IIS 10.0",
+    "environment-type"     : "SingleInstance",
+    "cname"                : "easypoll-dev",
+    "instance-type"        : "t2.micro",
+    "key-pair"             : "amazonRSA1",
+    "instance-profile"     : "aws-elasticbeanstalk-ec2-role",
+    "service-role"         : "aws-elasticbeanstalk-service-role"
+}
