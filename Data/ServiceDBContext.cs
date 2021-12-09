@@ -17,6 +17,7 @@ namespace EasyPoll.Data
         public DbSet<OptionModel> Options { get; set; }
         public DbSet<AnswerModel> Answers { get; set; }
         public DbSet<DepartmentModel> Departments { get; set; }
+        public DbSet<MediaExtMappingModel> MediaExtMapping { get; set; }
 
         private const string connectionString =
             "server=easypoll-db.cad8zcrqvclk.eu-central-1.rds.amazonaws.com;" +
