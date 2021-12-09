@@ -10,5 +10,10 @@ namespace EasyPoll.Models
         public int Id { get; set; }
         public string Question { get; set; }
         public int PollId { get; set; }
+        public PollModel Poll { get; set; }
+        public int Order { get; set; }
+
+        public System.Collections.Generic.List<OptionModel> Options { get; set; }
+        public System.Collections.Generic.List<AnswerModel> Answers { get; set; }
     }
 }

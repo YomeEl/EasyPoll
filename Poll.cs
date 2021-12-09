@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Microsoft.EntityFrameworkCore;
+
 namespace EasyPoll
 {
     public class Poll
@@ -22,46 +24,43 @@ namespace EasyPoll
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
 
-            PollModel = dbcontext.Polls.Find(id);
+            var poll = dbcontext.Polls
+                .Include(p => p.Questions).ThenInclude(q => q.Options)
+                .Include(p => p.Questions).ThenInclude(q => q.Answers)
+                .FirstOrDefault(p => p.Id == id);
+
+            PollModel = poll;
             Id = id;
-            var questionModels = (from question in dbcontext.Questions
-                        where question.PollId == PollModel.Id
-                        select question).OrderBy(q => q.Id).ToArray();
-            Questions = questionModels.Select(q => q.Question).ToArray();
-            Options = new string[questionModels.Length][];
-            for (int i = 0; i < questionModels.Length; i++)
+            Questions = poll.Questions.OrderBy(q => q.Order).Select(q => q.Question).ToArray();
+
+            Options = new string[poll.Questions.Count][];
+            var orderedQuestions = poll.Questions.OrderBy(q => q.Order).ToArray();
+            for (int i = 0; i < Options.Length; i++)
             {
-                var questionId = questionModels[i].Id;
-                Options[i] = (from opt in dbcontext.Options
-                              where opt.QuestionId == questionId
-                              orderby opt.Order
-                              select opt.Text).ToArray();
+                Options[i] = orderedQuestions[i].Options
+                    .OrderBy(o => o.Order)
+                    .Select(o => o.Text)
+                    .ToArray();
             }
 
-            Answers = new Models.AnswerModel[questionModels.Length][][];
+            Answers = new Models.AnswerModel[Questions.Length][][];
             UserAnswers = new Dictionary<int, int[]>();
-            for (int i = 0; i < questionModels.Length; i++)
+            for (int ans = 0; ans < Answers.Length; ans++)
             {
-                var currentQuestion = questionModels[i];
-                var optionsCount = Options[i].Length;
-
-                var answers = (from answer in dbcontext.Answers
-                           where answer.QuestionId == currentQuestion.Id
-                           select answer).ToArray();
-                foreach (var ans in answers)
-                {
-                    if (!UserAnswers.ContainsKey(ans.UserId))
-                    {
-                        UserAnswers[ans.UserId] = new int[questionModels.Length];
-                    }
-                    UserAnswers[ans.UserId][i] = ans.Answer;
-                }
-                Answers[i] = new Models.AnswerModel[optionsCount][];
+                var optionsCount = Options[ans].Length;
+                Answers[ans] = new Models.AnswerModel[optionsCount][];
                 for (int opt = 0; opt < optionsCount; opt++)
                 {
-                    Answers[i][opt] = (from answer in answers
-                                       where answer.Answer == (opt + 1)
-                                       select answer).ToArray();
+                    Answers[ans][opt] = orderedQuestions[ans].Answers.Where(a => a.Answer == opt + 1).ToArray();
+                }
+
+                foreach (var answer in orderedQuestions[ans].Answers)
+                {
+                    if (!UserAnswers.ContainsKey(answer.UserId))
+                    {
+                        UserAnswers[answer.UserId] = new int[poll.Questions.Count];
+                    }
+                    UserAnswers[answer.UserId][ans] = answer.Answer;
                 }
             }
         }
@@ -71,7 +70,7 @@ namespace EasyPoll
             var result = new int[Questions.Length][];
             for (int i = 0; i < Questions.Length; i++)
             {
-                result[i] = new int[Answers[i].GetLength(0)];
+                result[i] = new int[Answers[i].Length];
                 foreach (var opt in Answers[i])
                 {
                     foreach (var ans in opt)

@@ -9,7 +9,9 @@ namespace EasyPoll.Models
         [Key]
         public int Id { get; set; }
         public int QuestionId { get; set; }
+        public QuestionModel Question { get; set; }
         public int UserId { get; set; }
+        public UserModel User { get; set; }
         public int Answer { get; set; }
     }
 }
