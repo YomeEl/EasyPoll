@@ -9,17 +9,15 @@ using System.Linq;
 using System.Text.Json;
 using System.Collections.Generic;
 
+using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
+using System.Net;
+
 namespace EasyPoll.Controllers
 {
     public class PollController : Controller
     {
-        private readonly IWebHostEnvironment environment;
-
-        public PollController(IWebHostEnvironment environment)
-        {
-            this.environment = environment;
-        }
-
         [HttpGet]
         public IActionResult ActivePoll()
         {
@@ -60,22 +58,26 @@ namespace EasyPoll.Controllers
         public IActionResult ActivePoll(string answers)
         {
             var raw_answers = (string[])JsonSerializer.Deserialize(answers, typeof(string[]));
+
+            var questions = Global.ActivePoll.PollModel.Questions
+                .OrderBy(q => q.Order)
+                .Select(q => q.Id)
+                .ToArray();
+            var userId = Models.UserModel.GetUserByToken(Request.Cookies["token"]).Id;
+
             var dbcontext = Data.ServiceDBContext.GetDBContext();
 
-            var questions = (from question in dbcontext.Questions
-                             where question.PollId == Global.ActivePoll.Id
-                             select question.Id).ToArray();
-            var userId = Models.UserModel.GetUserByToken(Request.Cookies["token"]).Id;
+            var answersList = new List<Models.AnswerModel>();
             for (int i = 0; i < raw_answers.Length; i++)
             {
-                var ans = new Models.AnswerModel
+                answersList.Add(new Models.AnswerModel
                 {
                     Answer = int.Parse(raw_answers[i]),
                     QuestionId = questions[i],
                     UserId = userId
-                };
-                dbcontext.Answers.Add(ans);
+                });
             };
+            dbcontext.AddRange(answersList);
             dbcontext.SaveChanges();
 
             Global.UpdateActivePoll();
@@ -99,15 +101,16 @@ namespace EasyPoll.Controllers
                 userSelection = activePoll.UserAnswers[userId];
             }
 
-            var mediaPath = $"{environment.WebRootPath}\\img\\PollMedia\\{activePoll.Id}\\";
-            if (!Directory.Exists(mediaPath))
+            var srcs = new List<string>();
+
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            for (int i = 0; i < questions.Length; i++)
             {
-                Directory.CreateDirectory(mediaPath);
+                var filename = $"{activePoll.Id}_{i}";
+                var mem = dbcontext.MediaExtMapping.FirstOrDefault((m) => m.Filename == filename);
+                srcs.Add(mem != null ? GeneratePreSignedURL(0.1d, $"{mem.Filename}{mem.Extension}", HttpVerb.GET) : "");
             }
 
-            var srcs = from path in Directory.GetFiles(mediaPath)
-                       select $"/img/PollMedia/{activePoll.Id}/{Path.GetFileName(path)}";
-                        
             var data = new Dictionary<string, object>
             {
                 ["pollId"] = activePoll.PollModel.Id,
@@ -127,6 +130,7 @@ namespace EasyPoll.Controllers
             return Ok(JsonSerializer.Serialize(data));
         }
 
+        [HttpGet]
         public IActionResult PollControl()
         {
             return View();
@@ -138,45 +142,10 @@ namespace EasyPoll.Controllers
             return View();
         }
 
-        public IActionResult UploadFile(IFormFile file, int pollId, int questionIndex)
-        {
-            var ext = Path.GetExtension(file.FileName);
-            var dirPath = $"{environment.WebRootPath}\\img\\PollMedia\\{pollId}\\";
-            if (!Directory.Exists(dirPath))
-            {
-                Directory.CreateDirectory(dirPath);
-            }
-            var path = $"{dirPath}{questionIndex}{ext}";
-            var fs = new FileStream(path, FileMode.CreateNew);
-            file.CopyTo(fs);
-            fs.Close();
-            return Ok();
-        }
-
-        public IActionResult DeleteFiles(string questionsRaw, string pollId)
-        {
-            var questions = (int[])JsonSerializer.Deserialize(questionsRaw, typeof(int[]));
-            foreach (var q in questions)
-            {
-                var path = $"{environment.WebRootPath}\\img\\PollMedia\\{pollId}";
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                var files = Directory.GetFiles(path, $"{q}.*");
-                foreach (var file in files)
-                {
-                    System.IO.File.Delete(file);
-                }
-            }
-
-            return Ok();
-        }
-
         [HttpPost]
         public IActionResult AddNew(
-            string oldName, string newName, 
-            string startAtRaw, string finishAtRaw, 
+            string oldName, string newName,
+            string startAtRaw, string finishAtRaw,
             string sendStartRaw, string sendFinishRaw,
             string questionsRaw, string optionsRaw, string questionsChangedRaw)
         {
@@ -190,76 +159,73 @@ namespace EasyPoll.Controllers
             var questionsChanged = bool.Parse(questionsChangedRaw);
 
             var dbcontext = Data.ServiceDBContext.GetDBContext();
-            
+
             var existingPoll = dbcontext.Polls.FirstOrDefaultAsync((poll) => poll.PollName == oldName).Result;
-            int prevId = -1;
+            int pollId;
+            Models.PollModel poll;
             if (existingPoll != null)
             {
-                prevId = existingPoll.Id;
+                pollId = existingPoll.Id;
+
+                existingPoll.PollName = newName;
+                existingPoll.CreatedAt = startAt;
+                existingPoll.FinishAt = finishAt;
+
+                dbcontext.Polls.Update(existingPoll);
+
                 if (!questionsChanged)
                 {
-                    existingPoll.PollName = newName;
-                    existingPoll.CreatedAt = startAt;
-                    existingPoll.FinishAt = finishAt;
-                    dbcontext.Polls.Update(existingPoll);
-                    dbcontext.SaveChanges();
-
                     Global.UpdateActivePoll();
                     return Ok();
                 }
-                dbcontext.Polls.Remove(existingPoll);
+
+                dbcontext.Questions.RemoveRange(dbcontext.Questions.Where(q => q.PollId == pollId));
                 dbcontext.SaveChanges();
             }
+            else
+            { 
+                poll = new Models.PollModel()
+                {
+                    PollName = newName,
+                    CreatedAt = startAt,
+                    FinishAt = finishAt
+                };
+                dbcontext.Polls.Add(poll);
+                dbcontext.SaveChanges();
+                pollId = dbcontext.Polls.FirstAsync(p => p.PollName == newName).Result.Id;
+            }
 
-            var poll = new Models.PollModel()
-            {
-                PollName = newName,
-                CreatedAt = startAt,
-                FinishAt = finishAt
-            };
-            dbcontext.Polls.Add(poll);
-            dbcontext.SaveChanges();
-            poll = dbcontext.Polls.FirstAsync(p => p.PollName == newName).Result;
+            var questionsList = new List<Models.QuestionModel>();
             for (int i = 0; i < questions.Length; i++)
             {
                 var question = new Models.QuestionModel()
                 {
-                    PollId = poll.Id,
-                    Question = questions[i]
+                    PollId = pollId,
+                    Question = questions[i],
+                    Order = i,
+                    Options = new List<Models.OptionModel>()
                 };
-                dbcontext.Questions.Add(question);
-                dbcontext.SaveChanges();
-                question = dbcontext.Questions.FirstAsync(q => q.Question == questions[i]).Result;
-                var optionsList = new List<Models.OptionModel>();
+
                 for (int j = 0; j < options[i].Length; j++)
                 {
                     var option = new Models.OptionModel()
                     {
-                        QuestionId = question.Id,
                         Text = options[i][j],
                         Order = j
                     };
-                    optionsList.Add(option);
+                    question.Options.Add(option);
                 }
-                dbcontext.Options.AddRange(optionsList);
-                dbcontext.SaveChanges();
+
+                questionsList.Add(question);
             }
-            
-            var pathNew = $"{environment.WebRootPath}\\img\\PollMedia\\{poll.Id}\\";
-            var pathOld = $"{environment.WebRootPath}\\img\\PollMedia\\{prevId}\\";
-            if (prevId == -1)
-            {
-                Directory.CreateDirectory(pathNew);
-            }
-            else
-            {
-                Directory.Move(pathOld, pathNew);
-            }
+            dbcontext.Questions.AddRange(questionsList);
+            dbcontext.SaveChanges();
 
             Global.UpdateActivePoll();
-            return Ok(poll.Id);
+            return Ok(pollId);
         }
 
+        [HttpGet]
         public IActionResult ShowAll()
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
@@ -269,9 +235,79 @@ namespace EasyPoll.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult Details()
         {
             return View();
+        }
+
+        public IActionResult UploadFile(IFormFile file, int pollId, int questionIndex)
+        {
+            var filename = $"{pollId}_{questionIndex}";
+            var ext = Path.GetExtension(file.FileName);
+            var url = GeneratePreSignedURL(1, filename + ext, HttpVerb.PUT);
+            HttpWebRequest httpRequest = WebRequest.Create(url) as HttpWebRequest;
+            httpRequest.Method = "PUT";
+            using (Stream dataStream = httpRequest.GetRequestStream())
+            {
+                var buffer = new byte[8000];
+                var fileStream = file.OpenReadStream();
+                int bytesRead = 0;
+                while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    dataStream.Write(buffer, 0, bytesRead);
+                }
+            }
+            HttpWebResponse response = httpRequest.GetResponse() as HttpWebResponse;
+
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            dbcontext.MediaExtMapping.Add(new Models.MediaExtMappingModel
+            {
+                Filename = filename,
+                Extension = ext
+            });
+            dbcontext.SaveChanges();
+
+            return Ok(response);
+        }
+
+        public IActionResult DeleteFiles(string questionsRaw, string pollId)
+        {
+            var questions = (int[])JsonSerializer.Deserialize(questionsRaw, typeof(int[]));
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var mem = dbcontext.MediaExtMapping.ToArray();
+            HttpWebResponse response = null;
+            foreach (var q in questions)
+            {
+                var map = mem.FirstOrDefault(m => m.Filename == $"{pollId}_{q}");
+                if (map != null && map.Extension != "")
+                {
+                    var url = GeneratePreSignedURL(1, $"{map.Filename}{map.Extension}", HttpVerb.DELETE);
+                    HttpWebRequest httpRequest = WebRequest.Create(url) as HttpWebRequest;
+                    httpRequest.Method = "DELETE";
+                    response = httpRequest.GetResponse() as HttpWebResponse;
+                    dbcontext.MediaExtMapping.Remove(map);
+                }
+            }
+            dbcontext.SaveChanges();
+            return Ok(response);
+        }
+
+        private static string GeneratePreSignedURL(double duration, string filename, HttpVerb verb)
+        {
+            const string bucketName = "elasticbeanstalk-eu-central-1-871792599540";
+            IAmazonS3 s3Client = new AmazonS3Client(RegionEndpoint.EUCentral1);
+
+            var request = new GetPreSignedUrlRequest
+            {
+                BucketName = bucketName,
+                Key = filename,
+                Verb = verb,
+                Expires = DateTime.UtcNow.AddHours(duration)
+            };
+
+            string url = s3Client.GetPreSignedURL(request);
+            return url;
         }
     }
 }
