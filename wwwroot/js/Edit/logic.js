@@ -45,11 +45,9 @@ const editLogic = (function () {
     }
 
 	function setMedia(questionIndex) {
-		let file = null;
 		if (mediaController.data.fileInput.files.length === 1) {
-			file = mediaController.data.fileInput.files[0];
+			editData.questions[questionIndex].media = mediaController.data.fileInput.files[0];
 		}
-		editData.questions[questionIndex].media = file;
     }
 
 	function moveUp (index) {
