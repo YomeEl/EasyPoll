@@ -21,6 +21,7 @@ img {
 .img-wrapper {
     width: 100%;
     height: 100%;
+    margin-bottom: 1vh;
 }
 
 .upload-label {
@@ -97,6 +98,7 @@ img {
     display: flex;
     flex-direction: column;
     align-items: center;
+    user-select: none;
 }
 
 .btn-common {
