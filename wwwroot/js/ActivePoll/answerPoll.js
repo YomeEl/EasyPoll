@@ -37,7 +37,7 @@ function appendMedia() {
     video.setAttribute('controls', '');
 
     if (loadedSrc[index]) {
-        if (loadedSrc[index].match(/.(jpg|jpeg|png|gif)$/i)) {
+        if (loadedSrc[index].match(/\.(jpg|jpeg|png|gif)/i)) {
             img.src = loadedSrc[index];
             video.style = 'display: none';
         } else {

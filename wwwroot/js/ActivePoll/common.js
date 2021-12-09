@@ -26,10 +26,8 @@ function init() {
             allAnswers = data['answers'];
             userSelection = data['userselection'];
             answered = data['answered'];
-			data['sources'].forEach((src) => {
-				let s = src.match(/\d+\./)[0];
-				s = s.slice(0, s.length - 1);
-				loadedSrc[s] = src;
+			data['sources'].forEach((src, i) => {
+				loadedSrc[i] = src;
 			});
             reset();
 		});

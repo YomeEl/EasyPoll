@@ -67,7 +67,7 @@ function appendMedia() {
 	video.setAttribute('controls', '');
 	
 	if (loadedSrc[selectedQuestion]) {
-		if (loadedSrc[selectedQuestion].match(/.(jpg|jpeg|png|gif)$/i)) {
+		if (loadedSrc[selectedQuestion].match(/\.(jpg|jpeg|png|gif)/i)) {
 			img.src = loadedSrc[selectedQuestion];
 			video.style = 'display: none';
 		} else {
@@ -93,7 +93,11 @@ function appendMedia() {
 	input.style = 'display: none';
 	input.id = 'file';
 	input.setAttribute('accept', 'image/*, video/*');
-	input.onchange = () => mediaController.previewMedia();
+	let sel = selectedQuestion;
+	input.onchange = () => {
+		mediaController.data.deleteMediaFor = sel;
+		mediaController.previewMedia();
+	};
 
 	mediaController.init(input, img, video);
 	let questionMedia = editLogic.editData.questions[selectedQuestion].media;
@@ -108,7 +112,6 @@ function appendMedia() {
 	
 	let a = document.createElement('a');
 	a.innerText = 'Удалить медиа';
-	let sel = selectedQuestion;
 	a.onclick = () => mediaController.deleteMedia(sel);
 
 	btnContainer.append(input, label, a);
@@ -209,6 +212,7 @@ function appendSubmitQuestionButton() {
 		optionsInputs.forEach((input) => {
 			editLogic.addOption(selectedQuestion, input.value);
 		});
+		mediaController.sumbitDeletion();
 		editLogic.setMedia(selectedQuestion);
 		constructNewPoll();
 	});
@@ -428,10 +432,14 @@ function appendSubmitPollButton() {
 	});
 	btn.firstElementChild.id = 'submitBtnLabel';
 	contentDiv.append(btn);
-	
+
+	let a = document.createElement('a');
+	a.onclick = () => location.assign('/Settings/ControlPanel');
+	a.innerText = 'Отмена';
+
 	let wrapper = document.createElement('div');
 	wrapper.className = 'btn-container';
-	wrapper.append(btn);
+	wrapper.append(btn, a);
 	
 	contentDiv.append(wrapper);
 }

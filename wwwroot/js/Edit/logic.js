@@ -42,19 +42,11 @@ const editLogic = (function () {
 		questionsChanged = true;
 		editData.questions[questionIndex].name = name;
 		editData.questions[questionIndex].options = [];
-		let file;
-		if (mediaController.data.fileInput.files.length === 1) {
-			file = mediaController.data.fileInput.files[0]
-		}
-		else {
-			file = null;
-        }
-		editData.questions[questionIndex].media = file;
     }
 
 	function setMedia(questionIndex) {
 		let file = null;
-		if (mediaController.data.fileInput.files.length != 0) {
+		if (mediaController.data.fileInput.files.length === 1) {
 			file = mediaController.data.fileInput.files[0];
 		}
 		editData.questions[questionIndex].media = file;

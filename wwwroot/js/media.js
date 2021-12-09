@@ -3,13 +3,16 @@
 		fileInput: null,
 		imgPreview: null,
 		videoPreview: null,
-		deletedMedia: []
+		deletedMedia: [],
+		deleteMediaFor: -1
     }
 
 	function init(fileInput, imgPreview, videoPreview) {
 		data.fileInput = fileInput;
 		data.imgPreview = imgPreview;
 		data.videoPreview = videoPreview;
+
+		data.deleteMediaFor = -1;
     }
 
 	function previewMedia(file=null) {
@@ -35,7 +38,8 @@
 	};
 
 	function deleteMedia(question) {
-		data.deletedMedia.push(question);
+		data.deleteMediaFor = question;
+		
 		data.fileInput.value = '';
 		data.imgPreview.src = '';
 		data.imgPreview.style = 'display: none';
@@ -43,10 +47,17 @@
 		data.videoPreview.style = 'display: none';
 	}
 
+	function sumbitDeletion() {
+		if (data.deleteMediaFor === -1) return;
+		data.deletedMedia.push(data.deleteMediaFor);
+		loadedSrc[data.deleteMediaFor] = '';
+    }
+
 	return {
 		data,
 		init,
 		previewMedia,
-		deleteMedia
+		deleteMedia,
+		sumbitDeletion
     }
 }) ();
