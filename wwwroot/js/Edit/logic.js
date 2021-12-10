@@ -69,7 +69,7 @@ const editLogic = (function () {
 		if (editData.startAt === null) warnings.push('Дата начала не указана');
 		if (editData.finishAt === null) warnings.push('Дата окончания не указана');
 		if (editData.startAt > editData.finishAt) warnings.push('Окончание опроса указано раньше его начала');
-		if (editData.finishAt < Date.now()) warnings.push('Окончание вопроса указано раньше сегодняшней даты');
+		if (editData.finishAt < Date.now()) warnings.push('Окончание опроса указано раньше сегодняшней даты');
 		if (editData.questions.length === 0) warnings.push('Не добавлено ни одного вопроса');
 
 		editData.questions.forEach((question, i) => {
