@@ -1,29 +1,36 @@
-﻿var questions;
-var options;
-var allAnswers;
-var userSelection;
-var answered;
+﻿let questions;
+let options;
+let allAnswers;
+let answersByDepartment;
+let userSelection;
+let answered;
 
 let loadedSrc = [];
 
-var index = 0;
+let index = 0;
 
-var questionDiv = document.getElementById('question');
-var answersDiv = document.getElementById('answers');
-var buttonNext = document.getElementById('btn-next');
-var buttonPrev = document.getElementById('btn-prev');
-var buttonFinish = document.getElementById('btn-finish');
+let questionDiv = document.getElementById('question');
+let answersDiv = document.getElementById('answers');
+let buttonNext = document.getElementById('btn-next');
+let buttonPrev = document.getElementById('btn-prev');
+let buttonFinish = document.getElementById('btn-finish');
 
-init();
+let showDetails = false;
 
-function init() {
-	fetch('/Poll/GetActivePollInfo')
+let getInfo;
+
+function init(pollId = 0) {
+    showDetails = pollId != 0;
+    let url = `/Poll/GetPollInfo?id=${pollId}`;
+	getInfo = fetch(url)
 		.then((response) => response.text())
         .then((dataRaw) => {
             let data = JSON.parse(dataRaw);
             questions = data['questions'];
             options = data['options'];
             allAnswers = data['answers'];
+            answersByDepartment = data['answersByDepartment'];
+            answersByDepartment['all'] = allAnswers;
             userSelection = data['userselection'];
             answered = data['answered'];
 			data['sources'].forEach((src, i) => {
