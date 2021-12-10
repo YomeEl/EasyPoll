@@ -173,12 +173,12 @@ img {
 .poll-date {
     margin: 0;
     cursor: inherit;
+    white-space: nowrap;
 }
 
 .poll-desc {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .settings-label {

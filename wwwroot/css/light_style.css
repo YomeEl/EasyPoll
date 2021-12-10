@@ -62,6 +62,11 @@ a:hover {
     background-color: #FFA6A6;
 }
 
+.answer-bar-result-active {
+    background-color: #FF0000;
+    height: inherit;
+}
+
 .answer-text,
 .answer-text-selected {
     color: inherit!important;
