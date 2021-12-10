@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -19,10 +17,13 @@ namespace EasyPoll
         /// </summary>
         public Models.AnswerModel[][][] Answers { get; }
         public Dictionary<int, int[]> UserAnswers { get; }
+        public Dictionary<string, int[][]> AnswersByDepartmentName { get; }
 
         public Poll(int id)
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
+
+            var u = dbcontext.Users.ToArray(); //Preload users to context
 
             var poll = dbcontext.Polls
                 .Include(p => p.Questions).ThenInclude(q => q.Options)
@@ -63,9 +64,19 @@ namespace EasyPoll
                     UserAnswers[answer.UserId][ans] = answer.Answer;
                 }
             }
+
+            AnswersByDepartmentName = new Dictionary<string, int[][]>();
+            var departments = dbcontext.Departments.ToArray();
+            foreach (var dept in departments)
+            {
+                AnswersByDepartmentName[dept.Name] = GetAnswersAsCount(dept.Id);
+            }
         }
 
-        public int[][] GetAnswersAsCount()
+        /// <summary>
+        /// Indices [question][option]
+        /// </summary>
+        public int[][] GetAnswersAsCount(int departmentId = 0)
         {
             var result = new int[Questions.Length][];
             for (int i = 0; i < Questions.Length; i++)
@@ -75,7 +86,10 @@ namespace EasyPoll
                 {
                     foreach (var ans in opt)
                     {
-                        result[i][ans.Answer - 1]++;
+                        if (departmentId == 0 || ans.User.Department.Id == departmentId)
+                        {
+                            result[i][ans.Answer - 1]++;
+                        }
                     }
                 }
             }

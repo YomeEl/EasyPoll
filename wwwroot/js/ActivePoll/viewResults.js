@@ -10,15 +10,15 @@
         label1.innerText = (i + 1) + ".\xa0";
         let label2 = document.createElement('label');
         label2.className = 'answer-text';
-        label2.innerText = options[index][i] + '\xa0(' + percentage(index, i) +')';
+        let perc = percentage(index, i);
+        label2.innerText = options[index][i] + (perc != '0' ? `\xa0(${perc})` : '');
 
         let ansBarResult = document.createElement('div');
         ansBarResult.className = 'answer-bar-result';
-        let styleStr = 'width: ' + percentage(index, i);
-        if (userSelection[index] == i + 1) {
-            styleStr += '; background-color: #FF0000;'
+        if (showDetails || userSelection[index] == i + 1) {
+            ansBarResult.className += '-active';
         }
-        ansBarResult.style = styleStr;
+        ansBarResult.style = `width: ${perc}`;
         
 
         let ansBar = document.createElement('div');
@@ -82,9 +82,12 @@ function prevQuestion() {
 
 function percentage(question, ans) {
     let sum = 0;
-    for (let i = 0; i < allAnswers[question].length; i++) {
-        sum += allAnswers[question][i];
-    }
+    allAnswers[question].forEach((ans) => {
+        sum += ans;
+    });
+
+    if (sum === 0) return '0';
+
     let perc = (allAnswers[question][ans] / sum * 100).toFixed(1) + '%';
     return perc;
 }

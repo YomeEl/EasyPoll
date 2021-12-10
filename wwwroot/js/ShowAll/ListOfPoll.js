@@ -7,6 +7,9 @@
         } else {
             linePoll.className = 'poll-summary';
         }
+        linePoll.onclick = () => {
+            location.assign(`/Poll/Details?id=${pollsArray[i].id}`);
+        }
 
         let label1 = document.createElement('label');
         label1.className = 'poll-desc';
