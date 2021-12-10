@@ -15,6 +15,11 @@ let loadedSrc = {};
 constructNewPoll();
 
 function constructNewQuestion() {
+	let titles = document.getElementsByName('pageTitle');
+	titles.forEach((title) => {
+		title.innerText = title.innerText.replace('опрос', 'вопрос');
+	});
+
 	clearContent();
 	cntr = 0;
 	optionsInputs = [];
@@ -237,6 +242,11 @@ function appendSubmitQuestionButton() {
 
 
 function constructNewPoll() {
+	let titles = document.getElementsByName('pageTitle');
+	titles.forEach((title) => {
+		title.innerText = title.innerText.replace('вопрос', 'опрос');
+	});
+
 	questionCntr = 0;
 	clearContent();
 	

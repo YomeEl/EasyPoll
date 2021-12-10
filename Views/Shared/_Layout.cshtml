@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <title>@ViewData["Title"]</title>
+    <title name="pageTitle">@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/common_style.css">
     <link rel="stylesheet" href="~/css/light_style.css" />
@@ -11,7 +11,7 @@
         <div class="my-row">
             <div class="standard-container rounded">
                 <div class="page-header">
-                    <label class="text-logo">@ViewData["Title"]</label>
+                    <label name="pageTitle" class="text-logo">@ViewData["Title"]</label>
                 </div>
                 <hr>
                 <main role="main">
