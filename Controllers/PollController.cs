@@ -87,47 +87,7 @@ namespace EasyPoll.Controllers
         [HttpGet]
         public IActionResult GetActivePollInfo()
         {
-            var activePoll = Global.ActivePoll;
-
-            var user = Models.UserModel.GetUserByToken(Request.Cookies["token"]);
-            int userId = user.Id;
-
-            var questions = activePoll.Questions;
-            var answers = activePoll.GetAnswersAsCount();
-            int[] userSelection = new int[activePoll.Questions.Length];
-
-            if (activePoll.UserAnswers.ContainsKey(userId))
-            {
-                userSelection = activePoll.UserAnswers[userId];
-            }
-
-            var srcs = new List<string>();
-
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
-            for (int i = 0; i < questions.Length; i++)
-            {
-                var filename = $"{activePoll.Id}_{i}";
-                var mem = dbcontext.MediaExtMapping.FirstOrDefault((m) => m.Filename == filename);
-                srcs.Add(mem != null ? GeneratePreSignedURL(0.1d, $"{mem.Filename}{mem.Extension}", HttpVerb.GET) : "");
-            }
-
-            var data = new Dictionary<string, object>
-            {
-                ["pollId"] = activePoll.PollModel.Id,
-                ["pollName"] = activePoll.PollModel.PollName,
-                ["startAt"] = activePoll.PollModel.CreatedAt.ToString("u"),
-                ["finishAt"] = activePoll.PollModel.FinishAt.ToString("u"),
-                ["sendStart"] = false,
-                ["sendFinish"] = false,
-                ["questions"] = questions,
-                ["options"] = activePoll.Options,
-                ["media"] = null,
-                ["answers"] = answers,
-                ["userselection"] = userSelection,
-                ["sources"] = srcs.ToArray(),
-            };
-
-            return Ok(JsonSerializer.Serialize(data));
+            return GetPollInfo();
         }
 
         [HttpGet]
@@ -236,8 +196,9 @@ namespace EasyPoll.Controllers
         }
 
         [HttpGet]
-        public IActionResult Details()
+        public IActionResult Details(int id)
         {
+            ViewData["pollId"] = id;
             return View();
         }
 
@@ -291,6 +252,53 @@ namespace EasyPoll.Controllers
             }
             dbcontext.SaveChanges();
             return Ok(response);
+        }
+
+        //If id is not provided, returns info for Global.ActivePoll
+        public IActionResult GetPollInfo(int id = 0)
+        {
+            var poll = id == 0 || id == Global.ActivePoll.Id ? Global.ActivePoll : new Poll(id);
+
+            var user = Models.UserModel.GetUserByToken(Request.Cookies["token"]);
+            int userId = user.Id;
+
+            var questions = poll.Questions;
+            var answers = poll.GetAnswersAsCount();
+            int[] userSelection = new int[poll.Questions.Length];
+
+            if (poll.UserAnswers.ContainsKey(userId))
+            {
+                userSelection = poll.UserAnswers[userId];
+            }
+
+            var srcs = new List<string>();
+
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            for (int i = 0; i < questions.Length; i++)
+            {
+                var filename = $"{poll.Id}_{i}";
+                var mem = dbcontext.MediaExtMapping.FirstOrDefault((m) => m.Filename == filename);
+                srcs.Add(mem != null ? GeneratePreSignedURL(0.1d, $"{mem.Filename}{mem.Extension}", HttpVerb.GET) : "");
+            }
+
+            var data = new Dictionary<string, object>
+            {
+                ["pollId"] = poll.PollModel.Id,
+                ["pollName"] = poll.PollModel.PollName,
+                ["startAt"] = poll.PollModel.CreatedAt.ToString("u"),
+                ["finishAt"] = poll.PollModel.FinishAt.ToString("u"),
+                ["sendStart"] = false,
+                ["sendFinish"] = false,
+                ["questions"] = questions,
+                ["options"] = poll.Options,
+                ["media"] = null,
+                ["answers"] = answers,
+                ["answersByDepartment"] = poll.AnswersByDepartmentName,
+                ["userselection"] = userSelection,
+                ["sources"] = srcs.ToArray(),
+            };
+
+            return Ok(JsonSerializer.Serialize(data));
         }
 
         private static string GeneratePreSignedURL(double duration, string filename, HttpVerb verb)
