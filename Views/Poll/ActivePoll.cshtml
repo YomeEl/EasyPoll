@@ -49,10 +49,9 @@
     }
 </div>
 
-@{ 
+@{
     if (!(bool)ViewData["NoActivePoll"])
     {
-        <script src="/js/ActivePoll/common.js"></script>
         if ((bool)ViewData["Answered"])
         {
             <script src="~/js/ActivePoll/viewResults.js"></script>
@@ -61,5 +60,7 @@
         {
             <script src="~/js/ActivePoll/answerPoll.js"></script>
         }
+        <script src="/js/ActivePoll/common.js"></script>
+        <script>init()</script>
     }
 }
