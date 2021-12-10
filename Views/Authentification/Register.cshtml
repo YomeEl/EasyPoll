@@ -24,9 +24,12 @@
     <hr>
     <label class="question">Выберите подразделение:</label>
     <select id="department" name="DepartmentId" class="login-form-input">
-        <option value="1">Подразделение 1</option>
-        <option value="2">Подразделение 2</option>
-        <option value="3">Подразделение 3</option>
+        @{ 
+            foreach (var dept in (EasyPoll.Models.DepartmentModel[])ViewData["Departments"])
+            {
+                <option value="@dept.Id">@dept.Name</option>
+            }
+        }
     </select>
 
     <div id="errorList" class="login-warning-wrapper"></div>

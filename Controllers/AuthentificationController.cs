@@ -56,6 +56,9 @@ namespace EasyPoll.Controllers
         public IActionResult Register()
         {
             ViewData["ModelInvalid"] = false;
+
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            ViewData["Departments"] = dbcontext.Departments.OrderBy((d) => d.Id).ToArray();
             return View();
         }
 
