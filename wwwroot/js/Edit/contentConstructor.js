@@ -18,7 +18,8 @@ function constructNewQuestion() {
 	clearContent();
 	cntr = 0;
 	optionsInputs = [];
-	
+
+	appendSectionTitle('Медиа');
 	appendMedia();
 	hr();
 	appendSectionTitle('Текст вопроса');
@@ -146,13 +147,17 @@ function appendOption(opt) {
 	input.value = opt;
 	optionsInputs.push(input);
 
-    let a = document.createElement('a');
-    a.innerText = 'Загрузить изображение';
+	let a1 = document.createElement('a');
+	a1.className = 'separator';
+	a1.innerText = 'выбрать медиа';
+
+	let a2 = document.createElement('a');
+	a2.innerText = 'удалить медиа';
 	
     let optionDiv = document.createElement('div');
     optionDiv.id = 'option' + cntr;
 	optionDiv.style = 'margin-bottom: 1vh';
-    optionDiv.append(input, a);
+    optionDiv.append(input, a1, a2);
 
     let optionsDiv = document.getElementById('options');
     optionsDiv.append(optionDiv);
