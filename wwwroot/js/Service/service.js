@@ -3,12 +3,14 @@ let lastRow = document.getElementById('lastRow');
 let usernameInput = document.getElementById('username');
 let departmentsDiv = document.getElementById('departments');
 
-loadDepartments().then((departments) => loadUsersWithoutDept(departments));
+let rolesDelta = [];
+
+loadDepartments();
 loadUsers();
 
 //Departments section
 
-async function loadDepartments() {
+function loadDepartments() {
     return new Promise((resolve, reject) => {
         let xhr = new XMLHttpRequest();
         xhr.onload = function () {
@@ -16,7 +18,7 @@ async function loadDepartments() {
             let depts = JSON.parse(xhr.response);
             resolve(depts);
             for (let dept of depts) {
-                appendDepartment(dept);
+                appendDepartment(dept.Name);
             }
         }
         xhr.open('GET', '/Settings/GetDepartments', true);
@@ -34,9 +36,7 @@ function appendDepartment(dept, isNew = false) {
     action.innerText = 'удалить';
     action.style = 'margin-left: 5px;';
     let div = document.createElement('div');
-    if (isNew) {
-        div.setAttribute('name', 'newDept');
-    }
+    div.setAttribute('name', isNew ? 'newDept' : 'oldDept');
     div.append(label, action);
 
     let toggle;
@@ -58,17 +58,39 @@ function appendDepartment(dept, isNew = false) {
     departmentsDiv.append(div);
 }
 
+function isDeptUnique(dept) {
+    let flag = true;
+    document.getElementsByName('newDept').forEach((newDept) => {
+        flag = flag && newDept.firstElementChild.innerText != dept;
+    });
+    document.getElementsByName('oldDept').forEach((oldDept) => {
+        flag = flag && oldDept.firstElementChild.innerText != dept;
+    });
+
+    return flag;
+}
+
 function appendDepartmentFromInput() {
     let inp = document.getElementById('newDeptName');
-    if (inp.value != '') {
-        if (inp.value.length > 50) {
-            alert('В названии должно быть не более 50 символов');
-            inp.value = '';
-            return;
-        }
-        appendDepartment(inp.value, true);
-        inp.value = '';
+
+    if (inp.value == '') {
+        alert('Название не указано');
+        return;
     }
+
+    if (inp.value.length > 50) {
+        alert('В названии должно быть не более 50 символов');
+        inp.value = '';
+        return;
+    }
+
+    if (!isDeptUnique(inp.value)) {
+        alert('Название не уникально');
+        return;
+    }
+
+    appendDepartment(inp.value, true);
+    inp.value = '';
 }
 
 function getDeletedDepartments() {
@@ -92,96 +114,13 @@ function getAddedDepartments() {
 function updateDepartments() {
     let xhr = new XMLHttpRequest();
     xhr.onload = function () {
-        loadDepartments().then((departments) => loadUsersWithoutDept(departments));
+        loadDepartments();
     }
     xhr.open('POST', '/Settings/UpdateDepartments', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     let add = JSON.stringify(getAddedDepartments());
     let del = JSON.stringify(getDeletedDepartments());
     xhr.send('addRaw=' + add + '&deleteRaw=' + del);
-}
-
-//Users section
-
-function loadUsersWithoutDept(departments) {
-    clearUsersTable();
-    let xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        let users = JSON.parse(xhr.response);
-        for (let username of users) {
-            constructUsersRow(username, departments);
-        }
-    }
-    xhr.open('GET', '/Settings/GetUsersWithoutDepartment', true);
-    xhr.send();
-}
-
-function clearUsersTable() {
-    let table = document.getElementById('usersTable').firstElementChild;
-    let lastChild = table.lastElementChild;
-    if (lastChild.id != 'header') {
-        lastChild.remove();
-        clearUsersTable();
-    }
-}
-
-function constructUsersRow(username, departments) {
-    let usersTable = document.getElementById('usersTable').firstElementChild;
-
-    let left = document.createElement('td');
-    let label = document.createElement('label');
-    label.style = 'margin: 0';
-    label.innerText = username;
-    left.append(label);
-
-    let right = document.createElement('td');
-    let select = document.createElement('select');
-    let zeroOpt = document.createElement('option');
-    zeroOpt.value = 0;
-    zeroOpt.innerText = 'Не назначено';
-    select.append(zeroOpt);
-    for (let i = 0; i < departments.length; i++) {
-        let opt = document.createElement('option');
-        opt.value = i + 1;
-        opt.innerText = departments[i];
-        select.append(opt);
-    }
-    right.append(select);
-
-    let newRow = document.createElement('tr');
-    newRow.append(left);
-    newRow.append(right);
-
-    usersTable.append(newRow);
-}
-
-function submitUsersDepts() {
-    let table = document.getElementById('usersTable');
-    let deltaUsers = [];
-    let deltaDepartments = [];
-    for (let row of table.rows) {
-        if (row.id == 'header') continue;
-
-        let left = row.firstElementChild;
-        let right = row.lastElementChild;
-        let username = left.firstElementChild.innerText;
-        let departmentSelect = right.firstElementChild;
-        let index = departmentSelect.selectedIndex;
-        if (index > 0) {
-            deltaUsers.push(username);
-            deltaDepartments.push(departmentSelect[index].innerText);
-        }
-    }
-
-    let xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        loadDepartments().then((departments) => loadUsersWithoutDept(departments));
-    }
-    xhr.open('POST', '/Settings/UpdateUserDepartments', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    let usersRaw = JSON.stringify(deltaUsers);
-    let departmentsRaw = JSON.stringify(deltaDepartments);
-    xhr.send('usersRaw=' + usersRaw + '&departmentsRaw=' + departmentsRaw);
 }
 
 //Roles section
@@ -191,14 +130,14 @@ function loadUsers() {
     xhr.onload = function () {
         let users = JSON.parse(xhr.response);
         for (let [username, role] of Object.entries(users)) {
-            appendToTable(username, role - 1);
+            appendUserToTable(username, role - 1);
         }
     }
     xhr.open('GET', '/Settings/GetUsers', true);
     xhr.send();
 }
 
-function appendToTable(val = '', selectedIndex = -1) {
+function appendUserToTable(val = '', selectedIndex = -1) {
     if (val == '') {
         val = usernameInput.value;
     }
@@ -228,7 +167,20 @@ function appendToTable(val = '', selectedIndex = -1) {
     } else {
         select.selectedIndex = document.getElementById('roleSelect').selectedIndex;
     }
-    select.id = '';
+    select.id = val;
+    select.onchange = (event) => {
+        let name = event.target.id;
+        let role = event.target.selectedIndex + 1;
+        let index = rolesDelta.findIndex((val, i, o) => val.name == name);
+        if (index != -1) {
+            rolesDelta[index].role = role;
+        } else {
+            rolesDelta.push({
+                Username: name,
+                RoleId: role
+            });
+        }
+    };
     right.append(select);
 
     let newRow = document.createElement('tr');
@@ -269,9 +221,23 @@ function checkRow(val, newRow) {
             (function () {
                 return new Promise((resolve) => setTimeout(resolve, 1000));
             }()).then(() => newRow.remove());
+        } else {
+            rolesDelta.push({
+                Username: val,
+                RoleId: newRow.lastElementChild.firstElementChild.selectedIndex + 1
+            });
         }
     }
     xhr.open('POST', '/Settings/CheckUsername', true);
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.send('username=' + val);
+}
+
+function submitRoles() {
+    fetch('/Settings/UpdateRoles', {
+        method: 'POST',
+        body: new URLSearchParams({
+            itemsRaw: JSON.stringify(rolesDelta)
+        })
+    }).then(() => location.reload())
 }

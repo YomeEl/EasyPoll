@@ -51,7 +51,7 @@ namespace EasyPoll.Controllers
             var dbcontext = Data.ServiceDBContext.GetDBContext();
             var depts = (from dept in dbcontext.Departments
                          orderby dept.Id
-                         select dept.Name).ToArray();
+                         select dept).ToArray();
             return Ok(JsonSerializer.Serialize(depts));
         }
 
@@ -99,6 +99,25 @@ namespace EasyPoll.Controllers
             {
                 var item = dbcontext.Departments.ToArray().First(i => i.Name == dept);
                 dbcontext.Departments.Remove(item);
+            }
+            dbcontext.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult UpdateRoles(string itemsRaw)
+        {
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var items = (Models.UserModel[])JsonSerializer.Deserialize(itemsRaw, typeof(Models.UserModel[]));
+            foreach (var item in items)
+            {
+                var user = dbcontext.Users.FirstOrDefault((u) => u.Username == item.Username);
+                if (user != null)
+                {
+                    user.RoleId = item.RoleId;
+                    dbcontext.Update(user);
+                }
             }
             dbcontext.SaveChanges();
 

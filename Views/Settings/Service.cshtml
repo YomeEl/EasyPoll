@@ -17,24 +17,6 @@
 
 <hr>
 
-<!-- Users section -->
-<div class="settings-label" style="font-size: 150%;">Пользователи без подразделений</div>
-<div class="settings-section">
-    <table id="usersTable">
-        <tr id="header">
-            <th>Пользователь</th>
-            <th>Подразделение</th>
-        </tr>
-    </table>
-    <div class="btn-container" onclick="submitUsersDepts()">
-        <div class="btn-common">
-            <label class="btn-text">Сохранить</label>
-        </div>
-    </div>
-</div>
-
-<hr>
-
 <!-- Roles section -->
 <div class="settings-label" style="font-size: 150%;">Список HR и РП</div>
 <div class="settings-section">
@@ -56,9 +38,10 @@
             </td>
         </tr>
     </table>
-    <div class="btn-container" onclick="appendToTable()">
-        <div class="btn-common">
-            <label class="btn-text">Добавить пользователя</label>
+    <div class="btn-container">
+        <a onclick="appendUserToTable()">Добавить пользователя</a>
+        <div class="btn-common" onclick="submitRoles()">
+            <label class="btn-text">Сохранить изменения</label>
         </div>
     </div>
 </div>
