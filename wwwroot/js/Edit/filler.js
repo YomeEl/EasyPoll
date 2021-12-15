@@ -1,7 +1,7 @@
 ﻿loadActivePollData();
 
 function loadActivePollData() {
-	fetch('/Poll/GetActivePollInfo')
+	fetch('/Poll/GetPollInfo')
 		.then((response) => response.text())
 		.then((dataRaw) => {
 			let data = JSON.parse(dataRaw);
