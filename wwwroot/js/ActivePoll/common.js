@@ -5,8 +5,6 @@ let answersByDepartment;
 let userSelection;
 let answered;
 
-let loadedSrc = [];
-
 let index = 0;
 
 let questionDiv = document.getElementById('question');
@@ -34,7 +32,7 @@ function init(pollId = 0) {
             userSelection = data['userselection'];
             answered = data['answered'];
 			data['sources'].forEach((src, i) => {
-				loadedSrc[i] = src;
+                mediaController.loadedSrc[i] = src;
 			});
             reset();
 		});

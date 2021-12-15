@@ -1,5 +1,5 @@
-﻿var answers = [];
-var selected = 0;
+﻿let answers = [];
+let selected = 0;
 
 function constructCurrent() {
     clearCurrent();
@@ -7,14 +7,14 @@ function constructCurrent() {
     let div = document.createElement('div');
     div.innerText = questions[index];
     questionDiv.append(div);
-    
-    for (let i = 0; i < options[index].length; i++) {
+
+    options[index].forEach((opt, i) => {
         let label1 = document.createElement('label');
         label1.className = 'answer-text';
         label1.innerText = (i + 1) + ".\xa0";
         let label2 = document.createElement('a');
         label2.className = 'answer-text';
-        label2.innerText = options[index][i];
+        label2.innerText = opt;
 
         let ansDiv = document.createElement('div');
         ansDiv.className = 'answer-box-active';
@@ -27,33 +27,11 @@ function constructCurrent() {
         };
 
         answersDiv.appendChild(ansDiv);
-    }
+    })
 }
 
 function appendMedia() {
-    let img = document.createElement('img');
-
-    let video = document.createElement('video');
-    video.setAttribute('controls', '');
-
-    if (loadedSrc[index]) {
-        if (loadedSrc[index].match(/\.(jpg|jpeg|png|gif)/i)) {
-            img.src = loadedSrc[index];
-            video.style = 'display: none';
-        } else {
-            video.src = loadedSrc[index];
-            img.style = 'display: none';
-        }
-    }
-    else {
-        img.style = 'display: none';
-        video.style = 'display: none';
-    }
-
-    let wrapper = document.createElement('div');
-    wrapper.className = 'img-wrapper';
-    wrapper.append(img, video);
-
+    let wrapper = mediaController.createMediaDiv(mediaController.loadedSrc[index]);
     questionDiv.append(wrapper);
 }
 
@@ -87,12 +65,11 @@ function sendPoll() {
     buttonFinish.appendChild(newLabel);
 
     answers.push(selected);
-    let xhr = new XMLHttpRequest();
-    xhr.onload = function () {
-        window.location.reload();
-    }
 
-    xhr.open('POST', '/');
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.send('answers=' + JSON.stringify(answers));
+    fetch('/', {
+        method: 'POST',
+        body: new URLSearchParams({
+            answers: JSON.stringify(answers)
+        })
+    }).then((r) => location.reload());
 }

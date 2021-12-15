@@ -1,4 +1,4 @@
-﻿function DisplayPolls(pollsArray, lastIsActive) {
+﻿function displayPolls(pollsArray, lastIsActive) {
     let polllist = document.getElementById('polllist');
     for (let i = 0; i < pollsArray.length; i++) {
         let linePoll = document.createElement('div');

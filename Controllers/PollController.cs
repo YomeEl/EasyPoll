@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 
 using System;
 using System.IO;
+using System.Net;
 using System.Linq;
 using System.Text.Json;
 using System.Collections.Generic;
@@ -12,7 +12,8 @@ using System.Collections.Generic;
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
-using System.Net;
+
+using EasyPoll.Models;
 
 namespace EasyPoll.Controllers
 {
@@ -21,9 +22,9 @@ namespace EasyPoll.Controllers
         [HttpGet]
         public IActionResult ActivePoll()
         {
-            var user = Models.UserModel.GetUserByToken(Request.Cookies["token"]);
+            var user = AuthentificationController.GetUserByToken(Request.Cookies["token"]);
 
-            if (user == null || (user != null && !user.CheckToken()))
+            if (user == null)
             {
                 return RedirectToAction("Login", "Authentification");
             }
@@ -63,14 +64,14 @@ namespace EasyPoll.Controllers
                 .OrderBy(q => q.Order)
                 .Select(q => q.Id)
                 .ToArray();
-            var userId = Models.UserModel.GetUserByToken(Request.Cookies["token"]).Id;
+            var userId = AuthentificationController.GetUserByToken(Request.Cookies["token"]).Id;
 
             var dbcontext = Data.ServiceDBContext.GetDBContext();
 
-            var answersList = new List<Models.AnswerModel>();
+            var answersList = new List<AnswerModel>();
             for (int i = 0; i < raw_answers.Length; i++)
             {
-                answersList.Add(new Models.AnswerModel
+                answersList.Add(new AnswerModel
                 {
                     Answer = int.Parse(raw_answers[i]),
                     QuestionId = questions[i],
@@ -103,6 +104,7 @@ namespace EasyPoll.Controllers
         }
 
         [HttpPost]
+        //Needs refactoring
         public IActionResult AddNew(
             string oldName, string newName,
             string startAtRaw, string finishAtRaw,
@@ -122,7 +124,7 @@ namespace EasyPoll.Controllers
 
             var existingPoll = dbcontext.Polls.FirstOrDefaultAsync((poll) => poll.PollName == oldName).Result;
             int pollId;
-            Models.PollModel poll;
+            PollModel poll;
             if (existingPoll != null)
             {
                 pollId = existingPoll.Id;
@@ -144,7 +146,7 @@ namespace EasyPoll.Controllers
             }
             else
             { 
-                poll = new Models.PollModel()
+                poll = new PollModel()
                 {
                     PollName = newName,
                     CreatedAt = startAt,
@@ -155,20 +157,20 @@ namespace EasyPoll.Controllers
                 pollId = dbcontext.Polls.FirstAsync(p => p.PollName == newName).Result.Id;
             }
 
-            var questionsList = new List<Models.QuestionModel>();
+            var questionsList = new List<QuestionModel>();
             for (int i = 0; i < questions.Length; i++)
             {
-                var question = new Models.QuestionModel()
+                var question = new QuestionModel()
                 {
                     PollId = pollId,
                     Question = questions[i],
                     Order = i,
-                    Options = new List<Models.OptionModel>()
+                    Options = new List<OptionModel>()
                 };
 
                 for (int j = 0; j < options[i].Length; j++)
                 {
-                    var option = new Models.OptionModel()
+                    var option = new OptionModel()
                     {
                         Text = options[i][j],
                         Order = j
@@ -259,7 +261,7 @@ namespace EasyPoll.Controllers
         {
             var poll = id == 0 || id == Global.ActivePoll.Id ? Global.ActivePoll : new Poll(id);
 
-            var user = Models.UserModel.GetUserByToken(Request.Cookies["token"]);
+            var user = AuthentificationController.GetUserByToken(Request.Cookies["token"]);
             int userId = user.Id;
 
             var questions = poll.Questions;

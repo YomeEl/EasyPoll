@@ -6,9 +6,9 @@
     <div id="departments" class="settings-section"></div>
     <div>
         <input id="newDeptName" type="text" placeholder="Введите название" />
-        <a onclick="appendDepartmentFromInput()">добавить</a>
+        <a onclick="departmentsController.appendDepartmentFromInput()">добавить</a>
     </div>
-    <div class="btn-container" onclick="updateDepartments()">
+    <div class="btn-container" onclick="departmentsController.updateDepartments()">
         <div class="btn-common">
             <label class="btn-text">Сохранить</label>
         </div>

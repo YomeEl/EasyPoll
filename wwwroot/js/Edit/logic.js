@@ -87,73 +87,68 @@ const editLogic = (function () {
 	}
 
 	function submitPoll () {
-		const warnings = validateData()
+		let warnings = validateData();
 
 		if (warnings.length === 0) {
-			//Update poll
-			console.log('Updating poll...');
-			fetch('/Poll/AddNew', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded'
-				},
-				body: new URLSearchParams({
-					oldName: editData.oldName,
-					newName: editData.newName,
-					startAtRaw: editData.startAt.toISOString(),
-					finishAtRaw: editData.finishAt.toISOString(),
-					sendStartRaw: editData.sendStart,
-					sendFinishRaw: editData.sendFinish,
-					questionsRaw: JSON.stringify(editData.questions.map(question => question.name)),
-					optionsRaw: JSON.stringify(editData.questions.map(question => question.options)),
-					questionsChangedRaw: questionsChanged
-				})
-			}).then((response) => {
-				//Get new poll id
-				console.log('Poll updated');
-				return response.text();
-			}).then((id) => {
-				//Delete files
-				console.log('Deleting files...');
-				let deleteForm = new FormData();
-				deleteForm.append('questionsRaw', JSON.stringify(mediaController.data.deletedMedia));
-				deleteForm.append('pollId', id);
-				fetch('/Poll/DeleteFiles', {
-					method: 'POST',
-					body: deleteForm
-				}).then((response) => {
-					console.log('Files deleted');
-					//Upload files
-					console.log('Uploading files...');
-					let uploadPromises = [];
-					editData.questions.forEach((question, i) => {
-						if (question.media) {
-							console.log(`Uploading media for question ${i + 1}...`);
-							let uploadForm = new FormData();
-							uploadForm.append('file', question.media);
-							uploadForm.append('pollId', id);
-							uploadForm.append('questionIndex', i)
-							uploadPromises.push(fetch('/Poll/UploadFile', {
-								method: 'POST',
-								body: uploadForm
-							}));
-							uploadPromises[uploadPromises.length - 1].then(() => {
-								console.log(`Question ${i + 1} done`)
-							});
-						}
-					});
-					Promise.all(uploadPromises).then(() => {
-						console.log('Files uploaded');
-						console.log('Redirecting...');
-						document.location.assign('/Settings/ControlPanel');
-					});
-				});
-			});
+			updatePoll().then((r) => r.text().then((id) => {
+				deleteFiles(id).then((r) => r.text().then(() => {
+					uploadFilesAndRedirect(id)
+				}));
+			}));
 		}
 
 		return warnings;
 	}
-					   
+
+	function updatePoll() {
+		return fetch('/Poll/AddNew', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			},
+			body: new URLSearchParams({
+				oldName: editData.oldName,
+				newName: editData.newName,
+				startAtRaw: editData.startAt.toISOString(),
+				finishAtRaw: editData.finishAt.toISOString(),
+				sendStartRaw: editData.sendStart,
+				sendFinishRaw: editData.sendFinish,
+				questionsRaw: JSON.stringify(editData.questions.map(question => question.name)),
+				optionsRaw: JSON.stringify(editData.questions.map(question => question.options)),
+				questionsChangedRaw: questionsChanged
+			})
+		})
+    }
+
+	function deleteFiles(id) {
+		let deleteForm = new FormData();
+		deleteForm.append('questionsRaw', JSON.stringify(mediaController.data.deletedMedia));
+		deleteForm.append('pollId', id);
+		return fetch('/Poll/DeleteFiles', {
+			method: 'POST',
+			body: deleteForm
+		})
+	}
+
+	function uploadFilesAndRedirect(id) {
+		let uploadPromises = [];
+		editData.questions.forEach((question, i) => {
+			if (question.media) {
+				let uploadForm = new FormData();
+				uploadForm.append('file', question.media);
+				uploadForm.append('pollId', id);
+				uploadForm.append('questionIndex', i)
+				uploadPromises.push(fetch('/Poll/UploadFile', {
+					method: 'POST',
+					body: uploadForm
+				}));
+			}
+		});
+		Promise.all(uploadPromises).then(() => {
+			document.location.assign('/Settings/ControlPanel');
+		});
+	}
+
 	return {
 		editData,
 		newPoll,
@@ -164,7 +159,6 @@ const editLogic = (function () {
 		setMedia,
 		moveUp,
 		moveDown,
-		validateData,
 		submitPoll
 	}
 })()

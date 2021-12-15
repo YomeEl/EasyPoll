@@ -1,26 +1,10 @@
 ﻿@{ ViewData["Title"] = "Регистрация"; }
 
 <form id="registrationForm" method="post" action="@Url.Action("Register")">
-    <input id="username"
-           name="Username"
-           class="login-form-input"
-           type="text"
-           placeholder="Логин" />
-    <input id="email"
-           name="Email"
-           class="login-form-input"
-           type="email"
-           placeholder="Aдрес электроной почты" />
-    <input id="password"
-           name="Password"
-           class="login-form-input"
-           type="password"
-           placeholder="Пароль" />
-    <input id="rePassword"
-           name="RePasword"
-           class="login-form-input"
-           type="password"
-           placeholder="Повтор пароля" />
+    <input id="username" name="Username" class="login-form-input" type="text" placeholder="Логин" />
+    <input id="email" name="Email" class="login-form-input" type="email" placeholder="Aдрес электроной почты" />
+    <input id="password" name="Password" class="login-form-input" type="password" placeholder="Пароль" />
+    <input id="rePassword" name="RePasword" class="login-form-input" type="password" placeholder="Повтор пароля" />
     <hr>
     <label class="question">Выберите подразделение:</label>
     <select id="department" name="DepartmentId" class="login-form-input">
@@ -35,7 +19,7 @@
     <div id="errorList" class="login-warning-wrapper"></div>
 
     <div class="btn-container">
-        <div class="btn-common" onclick="validateAndSend()">
+        <div class="btn-common" onclick="registrationController.validateAndSend()">
             <label class="btn-text">Зарегистрироваться</label>
         </div>
     </div>

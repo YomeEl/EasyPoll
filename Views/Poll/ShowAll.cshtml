@@ -7,7 +7,7 @@
         <label class="btn-text">Назад</label>
     </div>
 </div>
-<script src="~/js/ShowAll/ListOfPoll.js"></script>
+<script src="~/js/ShowAll/pollList.js"></script>
 <script>
-    DisplayPolls(@Html.Raw(Json.Serialize(ViewData["PollsArray"])), @(((bool)ViewData["LastIsActive"]).ToString().ToLower()));
+    displayPolls(@Html.Raw(Json.Serialize(ViewData["PollsArray"])), @(((bool)ViewData["LastIsActive"]).ToString().ToLower()));
 </script>

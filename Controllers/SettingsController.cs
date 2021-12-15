@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Collections.Generic;
 
+using EasyPoll.Models;
+
 namespace EasyPoll.Controllers
 {
     public class SettingsController : Controller
@@ -28,9 +30,7 @@ namespace EasyPoll.Controllers
         public IActionResult GetUsers()
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
-            var users = (from user in dbcontext.Users
-                         where user.RoleId != 1
-                         select user).ToArray();
+            var users = dbcontext.Users.Where(user => user.RoleId != 1).ToArray();
             var dict = new Dictionary<string, int>();
             foreach (var user in users)
             {
@@ -49,39 +49,8 @@ namespace EasyPoll.Controllers
         public IActionResult GetDepartments()
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
-            var depts = (from dept in dbcontext.Departments
-                         orderby dept.Id
-                         select dept).ToArray();
+            var depts = dbcontext.Departments.OrderBy(dept => dept.Id).ToArray();
             return Ok(JsonSerializer.Serialize(depts));
-        }
-
-        public IActionResult GetUsersWithoutDepartment()
-        {
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
-            var users = (from user in dbcontext.Users
-                         where user.DepartmentId == null
-                         select user.Username).ToArray();
-            return Ok(JsonSerializer.Serialize(users));
-        }
-
-        public IActionResult UpdateUserDepartments(string usersRaw, string departmentsRaw)
-        {
-            var users = (string[])JsonSerializer.Deserialize(usersRaw, typeof(string[]));
-            var deptNames = (string[])JsonSerializer.Deserialize(departmentsRaw, typeof(string[]));
-            var depts = ConvertDepartmentsToIds(deptNames);
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
-
-            for (int i = 0; i < users.Length; i++)
-            {
-                var user = (from u in dbcontext.Users
-                            where u.Username == users[i]
-                            select u).First();
-                user.DepartmentId = depts[i];
-                dbcontext.Users.Update(user);
-            }
-            dbcontext.SaveChanges();
-
-            return Ok();
         }
 
         public IActionResult UpdateDepartments(string addRaw, string deleteRaw)
@@ -93,7 +62,7 @@ namespace EasyPoll.Controllers
 
             foreach (var dept in add)
             {
-                dbcontext.Departments.Add(new Models.DepartmentModel() { Name = dept });
+                dbcontext.Departments.Add(new DepartmentModel() { Name = dept });
             }
             foreach (var dept in delete)
             {
@@ -109,10 +78,10 @@ namespace EasyPoll.Controllers
         public IActionResult UpdateRoles(string itemsRaw)
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
-            var items = (Models.UserModel[])JsonSerializer.Deserialize(itemsRaw, typeof(Models.UserModel[]));
+            var items = (UserModel[])JsonSerializer.Deserialize(itemsRaw, typeof(UserModel[]));
             foreach (var item in items)
             {
-                var user = dbcontext.Users.FirstOrDefault((u) => u.Username == item.Username);
+                var user = dbcontext.Users.FirstOrDefault(u => u.Username == item.Username);
                 if (user != null)
                 {
                     user.RoleId = item.RoleId;
@@ -122,19 +91,6 @@ namespace EasyPoll.Controllers
             dbcontext.SaveChanges();
 
             return Ok();
-        }
-
-        private int[] ConvertDepartmentsToIds(string[] departments)
-        {
-            var ids = new int[departments.Length];
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
-            for (int i = 0; i < departments.Length; i++)
-            {
-                ids[i] = (from dept in dbcontext.Departments
-                          where dept.Name == departments[i]
-                          select dept.Id).First();
-            }
-            return ids;
         }
     }
 }

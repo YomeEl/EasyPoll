@@ -19,8 +19,8 @@ function loadActivePollData() {
 			});
 			editLogic.newPoll = false;
 			data['sources'].forEach((src, i) => {
-				loadedSrc[i] = src;
+				mediaController.loadedSrc[i] = src;
 			});
-			constructNewPoll();
+			pollConstructor.construct();
 		});
 }

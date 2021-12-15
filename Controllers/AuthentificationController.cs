@@ -1,13 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Http;
 
 using System;
+using System.Text;
 using System.Linq;
+
+using EasyPoll.Models;
+using EasyPoll.ViewModels;
 
 namespace EasyPoll.Controllers
 {
     public class AuthentificationController : Controller
     {
+        private readonly CookieOptions cookieOptions = new() { Expires = new DateTimeOffset(DateTime.Now.AddHours(1)) };
+
         [HttpGet]
         public IActionResult Login()
         {
@@ -16,40 +23,24 @@ namespace EasyPoll.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(ViewModels.LoginViewModel model)
+        public IActionResult Login(LoginViewModel viewModel)
         {
-            if (model.IsValid())
+            var suToken = Global.CheckSUAndGenerateToken(viewModel.Username, viewModel.Password);
+            if (suToken.Length > 0)
             {
-                var suToken = Global.CheckSUAndGenerateToken(model.Username, model.Password);
-                if (suToken.Length > 0)
-                {
-                    Response.Cookies.Append("token", suToken);
-                    return RedirectToAction("Service", "Settings");
-                }
-
-                Models.UserModel userModel;
-                try 
-                { 
-                    userModel = new Models.UserModel(model); 
-                }
-                catch
-                {
-                    ViewData["ModelInvalid"] = true;
-                    return View();
-                }
-
-                var opt = new Microsoft.AspNetCore.Http.CookieOptions
-                {
-                    Expires = new DateTimeOffset(DateTime.Now.AddHours(1))
-                };
-                Response.Cookies.Append("token", userModel.Token, opt);
-                return RedirectToAction("ActivePoll", "Poll");
+                Response.Cookies.Append("token", suToken, cookieOptions);
+                return RedirectToAction("Service", "Settings");
             }
-            else
+
+            UserModel userModel = GetUserModel(viewModel);
+            if (userModel == null)
             {
                 ViewData["ModelInvalid"] = true;
                 return View();
             }
+            
+            Response.Cookies.Append("token", userModel.Token, cookieOptions);
+            return RedirectToAction("ActivePoll", "Poll");
         }
 
         [HttpGet]
@@ -63,15 +54,15 @@ namespace EasyPoll.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(ViewModels.RegisterViewModel model)
+        public IActionResult Register(RegisterViewModel model)
         {
-            var newUser = new Models.UserModel()
+            var newUser = new UserModel()
             {
                 Username = model.Username,
                 Email = model.Email,
                 DepartmentId = model.DepartmentId,
                 RoleId = 1,
-                Key = new PasswordHasher<Models.UserModel>().HashPassword(null, model.Password)
+                Key = new PasswordHasher<UserModel>().HashPassword(null, model.Password)
             };
             var dbcontext = Data.ServiceDBContext.GetDBContext();
             dbcontext.Users.Add(newUser);
@@ -86,11 +77,9 @@ namespace EasyPoll.Controllers
         }
 
         [HttpPost]
-        public IActionResult CheckRegistration()
+        public IActionResult CheckRegistration(string username, string email)
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
-            var username = Request.Headers["Username"][0];
-            var email = Request.Headers["Email"][0];
             var similarUsers = (from user in dbcontext.Users
                                where user.Username == username || user.Email == email
                                select user).ToArray();
@@ -102,11 +91,43 @@ namespace EasyPoll.Controllers
                 usernameFound = usernameFound || user.Username == username;
                 emailFound = emailFound || user.Email == email;
             }
-            var strArr = new string[] { usernameFound.ToString(), emailFound.ToString() };
-            var strVal = new Microsoft.Extensions.Primitives.StringValues(strArr);
-            Response.Headers.Add("Result", strVal);
 
-            return Ok(strVal.ToString().ToLower());
+            return Ok($"{usernameFound},{emailFound}");
+        }
+    
+        public static UserModel GetUserByToken(string token)
+        {
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            return dbcontext.Users.Where(user => user.Token == token).FirstOrDefault();
+        }
+
+        //Also updates token in db
+        private static UserModel GetUserModel(LoginViewModel viewModel)
+        {
+            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var user = dbcontext.Users.Where(user => user.Username == viewModel.Username).FirstOrDefault();
+
+            bool isPasswordCorrect = new PasswordHasher<UserModel>()
+                .VerifyHashedPassword(user, user.Key, viewModel.Password) != PasswordVerificationResult.Failed;
+
+
+            if (user == null || !isPasswordCorrect)
+            {
+                return null;
+            }
+
+            user.Token = GenerateToken(viewModel.Username);
+            dbcontext.Users.Update(user);
+            dbcontext.SaveChanges();
+
+            return user;
+        }
+
+        private static string GenerateToken(string username)
+        {
+            string rawToken = $"{DateTime.Now.ToBinary()}:{username}";
+            string token = Convert.ToBase64String(Encoding.UTF8.GetBytes(rawToken));
+            return token;
         }
     }
 }

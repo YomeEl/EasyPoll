@@ -11,10 +11,5 @@ namespace EasyPoll.ViewModels
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; }
-
-        public bool IsValid()
-        {
-            return Username != null && Password != null;
-        }
     }
 }
