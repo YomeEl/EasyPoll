@@ -14,21 +14,11 @@ using Amazon.S3;
 using Amazon.S3.Model;
 
 using EasyPoll.Models;
-using EasyPoll.Data;
 
 namespace EasyPoll.Controllers
 {
-    public class PollController : Controller
+    public class PollController : BaseController
     {
-        private readonly ServiceDBContext dbcontext;
-        private readonly UserModel user;
-
-        public PollController() : base()
-        {
-            dbcontext = ServiceDBContext.GetDBContext();
-            user = AuthentificationController.GetUserByToken(Request.Cookies["token"]);
-        }
-
         [HttpGet]
         public IActionResult ActivePoll()
         {
@@ -92,20 +82,24 @@ namespace EasyPoll.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetActivePollInfo()
-        {
-            return GetPollInfo();
-        }
-
-        [HttpGet]
         public IActionResult PollControl()
         {
+            if (user == null || user.RoleId != 3)
+            {
+                return Ok("Доступ запрещён!");
+            }
+
             return View();
         }
 
         [HttpGet]
         public IActionResult AddNew()
         {
+            if (user == null || user.RoleId != 3)
+            {
+                return Ok("Доступ запрещён!");
+            }
+
             return View();
         }
 
@@ -116,6 +110,11 @@ namespace EasyPoll.Controllers
             string sendStartRaw, string sendFinishRaw,
             string questionsRaw, string optionsRaw, string questionsChangedRaw)
         {
+            if (user == null || user.RoleId != 3)
+            {
+                return BadRequest();
+            }
+
             var startAt = DateTime.Parse(startAtRaw);
             var finishAt = DateTime.Parse(finishAtRaw);
             var sendStart = bool.Parse(sendStartRaw);
@@ -168,6 +167,11 @@ namespace EasyPoll.Controllers
         [HttpGet]
         public IActionResult ShowAll()
         {
+            if (user == null || user.RoleId == 1)
+            {
+                return Ok("Доступ запрещён!");
+            }
+
             var pollsArray = dbcontext.Polls.OrderBy(poll => poll.CreatedAt).ToArray();
             ViewData["LastIsActive"] = pollsArray.Last().FinishAt > DateTime.Now;
             ViewData["PollsArray"] = pollsArray;
@@ -177,12 +181,22 @@ namespace EasyPoll.Controllers
         [HttpGet]
         public IActionResult Details(int id)
         {
+            if (user == null || user.RoleId == 1)
+            {
+                return Ok("Доступ запрещён!");
+            }
+
             ViewData["pollId"] = id;
             return View();
         }
 
         public IActionResult UploadFile(IFormFile file, int pollId, int questionIndex)
         {
+            if (user == null || user.RoleId != 3)
+            {
+                return BadRequest();
+            }
+
             var filename = $"{pollId}_{questionIndex}";
             var ext = Path.GetExtension(file.FileName);
             var url = GeneratePreSignedURL(1, filename + ext, HttpVerb.PUT);
@@ -212,6 +226,11 @@ namespace EasyPoll.Controllers
 
         public IActionResult DeleteFiles(string questionsRaw, string pollId)
         {
+            if (user == null || user.RoleId != 3)
+            {
+                return BadRequest();
+            }
+
             var questions = (int[])JsonSerializer.Deserialize(questionsRaw, typeof(int[]));
             var mem = dbcontext.MediaExtMapping.ToArray();
             HttpWebResponse response = null;
@@ -234,6 +253,11 @@ namespace EasyPoll.Controllers
         //If id is not provided, returns info for Global.ActivePoll
         public IActionResult GetPollInfo(int id = 0)
         {
+            if (user == null || (user.RoleId == 1 && id != 0))
+            {
+                return BadRequest();
+            }
+
             var poll = id == 0 || id == Global.ActivePoll.Id ? Global.ActivePoll : new Poll(id);
 
             int userId = user.Id;
@@ -265,7 +289,6 @@ namespace EasyPoll.Controllers
                 ["sendFinish"] = false,
                 ["questions"] = questions,
                 ["options"] = poll.Options,
-                ["media"] = null,
                 ["answers"] = answers,
                 ["answersByDepartment"] = poll.AnswersByDepartmentName,
                 ["userselection"] = userSelection,
