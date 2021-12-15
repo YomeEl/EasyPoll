@@ -17,10 +17,21 @@ function loadActivePollData() {
 					options: data['options'][i]
 				});
 			});
+			editLogic.editData.questions.forEach((q) => {
+				q.options.forEach((opt, i) => {
+					q.options[i] = {
+						text: opt,
+						media: null
+                    }
+				})
+			});
 			editLogic.newPoll = false;
 			data['sources'].forEach((src, i) => {
 				mediaController.loadedSrc[i] = src;
 			});
+			data['optionSources'].forEach((question, q) => question.forEach((optSrc, o) => {
+				mediaController.loadedOptionSrc[q][o] = optSrc;
+			}));
 			pollConstructor.construct();
 		});
 }

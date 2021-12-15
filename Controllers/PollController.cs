@@ -190,7 +190,7 @@ namespace EasyPoll.Controllers
             return View();
         }
 
-        public IActionResult UploadFile(IFormFile file, int pollId, int questionIndex)
+        public IActionResult UploadFile(IFormFile file, int pollId, int questionIndex, int optionIndex = -1)
         {
             if (user == null || user.RoleId != 3)
             {
@@ -198,6 +198,10 @@ namespace EasyPoll.Controllers
             }
 
             var filename = $"{pollId}_{questionIndex}";
+            if (optionIndex != -1)
+            {
+                filename += $"_{optionIndex}";
+            }
             var ext = Path.GetExtension(file.FileName);
             var url = GeneratePreSignedURL(1, filename + ext, HttpVerb.PUT);
             HttpWebRequest httpRequest = WebRequest.Create(url) as HttpWebRequest;
@@ -224,7 +228,7 @@ namespace EasyPoll.Controllers
             return Ok(response);
         }
 
-        public IActionResult DeleteFiles(string questionsRaw, string pollId)
+        public IActionResult DeleteFiles(string questionsRaw, string optionsRaw, string pollId)
         {
             if (user == null || user.RoleId != 3)
             {
@@ -232,21 +236,43 @@ namespace EasyPoll.Controllers
             }
 
             var questions = (int[])JsonSerializer.Deserialize(questionsRaw, typeof(int[]));
+            var options = (int[][])JsonSerializer.Deserialize(optionsRaw, typeof(int[][]));
             var mem = dbcontext.MediaExtMapping.ToArray();
-            HttpWebResponse response = null;
+
+            var urls = new List<string>();
             foreach (var q in questions)
             {
                 var map = mem.FirstOrDefault(m => m.Filename == $"{pollId}_{q}");
                 if (map != null && map.Extension != "")
                 {
-                    var url = GeneratePreSignedURL(1, $"{map.Filename}{map.Extension}", HttpVerb.DELETE);
-                    HttpWebRequest httpRequest = WebRequest.Create(url) as HttpWebRequest;
-                    httpRequest.Method = "DELETE";
-                    response = httpRequest.GetResponse() as HttpWebResponse;
+                    urls.Add(GeneratePreSignedURL(1, $"{map.Filename}{map.Extension}", HttpVerb.DELETE));
+                }
+                dbcontext.MediaExtMapping.Remove(map);
+            }
+
+            for (int q = 0; q < options.Length; q++)
+            {
+                foreach (var opt in options[q])
+                {
+                    var map = mem.FirstOrDefault(m => m.Filename == $"{pollId}_{q}_{opt}");
+                    if (map != null && map.Extension != "")
+                    {
+                        urls.Add(GeneratePreSignedURL(1, $"{map.Filename}{map.Extension}", HttpVerb.DELETE));
+                    }
                     dbcontext.MediaExtMapping.Remove(map);
                 }
             }
+
             dbcontext.SaveChanges();
+
+            HttpWebResponse response = null;
+            foreach (var url in urls)
+            {
+                HttpWebRequest httpRequest = WebRequest.Create(url) as HttpWebRequest;
+                httpRequest.Method = "DELETE";
+                response = httpRequest.GetResponse() as HttpWebResponse;
+            }
+            
             return Ok(response);
         }
 
@@ -272,11 +298,29 @@ namespace EasyPoll.Controllers
             }
 
             var srcs = new List<string>();
+            var optionSources = new List<string>[questions.Length];
             for (int i = 0; i < questions.Length; i++)
             {
                 var filename = $"{poll.Id}_{i}";
-                var mem = dbcontext.MediaExtMapping.FirstOrDefault((m) => m.Filename == filename);
-                srcs.Add(mem != null ? GeneratePreSignedURL(0.1d, $"{mem.Filename}{mem.Extension}", HttpVerb.GET) : "");
+                var mem = dbcontext.MediaExtMapping.FirstOrDefault(m => m.Filename == filename);
+                var link = "";
+                if (mem != null)
+                {
+                    link = GeneratePreSignedURL(0.1d, $"{mem.Filename}{mem.Extension}", HttpVerb.GET);
+                }
+                srcs.Add(link);
+                optionSources[i] = new List<string>();
+                for (int j = 0; j < poll.Options[i].Length; j++)
+                {
+                    filename = $"{poll.Id}_{i}_{j}";
+                    mem = dbcontext.MediaExtMapping.FirstOrDefault(m => m.Filename == filename);
+                    link = "";
+                    if (mem != null)
+                    {
+                        link = GeneratePreSignedURL(0.1d, $"{mem.Filename}{mem.Extension}", HttpVerb.GET);
+                    }
+                    optionSources[i].Add(link);
+                }
             }
 
             var data = new Dictionary<string, object>
@@ -293,6 +337,7 @@ namespace EasyPoll.Controllers
                 ["answersByDepartment"] = poll.AnswersByDepartmentName,
                 ["userselection"] = userSelection,
                 ["sources"] = srcs.ToArray(),
+                ["optionSources"] = optionSources.Select(s => s.ToArray()).ToArray()
             };
 
             return Ok(JsonSerializer.Serialize(data));

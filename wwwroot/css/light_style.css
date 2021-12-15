@@ -37,21 +37,24 @@ a:hover {
 
 }
 
+.answer-box,
 .answer-box-active,
-.answer-box-active-selected
-{
-    width: fit-content;
+.answer-box-active-selected {
+    padding: 1rem;
+    width: 100%;
+    margin: 5px 0;
+    border-radius: 5px;
+    outline: 1px solid #000000;
 }
 
 .answer-box-active-selected {
-    background-color: #FF0000;
-    color: #FFFFFF!important;
-    transition: 0.6s ease-out;
+    outline: 3px solid #FF0000;
+    background: rgba(255, 0, 0, 0.1);
+    transition: 0.15s ease-out;
 }
 
-.answer-box:hover,
 .answer-box-active:hover {
-
+    outline: 1px solid #FF0000;
 }
 
 .answer-bar {
@@ -75,12 +78,6 @@ a:hover {
 
 a.answer-text:hover {
     color: inherit!important;
-}
-
-.answer-box-active:hover::after {
-    content: " выбрать";
-    font-size: 0.75rem;
-    color: #808080;
 }
 
 .poll-summary-current {

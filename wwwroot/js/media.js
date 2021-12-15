@@ -4,62 +4,24 @@
 		imgPreview: null,
 		videoPreview: null,
 		deletedMedia: [],
-		deleteMediaFor: -1
+		deletedOptionsMedia: [[]]
     }
 
 	const acceptedImageFormats = ['.jpg', '.jpeg', '.png', '.gif'];
 	const acceptedVideoFormats = ['.mp4'];
 
-	let loadedSrc = []
+	let loadedSrc = [];
+	let loadedOptionSrc = [[]];
 
 	function init(fileInput, imgPreview, videoPreview) {
 		data.fileInput = fileInput;
 		data.imgPreview = imgPreview;
 		data.videoPreview = videoPreview;
-
-		data.deleteMediaFor = -1;
     }
 
-	function previewMedia(file=null) {
-		let oFReader = new FileReader();
-		if (!file) {
-			file = data.fileInput.files[0];
-        }
-		oFReader.readAsDataURL(file);
-
-		oFReader.onload = function (oFREvent) {
-			let src = oFREvent.target.result;
-			if (file.type.match(/image/)) {
-				data.imgPreview.src = oFREvent.target.result;
-				data.imgPreview.style = '';
-				data.imgPreview.setAttribute('hide', 'false');
-				data.videoPreview.style = 'display: none';
-				data.videoPreview.setAttribute('hide', 'true');
-			}
-			else {
-				data.videoPreview.src = src;
-				data.videoPreview.style = '';
-				data.videoPreview.setAttribute('hide', 'false');
-				data.imgPreview.style = 'display: none';
-				data.imgPreview.setAttribute('hide', 'true');
-            }
-		};
-	};
-
-	function deleteMedia(question) {
-		data.deleteMediaFor = question;
-		
-		data.fileInput.value = '';
-		data.imgPreview.src = '';
-		data.imgPreview.style = 'display: none';
-		data.videoPreview.src = '';
-		data.videoPreview.style = 'display: none';
-	}
-
-	function sumbitDeletion() {
-		if (data.deleteMediaFor === -1) return;
-		data.deletedMedia.push(data.deleteMediaFor);
-		loadedSrc[data.deleteMediaFor] = '';
+	function deleteQuestionMedia(question) {
+		data.deletedMedia.push(question);
+		loadedSrc[question] = '';
     }
 
 	function createMediaDiv(source = '') {
@@ -91,24 +53,30 @@
 		wrapper.className = 'img-wrapper';
 		wrapper.append(img, video);
 
-		wrapper.onclick = () => {
-			if (video.getAttribute('hide') == 'true') {
-				let w1 = wrapper.cloneNode(true);
-				w1.className = 'img-wrapper-full';
-				w1.id = 'full';
-				w1.onclick = () => w1.remove();
+		img.onclick = () => {
+			let w1 = wrapper.cloneNode(true);
+			w1.className = 'img-wrapper-full';
+			w1.id = 'full';
+			w1.onclick = () => w1.remove();
+			let loading = document.createElement('label');
+			loading.className = 'question loading-label';
+			loading.id = 'loadingLabel';
+			loading.innerText = 'Загрузка изображения...';
+			wrapper.append(loading);
+			w1.firstElementChild.onload = () => {
 				document.body.append(w1);
-			}
+				document.getElementById('loadingLabel').remove();
+            }
         }
 
 		return wrapper;
     }
 
-	function createMediaInput() {
+	function createMediaInput(id) {
 		let input = document.createElement('input');
 		input.type = 'file';
 		input.style = 'display: none';
-		input.id = 'file';
+		input.id = id;
 		let extensions = acceptedImageFormats.concat(acceptedVideoFormats).join(',');
 		input.setAttribute('accept', extensions);
 
@@ -118,11 +86,10 @@
 	return {
 		data,
 		loadedSrc,
+		loadedOptionSrc,
 		createMediaDiv,
 		createMediaInput,
 		init,
-		previewMedia,
-		deleteMedia,
-		sumbitDeletion
+		deleteQuestionMedia
     }
 }) ();
