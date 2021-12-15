@@ -33,7 +33,10 @@ function init(pollId = 0) {
             answered = data['answered'];
 			data['sources'].forEach((src, i) => {
                 mediaController.loadedSrc[i] = src;
-			});
+            });
+            data['optionSources'].forEach((question, q) => question.forEach((optSrc, o) => {
+                mediaController.loadedOptionSrc[q][o] = optSrc;
+            }));
             reset();
 		});
 }

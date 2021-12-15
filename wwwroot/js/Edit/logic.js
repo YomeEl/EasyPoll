@@ -1,7 +1,14 @@
 /*
 interface Question {
 	name: string;
-	options: string[];
+	options: Option[];
+	media: File;
+}
+*/
+
+/*
+interface Option {
+	text: string;
 	media: File;
 }
 */
@@ -34,8 +41,11 @@ const editLogic = (function () {
 		editData.questions.splice(index, 1);
 	}
 
-	function addOption(questionIndex, option) {
-		editData.questions[questionIndex].options.push(option);
+	function addOption(questionIndex, option, media) {
+		editData.questions[questionIndex].options.push({
+			text: option,
+			media: media
+		});
     }
 
 	function resetQuestion(questionIndex, name) {
@@ -44,7 +54,7 @@ const editLogic = (function () {
 		editData.questions[questionIndex].options = [];
     }
 
-	function setMedia(questionIndex) {
+	function setQuestionMedia(questionIndex) {
 		if (mediaController.data.fileInput.files.length === 1) {
 			editData.questions[questionIndex].media = mediaController.data.fileInput.files[0];
 		}
@@ -114,19 +124,20 @@ const editLogic = (function () {
 				sendStartRaw: editData.sendStart,
 				sendFinishRaw: editData.sendFinish,
 				questionsRaw: JSON.stringify(editData.questions.map(question => question.name)),
-				optionsRaw: JSON.stringify(editData.questions.map(question => question.options)),
+				optionsRaw: JSON.stringify(editData.questions.map(question => question.options.map((opt) => opt.text))),
 				questionsChangedRaw: questionsChanged
 			})
 		})
     }
 
 	function deleteFiles(id) {
-		let deleteForm = new FormData();
-		deleteForm.append('questionsRaw', JSON.stringify(mediaController.data.deletedMedia));
-		deleteForm.append('pollId', id);
 		return fetch('/Poll/DeleteFiles', {
 			method: 'POST',
-			body: deleteForm
+			body: new URLSearchParams({
+				questionsRaw: JSON.stringify(mediaController.data.deletedMedia),
+				optionsRaw: JSON.stringify(mediaController.data.deletedOptionsMedia),
+				pollId: id
+			})
 		})
 	}
 
@@ -137,12 +148,25 @@ const editLogic = (function () {
 				let uploadForm = new FormData();
 				uploadForm.append('file', question.media);
 				uploadForm.append('pollId', id);
-				uploadForm.append('questionIndex', i)
+				uploadForm.append('questionIndex', i);
 				uploadPromises.push(fetch('/Poll/UploadFile', {
 					method: 'POST',
 					body: uploadForm
 				}));
 			}
+			question.options.forEach((option, j) => {
+				if (option.media) {
+					let uploadForm = new FormData();
+					uploadForm.append('file', option.media);
+					uploadForm.append('pollId', id);
+					uploadForm.append('questionIndex', i);
+					uploadForm.append('optionIndex', j)
+					uploadPromises.push(fetch('/Poll/UploadFile', {
+						method: 'POST',
+						body: uploadForm
+					}));
+				}
+			})
 		});
 		Promise.all(uploadPromises).then(() => {
 			document.location.assign('/Settings/ControlPanel');
@@ -156,7 +180,7 @@ const editLogic = (function () {
 		removeQuestion,
 		addOption,
 		resetQuestion,
-		setMedia,
+		setQuestionMedia,
 		moveUp,
 		moveDown,
 		submitPoll

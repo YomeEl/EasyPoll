@@ -5,13 +5,10 @@
     questionDiv.append(div);
 
     options[index].forEach((opt, i) => {
-        let label1 = document.createElement('label');
-        label1.className = 'answer-text';
-        label1.innerText = (i + 1) + ".\xa0";
-        let label2 = document.createElement('label');
-        label2.className = 'answer-text';
+        let label = document.createElement('label');
+        label.className = 'answer-text';
         let perc = percentage(index, i);
-        label2.innerText = opt + (perc != '0' ? `\xa0(${perc})` : '');
+        label.innerText = opt + (perc != '0' ? `\xa0(${perc})` : '');
 
         let ansBarResult = document.createElement('div');
         ansBarResult.className = 'answer-bar-result';
@@ -20,19 +17,23 @@
         }
         ansBarResult.style = `width: ${perc}`;
 
-
         let ansBar = document.createElement('div');
         ansBar.className = 'answer-bar';
-        ansBar.appendChild(ansBarResult);
+        ansBar.append(ansBarResult);
 
         let ansDiv = document.createElement('div');
         ansDiv.className = 'answer-box';
         ansDiv.id = (i + 1);
-        ansDiv.appendChild(label1);
-        ansDiv.appendChild(label2);
-        ansDiv.appendChild(ansBar);
+        ansDiv.append(label, ansBar);
 
-        answersDiv.appendChild(ansDiv);
+        let src = mediaController.loadedOptionSrc[index][i];
+        if (src) {
+            let media = mediaController.createMediaDiv(src);
+            media.className = 'img-wrapper-small';
+            label.before(media);
+        }
+
+        answersDiv.append(ansDiv);
 
         if (index < questions.length - 1) {
             buttonNext.style = '';
