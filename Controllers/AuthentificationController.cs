@@ -11,7 +11,7 @@ using EasyPoll.ViewModels;
 
 namespace EasyPoll.Controllers
 {
-    public class AuthentificationController : Controller
+    public class AuthentificationController : BaseController
     {
         private readonly CookieOptions cookieOptions = new() { Expires = new DateTimeOffset(DateTime.Now.AddHours(1)) };
 
@@ -47,8 +47,6 @@ namespace EasyPoll.Controllers
         public IActionResult Register()
         {
             ViewData["ModelInvalid"] = false;
-
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
             ViewData["Departments"] = dbcontext.Departments.OrderBy((d) => d.Id).ToArray();
             return View();
         }
@@ -64,7 +62,6 @@ namespace EasyPoll.Controllers
                 RoleId = 1,
                 Key = new PasswordHasher<UserModel>().HashPassword(null, model.Password)
             };
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
             dbcontext.Users.Add(newUser);
             dbcontext.SaveChanges();
             return RedirectToAction("Login", "Authentification");
@@ -79,7 +76,6 @@ namespace EasyPoll.Controllers
         [HttpPost]
         public IActionResult CheckRegistration(string username, string email)
         {
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
             var similarUsers = (from user in dbcontext.Users
                                where user.Username == username || user.Email == email
                                select user).ToArray();
@@ -103,9 +99,8 @@ namespace EasyPoll.Controllers
         }
 
         //Also updates token in db
-        private static UserModel GetUserModel(LoginViewModel viewModel)
+        private UserModel GetUserModel(LoginViewModel viewModel)
         {
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
             var user = dbcontext.Users.Where(user => user.Username == viewModel.Username).FirstOrDefault();
 
             bool isPasswordCorrect = new PasswordHasher<UserModel>()
