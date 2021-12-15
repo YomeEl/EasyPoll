@@ -14,16 +14,24 @@ using Amazon.S3;
 using Amazon.S3.Model;
 
 using EasyPoll.Models;
+using EasyPoll.Data;
 
 namespace EasyPoll.Controllers
 {
     public class PollController : Controller
     {
+        private readonly ServiceDBContext dbcontext;
+        private readonly UserModel user;
+
+        public PollController() : base()
+        {
+            dbcontext = ServiceDBContext.GetDBContext();
+            user = AuthentificationController.GetUserByToken(Request.Cookies["token"]);
+        }
+
         [HttpGet]
         public IActionResult ActivePoll()
         {
-            var user = AuthentificationController.GetUserByToken(Request.Cookies["token"]);
-
             if (user == null)
             {
                 return RedirectToAction("Login", "Authentification");
@@ -64,9 +72,7 @@ namespace EasyPoll.Controllers
                 .OrderBy(q => q.Order)
                 .Select(q => q.Id)
                 .ToArray();
-            var userId = AuthentificationController.GetUserByToken(Request.Cookies["token"]).Id;
-
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
+            var userId = user.Id;
 
             var answersList = new List<AnswerModel>();
             for (int i = 0; i < raw_answers.Length; i++)
@@ -104,7 +110,6 @@ namespace EasyPoll.Controllers
         }
 
         [HttpPost]
-        //Needs refactoring
         public IActionResult AddNew(
             string oldName, string newName,
             string startAtRaw, string finishAtRaw,
@@ -120,11 +125,8 @@ namespace EasyPoll.Controllers
 
             var questionsChanged = bool.Parse(questionsChangedRaw);
 
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
-
-            var existingPoll = dbcontext.Polls.FirstOrDefaultAsync((poll) => poll.PollName == oldName).Result;
+            var existingPoll = dbcontext.Polls.Where(poll => poll.PollName == oldName).FirstOrDefault();
             int pollId;
-            PollModel poll;
             if (existingPoll != null)
             {
                 pollId = existingPoll.Id;
@@ -146,7 +148,7 @@ namespace EasyPoll.Controllers
             }
             else
             { 
-                poll = new PollModel()
+                var poll = new PollModel()
                 {
                     PollName = newName,
                     CreatedAt = startAt,
@@ -157,31 +159,7 @@ namespace EasyPoll.Controllers
                 pollId = dbcontext.Polls.FirstAsync(p => p.PollName == newName).Result.Id;
             }
 
-            var questionsList = new List<QuestionModel>();
-            for (int i = 0; i < questions.Length; i++)
-            {
-                var question = new QuestionModel()
-                {
-                    PollId = pollId,
-                    Question = questions[i],
-                    Order = i,
-                    Options = new List<OptionModel>()
-                };
-
-                for (int j = 0; j < options[i].Length; j++)
-                {
-                    var option = new OptionModel()
-                    {
-                        Text = options[i][j],
-                        Order = j
-                    };
-                    question.Options.Add(option);
-                }
-
-                questionsList.Add(question);
-            }
-            dbcontext.Questions.AddRange(questionsList);
-            dbcontext.SaveChanges();
+            UpdateQuestions(pollId, questions, options);
 
             Global.UpdateActivePoll();
             return Ok(pollId);
@@ -190,7 +168,6 @@ namespace EasyPoll.Controllers
         [HttpGet]
         public IActionResult ShowAll()
         {
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
             var pollsArray = dbcontext.Polls.OrderBy(poll => poll.CreatedAt).ToArray();
             ViewData["LastIsActive"] = pollsArray.Last().FinishAt > DateTime.Now;
             ViewData["PollsArray"] = pollsArray;
@@ -223,8 +200,7 @@ namespace EasyPoll.Controllers
             }
             HttpWebResponse response = httpRequest.GetResponse() as HttpWebResponse;
 
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
-            dbcontext.MediaExtMapping.Add(new Models.MediaExtMappingModel
+            dbcontext.MediaExtMapping.Add(new MediaExtMappingModel
             {
                 Filename = filename,
                 Extension = ext
@@ -237,7 +213,6 @@ namespace EasyPoll.Controllers
         public IActionResult DeleteFiles(string questionsRaw, string pollId)
         {
             var questions = (int[])JsonSerializer.Deserialize(questionsRaw, typeof(int[]));
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
             var mem = dbcontext.MediaExtMapping.ToArray();
             HttpWebResponse response = null;
             foreach (var q in questions)
@@ -261,7 +236,6 @@ namespace EasyPoll.Controllers
         {
             var poll = id == 0 || id == Global.ActivePoll.Id ? Global.ActivePoll : new Poll(id);
 
-            var user = AuthentificationController.GetUserByToken(Request.Cookies["token"]);
             int userId = user.Id;
 
             var questions = poll.Questions;
@@ -274,8 +248,6 @@ namespace EasyPoll.Controllers
             }
 
             var srcs = new List<string>();
-
-            var dbcontext = Data.ServiceDBContext.GetDBContext();
             for (int i = 0; i < questions.Length; i++)
             {
                 var filename = $"{poll.Id}_{i}";
@@ -301,6 +273,35 @@ namespace EasyPoll.Controllers
             };
 
             return Ok(JsonSerializer.Serialize(data));
+        }
+
+        private void UpdateQuestions(int pollId, string[] questions, string[][] options)
+        {
+            var questionsList = new List<QuestionModel>();
+            for (int i = 0; i < questions.Length; i++)
+            {
+                var question = new QuestionModel()
+                {
+                    PollId = pollId,
+                    Question = questions[i],
+                    Order = i,
+                    Options = new List<OptionModel>()
+                };
+
+                for (int j = 0; j < options[i].Length; j++)
+                {
+                    var option = new OptionModel()
+                    {
+                        Text = options[i][j],
+                        Order = j
+                    };
+                    question.Options.Add(option);
+                }
+
+                questionsList.Add(question);
+            }
+            dbcontext.Questions.AddRange(questionsList);
+            dbcontext.SaveChanges();
         }
 
         private static string GeneratePreSignedURL(double duration, string filename, HttpVerb verb)
