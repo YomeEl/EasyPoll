@@ -97,6 +97,7 @@ namespace EasyPoll.Controllers
     
         public static UserModel GetUserByToken(string token)
         {
+            if (token == null) return null;
             var dbcontext = Data.ServiceDBContext.GetDBContext();
             return dbcontext.Users.Where(user => user.Token == token).FirstOrDefault();
         }
