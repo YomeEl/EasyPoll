@@ -1,7 +1,4 @@
-﻿departmentsController.loadDepartments();
-rolesController.loadUsers();
-
-const departmentsController = (function () {
+﻿const departmentsController = (function () {
     let departmentsDiv = document.getElementById('departments');
 
     //Departments section
@@ -248,3 +245,6 @@ const rolesController = (function () {
         submitRoles
     }
 })();
+
+departmentsController.loadDepartments();
+rolesController.loadUsers();
