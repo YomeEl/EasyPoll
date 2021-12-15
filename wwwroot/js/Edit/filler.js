@@ -30,6 +30,9 @@ function loadActivePollData() {
 				mediaController.loadedSrc[i] = src;
 			});
 			data['optionSources'].forEach((question, q) => question.forEach((optSrc, o) => {
+				if (o == 0) {
+					mediaController.loadedOptionSrc[q] = [];
+                }
 				mediaController.loadedOptionSrc[q][o] = optSrc;
 			}));
 			pollConstructor.construct();
