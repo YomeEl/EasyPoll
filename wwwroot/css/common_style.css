@@ -24,6 +24,21 @@ img {
     margin: 1vh 0;
 }
 
+.img-wrapper-full {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.img-wrapper-full img {
+    width: 80%;
+}
+
 .upload-label {
     color: #FF0000;
     cursor: pointer;
