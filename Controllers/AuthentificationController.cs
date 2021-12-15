@@ -101,13 +101,25 @@ namespace EasyPoll.Controllers
         //Also updates token in db
         private UserModel GetUserModel(LoginViewModel viewModel)
         {
-            var user = dbcontext.Users.Where(user => user.Username == viewModel.Username).FirstOrDefault();
+            try
+            {
+                var user = dbcontext.Users.Where(user => user.Username == viewModel.Username).FirstOrDefault();
+            }
+            catch
+            {
+                return null;
+            }
+
+            if (user == null)
+            {
+                return null;
+            }
 
             bool isPasswordCorrect = new PasswordHasher<UserModel>()
                 .VerifyHashedPassword(user, user.Key, viewModel.Password) != PasswordVerificationResult.Failed;
 
 
-            if (user == null || !isPasswordCorrect)
+            if (!isPasswordCorrect)
             {
                 return null;
             }
