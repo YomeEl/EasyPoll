@@ -1,8 +1,6 @@
 ﻿const departmentsController = (function () {
     let departmentsDiv = document.getElementById('departments');
 
-    //Departments section
-
     function loadDepartments() {
         fetch('/Settings/GetDepartments').then((res) => res.text().then((text) => {
             departmentsDiv.innerHTML = '';
@@ -242,7 +240,8 @@ const rolesController = (function () {
 
     return {
         loadUsers,
-        submitRoles
+        submitRoles,
+        appendUserToTable
     }
 })();
 
