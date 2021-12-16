@@ -263,7 +263,9 @@ namespace EasyPoll.Controllers
 
         public IActionResult GetTable(int id)
         {
-            if (user == null || user.RoleId == 1)
+            var poll = dbcontext.Polls.Find(id);
+
+            if (user == null || user.RoleId == 1 || poll == null)
             {
                 return BadRequest();
             }
@@ -282,7 +284,7 @@ namespace EasyPoll.Controllers
             workbook.Write(s, true);
             s.Seek(0, SeekOrigin.Begin);
 
-            return File(s, "application/vnd.ms-excel", "answers.xlsx");
+            return File(s, "application/vnd.ms-excel", $"{poll.PollName}.xlsx");
         }
 
         private void UpdateQuestions(int pollId, string[] questions, string[][] options)
