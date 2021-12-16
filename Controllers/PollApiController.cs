@@ -77,6 +77,8 @@ namespace EasyPoll.Controllers
                 existingPoll.PollName = newName;
                 existingPoll.CreatedAt = startAt;
                 existingPoll.FinishAt = finishAt;
+                existingPoll.SendStart = sendStart;
+                existingPoll.SendFinish = sendFinish;
 
                 dbcontext.Polls.Update(existingPoll);
 
@@ -95,7 +97,9 @@ namespace EasyPoll.Controllers
                 {
                     PollName = newName,
                     CreatedAt = startAt,
-                    FinishAt = finishAt
+                    FinishAt = finishAt,
+                    SendStart = sendStart,
+                    SendFinish = sendFinish
                 };
                 dbcontext.Polls.Add(poll);
                 dbcontext.SaveChanges();
@@ -247,8 +251,8 @@ namespace EasyPoll.Controllers
                 ["pollName"] = poll.PollModel.PollName,
                 ["startAt"] = poll.PollModel.CreatedAt.ToString("u"),
                 ["finishAt"] = poll.PollModel.FinishAt.ToString("u"),
-                ["sendStart"] = false,
-                ["sendFinish"] = false,
+                ["sendStart"] = poll.PollModel.SendStart,
+                ["sendFinish"] = poll.PollModel.SendFinish,
                 ["questions"] = questions,
                 ["options"] = poll.Options,
                 ["answers"] = answers,
