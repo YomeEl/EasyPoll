@@ -71,7 +71,7 @@ function sendPoll() {
 
     answers.push(selected);
 
-    fetch('/', {
+    fetch('/PollApi/AnswerPoll', {
         method: 'POST',
         body: new URLSearchParams({
             answers: JSON.stringify(answers)
