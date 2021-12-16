@@ -90,29 +90,5 @@ namespace EasyPoll.Controllers
             ViewData["pollId"] = id;
             return View();
         }
-
-        public IActionResult GetTable(int id)
-        {
-            if (user == null || user.RoleId == 1)
-            {
-                return BadRequest();
-            }
-
-            var questions = dbcontext.Questions
-                .Where(q => q.PollId == id)
-                .Include(q => q.Answers).ThenInclude(a => a.User).ThenInclude(u => u.Department)
-                .Include(q => q.Options)
-                .OrderBy(q => q.Order)
-                .ToList();
-
-            var tableBuilder = new TableBuider(questions);
-            var workbook = tableBuilder.Build();
-
-            var s = new MemoryStream();
-            workbook.Write(s, true);
-            s.Seek(0, SeekOrigin.Begin);
-            
-            return File(s, "application/vnd.ms-excel", "answers.xlsx");
-        }
     }
 }
