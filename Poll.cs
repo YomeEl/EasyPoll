@@ -3,6 +3,8 @@ using System.Linq;
 
 using Microsoft.EntityFrameworkCore;
 
+using EasyPoll.Models;
+
 namespace EasyPoll
 {
     public class Poll
@@ -11,6 +13,7 @@ namespace EasyPoll
         public Models.PollModel PollModel { get; }
         public string[] Questions { get; }
         public string[][] Options { get; }
+        public List<UserModel> Users { get; }
 
         /// <summary>
         /// Indices [question][option][answer]
@@ -23,7 +26,7 @@ namespace EasyPoll
         {
             var dbcontext = Data.ServiceDBContext.GetDBContext();
 
-            var u = dbcontext.Users.ToArray(); //Preload users to context
+            Users = dbcontext.Users.ToList(); 
 
             var poll = dbcontext.Polls
                 .Include(p => p.Questions).ThenInclude(q => q.Options)

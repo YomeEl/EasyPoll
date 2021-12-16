@@ -16,6 +16,8 @@ namespace EasyPoll
 
         private static Task timeTrackingTask;
 
+        private static int lastPollId = -1;
+
         public static void Initialize()
         {
             UpdateActivePoll();
@@ -50,6 +52,17 @@ namespace EasyPoll
             lock (_lock)
             {
                 int activePollId = DetermineActivePollId();
+
+                if (lastPollId != -1 && activePollId != lastPollId)
+                {
+                    //Send finish message
+                    if (ActivePoll != null && ActivePoll.PollModel.SendFinish)
+                    {
+                        var message = $"Опрос \"{ActivePoll.PollModel.PollName}\" завершён";
+                        MailSender.SendEmails(ActivePoll.Users, message);
+                    }
+                }
+                
                 if (activePollId > 0)
                 {
                     ActivePoll = new Poll(activePollId);
@@ -58,6 +71,18 @@ namespace EasyPoll
                 {
                     ActivePoll = null;
                 }
+
+                if (lastPollId != -1 && activePollId != lastPollId)
+                {
+                    //Send start message
+                    if (activePollId > 0 && ActivePoll.PollModel.SendStart)
+                    {
+                        var message = $"Опрос \"{ActivePoll.PollModel.PollName}\" начался";
+                        MailSender.SendEmails(ActivePoll.Users, message);
+                    }
+                }
+
+                lastPollId = activePollId;
             }
         }
 
