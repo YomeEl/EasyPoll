@@ -1,4 +1,8 @@
-﻿@{ ViewData["Title"] = "Детализация"; }
+﻿@{ 
+    ViewData["Title"] = "Детализация";
+
+    int pollId = (int)ViewData["pollId"];
+}
 
 <label class="question" style="font-size: 150%; width: 100%">Вопрос</label>
 <div id="question" class="question">
@@ -30,11 +34,13 @@
 <label class="question" style="font-size: 150%; width: 100%">Участники опроса</label>
 <br>
 <div id="counts"></div>
-<hr>
+<br>
 <label class="question">Самое активное подразделение: <b id="mostActiveDept">...</b></label>
 <hr>
+<a href="@Url.Action("GetTable", "PollApi")?id=@pollId">Загрузить таблицу результатов</a>
+<hr>
 <div class="btn-container">
-    <div class="btn-common" onclick="location.href='@Url.Action("ShowAll", "Poll")'">
+    <div class="btn-common" onclick="location.assign('@(Url.Action("ShowAll", "Poll"))')">
         <label class="btn-text">Назад</label>
     </div>
 </div>
@@ -42,5 +48,5 @@
 <script src="~/js/media.js"></script>
 <script src="~/js/ActivePoll/viewResults.js"></script>
 <script src="~/js/ActivePoll/common.js"></script>
-<script>init(@((int)ViewData["pollId"]))</script>
+<script>init(@pollId)</script>
 <script src="~/js/Details/filler.js"></script>
