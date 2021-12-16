@@ -19,7 +19,7 @@ let getInfo;
 
 function init(pollId = 0) {
     showDetails = pollId != 0;
-    let url = `/Poll/GetPollInfo?id=${pollId}`;
+    let url = `/PollApi/GetPollInfo?id=${pollId}`;
 	getInfo = fetch(url)
 		.then((response) => response.text())
         .then((dataRaw) => {

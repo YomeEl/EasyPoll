@@ -111,7 +111,7 @@ const editLogic = (function () {
 	}
 
 	function updatePoll() {
-		return fetch('/Poll/AddNew', {
+		return fetch('/PollApi/AddNewPoll', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded'
@@ -131,7 +131,7 @@ const editLogic = (function () {
     }
 
 	function deleteFiles(id) {
-		return fetch('/Poll/DeleteFiles', {
+		return fetch('/PollApi/DeleteMedia', {
 			method: 'POST',
 			body: new URLSearchParams({
 				questionsRaw: JSON.stringify(mediaController.data.deletedMedia),
@@ -149,7 +149,7 @@ const editLogic = (function () {
 				uploadForm.append('file', question.media);
 				uploadForm.append('pollId', id);
 				uploadForm.append('questionIndex', i);
-				uploadPromises.push(fetch('/Poll/UploadFile', {
+				uploadPromises.push(fetch('/PollApi/UploadMedia', {
 					method: 'POST',
 					body: uploadForm
 				}));
@@ -161,7 +161,7 @@ const editLogic = (function () {
 					uploadForm.append('pollId', id);
 					uploadForm.append('questionIndex', i);
 					uploadForm.append('optionIndex', j)
-					uploadPromises.push(fetch('/Poll/UploadFile', {
+					uploadPromises.push(fetch('/PollApi/UploadMedia', {
 						method: 'POST',
 						body: uploadForm
 					}));
